@@ -134,7 +134,7 @@ function parsePowerShellDate(dateStr: string | null | undefined): number | undef
   // Handle Microsoft JSON date format /Date(1234567890)/
   const msDateMatch = dateStr.match(/\/Date\((\d+)\)\//);
   if (msDateMatch) {
-    return parseInt(msDateMatch[1], 10);
+    return parseInt(msDateMatch[1] ?? '0', 10);
   }
 
   // Handle ISO date format

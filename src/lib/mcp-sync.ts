@@ -18,6 +18,7 @@ import {
     MCPConfig,
     IDEMCPConfig,
 } from './mcp-config';
+import { IDEType } from '../types';
 
 // ============================================================================
 // Types
@@ -267,8 +268,8 @@ export function getMCPSyncStatus(): MCPSyncStatus[] {
 
         return {
             ideId,
-            name: IDE_NAMES[ideId] || ideId,
-            icon: IDE_ICONS[ideId] || '📦',
+            name: IDE_NAMES[ideId as IDEType] || ideId,
+            icon: IDE_ICONS[ideId as IDEType] || '📦',
             path: idePath,
             enabled: settings.enabledIDEs[ideId] ?? true,
             hasOverride: hasOverride(ideId),

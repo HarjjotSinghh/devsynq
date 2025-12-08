@@ -5,7 +5,7 @@ import SettingsPage from './components/SettingsPage';
 import Modal from './components/Modal';
 
 const SETTINGS_DEFAULTS: Settings = {
-    defaultIDE: 'Cursor',
+    defaultIDE: IDEType.Cursor,
     launchAtStartup: false,
     theme: 'dark',
     autoDetectIDEs: true,
