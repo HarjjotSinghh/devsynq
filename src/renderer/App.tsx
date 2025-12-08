@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { IDE, IDEType, Project, Settings } from '../types';
-import { MCPSyncSettings } from './components/MCPSyncSettings';
-import ProcessManager from './components/ProcessManager';
-import APIKeysManager from './components/APIKeysManager';
+import { Icon, IdeIcon } from './components/Icons';
+import SettingsPage from './components/SettingsPage';
 
 const SETTINGS_DEFAULTS: Settings = {
     defaultIDE: 'Cursor',
@@ -17,11 +16,11 @@ const App: React.FC = () => {
     const [projects, setProjects] = useState<Project[]>([]);
     const [settings, setSettings] = useState<Settings>(SETTINGS_DEFAULTS);
     const [projectSearchTerm, setProjectSearchTerm] = useState('');
-    const [isSettingsOpen, setIsSettingsOpen] = useState(false);
-    const [settingsTab, setSettingsTab] = useState<'general' | 'mcp' | 'processes' | 'apikeys'>('general');
+    const [activeView, setActiveView] = useState<'home' | 'settings'>('home');
+    const [settingsTab, setSettingsTab] = useState<'general' | 'mcp' | 'processes' | 'apikeys' | 'shortcuts'>('general');
     const [isLoadingIDEs, setIsLoadingIDEs] = useState(true);
     const [isRefreshing, setIsRefreshing] = useState(false);
-    const [toastMessage, setToastMessage] = useState<string | null>(null);
+    const [toastMessage, setToastMessage] = useState<React.ReactNode | null>(null);
     const [mcpSyncCount, setMcpSyncCount] = useState<number>(0);
     const [isSyncingMCP, setIsSyncingMCP] = useState(false);
     const [lastMcpSync, setLastMcpSync] = useState<number | null>(null);
@@ -54,7 +53,10 @@ const App: React.FC = () => {
             await loadMCPStatus();
 
             // Listen for settings shortcut from main process
-            window.electronAPI.onShowSettings(() => setIsSettingsOpen(true));
+            window.electronAPI.onShowSettings(() => {
+                setActiveView('settings');
+                setSettingsTab('general');
+            });
         };
 
         init();
@@ -85,17 +87,17 @@ const App: React.FC = () => {
             await loadMCPStatus();
 
             if (result.success.length > 0) {
-                showToast(`✅ Synced MCP config to ${result.success.length} IDE(s)`);
+                showToast(<><Icon name="checkCircle" size={16} /> Synced MCP config to {result.success.length} IDE(s)</>);
             }
             if (result.failed.length > 0) {
-                showToast(`⚠️ ${result.failed.length} failed to sync`);
+                showToast(<><Icon name="alert" size={16} /> {result.failed.length} failed to sync</>);
             }
             if (result.success.length === 0 && result.failed.length === 0) {
                 showToast('No IDEs enabled for sync');
             }
         } catch (error) {
             console.error('MCP sync failed:', error);
-            showToast('❌ MCP sync failed');
+            showToast(<><Icon name="xCircle" size={16} /> MCP sync failed</>);
         } finally {
             setIsSyncingMCP(false);
         }
@@ -127,7 +129,7 @@ const App: React.FC = () => {
     };
 
     // --- Handlers ---
-    const showToast = (message: string) => {
+    const showToast = (message: React.ReactNode) => {
         setToastMessage(message);
         setTimeout(() => setToastMessage(null), 3000);
     };
@@ -162,12 +164,12 @@ const App: React.FC = () => {
         try {
             const result = await window.electronAPI.launchIDE(ide.name);
             if (result.success) {
-                showToast('✅ Launched!');
+                showToast(<><Icon name="checkCircle" size={16} /> Launched!</>);
             } else {
-                showToast(`❌ Failed: ${result.error}`);
+                showToast(<><Icon name="xCircle" size={16} /> Failed: {result.error}</>);
             }
         } catch (error) {
-            showToast('❌ Error launching IDE');
+            showToast(<><Icon name="xCircle" size={16} /> Error launching IDE</>);
         }
     };
 
@@ -231,7 +233,7 @@ const App: React.FC = () => {
             document.body.dataset.theme = settings.theme;
             await window.electronAPI.saveSettings(settings);
             showToast('Settings saved');
-            setIsSettingsOpen(false);
+            setActiveView('home');
         } catch (error) {
             console.error('Failed to save settings', error);
             showToast('Failed to save settings');
@@ -246,7 +248,8 @@ const App: React.FC = () => {
 
             if (event.key === ',' && !event.shiftKey) {
                 event.preventDefault();
-                setIsSettingsOpen(true);
+                setActiveView('settings');
+                setSettingsTab('general');
                 return;
             }
 
@@ -259,19 +262,31 @@ const App: React.FC = () => {
             const numeric = Number(event.key);
             if (!Number.isNaN(numeric) && numeric >= 1 && numeric <= 5) {
                 event.preventDefault();
-                const installed = ides.filter(ide => ide.installed);
-                const target = installed[numeric - 1];
+                const targetName = resolveShortcutIDE(numeric);
+                if (!targetName) {
+                    showToast('No IDE configured for that shortcut');
+                    return;
+                }
+                const target = ides.find(ide => ide.name === targetName && ide.installed);
                 if (target) {
                     handleLaunchIDE(target);
                 } else {
-                    showToast('No IDE in that slot yet');
+                    showToast('Configured IDE is not installed');
                 }
             }
         };
 
         document.addEventListener('keydown', handleKeyDown);
         return () => document.removeEventListener('keydown', handleKeyDown);
-    }, [ides]); // Re-bind when ides change for numeric shortcuts
+    }, [ides, settings]); // Re-bind when ides or bindings change
+
+    const resolveShortcutIDE = (index: number): IDEType | undefined => {
+        const key = `cmdorctrl+${index}`;
+        const bound = settings.shortcutBindings?.[key];
+        if (bound) return bound as IDEType;
+        const installed = ides.filter(ide => ide.installed);
+        return installed[index - 1]?.name;
+    };
 
     // --- Filtering & Sorting ---
     const filteredProjects = projects.filter(project => {
@@ -292,25 +307,48 @@ const App: React.FC = () => {
 
     // --- Render Helpers ---
     const getProjectIcon = (preferredIDE: IDEType) => {
-        if (preferredIDE.includes('Cursor')) return '⚡';
-        if (preferredIDE.includes('Code')) return '💻';
-        if (preferredIDE.includes('Windsurf')) return '🏄';
-        return '📁';
+        return <IdeIcon ide={preferredIDE} size={26} />;
     };
+
+    if (activeView === 'settings') {
+        return (
+            <SettingsPage
+                settings={settings}
+                ides={ides}
+                onSettingsChange={setSettings}
+                onSave={handleSaveSettings}
+                onClose={() => setActiveView('home')}
+                onToast={showToast}
+                activeTab={settingsTab}
+                onTabChange={setSettingsTab}
+                resolveShortcutIDE={resolveShortcutIDE}
+            />
+        );
+    }
 
     return (
         <div className="app-container">
             {/* Title Bar */}
             <div className="title-bar">
                 <div className="title-bar-title">
-                    <div className="title-bar-logo">⚡</div>
+                    <div className="title-bar-logo">
+                        <Icon name="logo" />
+                    </div>
                     <span>DevSynq</span>
                 </div>
                 <div className="window-controls">
-                    <button id="settings-btn" className="window-control-btn" title="Settings" onClick={() => setIsSettingsOpen(true)}>⚙️</button>
-                    <button id="minimize-btn" className="window-control-btn" title="Minimize" onClick={() => window.electronAPI.minimize()}>─</button>
-                    <button id="maximize-btn" className="window-control-btn" title="Maximize" onClick={() => window.electronAPI.maximize()}>□</button>
-                    <button id="close-btn" className="window-control-btn close" title="Close" onClick={() => window.electronAPI.close()}>✕</button>
+                    <button id="settings-btn" className="window-control-btn" title="Settings" onClick={() => setActiveView('settings')}>
+                        <Icon name="settings" />
+                    </button>
+                    <button id="minimize-btn" className="window-control-btn" title="Minimize" onClick={() => window.electronAPI.minimize()}>
+                        <Icon name="minimize" />
+                    </button>
+                    <button id="maximize-btn" className="window-control-btn" title="Maximize" onClick={() => window.electronAPI.maximize()}>
+                        <Icon name="maximize" />
+                    </button>
+                    <button id="close-btn" className="window-control-btn close" title="Close" onClick={() => window.electronAPI.close()}>
+                        <Icon name="close" />
+                    </button>
                 </div>
             </div>
 
@@ -318,7 +356,7 @@ const App: React.FC = () => {
             <main className="main-content">
                 {/* Header */}
                 <header className="header">
-                    <h1 className="header-title">AI IDE Launcher</h1>
+                    <h1 className="header-title">DevSynq</h1>
                     <p className="header-subtitle">Launch your favorite AI-powered development environments instantly</p>
 
                     <div className="stats-bar">
@@ -335,57 +373,21 @@ const App: React.FC = () => {
                             title="Refresh IDE list"
                             onClick={handleRefreshIDEs}
                             disabled={isRefreshing}
-                            style={{ transform: isRefreshing ? 'rotate(360deg)' : '' }}
+                            className="icon-button-inline"
                         >
-                            🔄 Refresh
+                            <Icon name="refresh" />
+                            <span>Refresh</span>
                         </button>
                     </div>
                 </header>
 
-                {/* IDE Grid */}
-                <div id="ide-grid">
-                    {isLoadingIDEs ? (
-                        <div className="loading-state">
-                            <div className="loading-spinner"></div>
-                            <p>Scanning for installed IDEs...</p>
-                        </div>
-                    ) : (
-                        ides.map(ide => (
-                            <div
-                                key={ide.name}
-                                className={`ide-card ${ide.installed ? 'installed' : 'not-installed'}`}
-                                style={{ '--accent-color': ide.color } as React.CSSProperties}
-                                onClick={() => handleLaunchIDE(ide)}
-                            >
-                                <div className="card-glow"></div>
-                                <div className="card-content">
-                                    <div className="ide-icon">{ide.icon}</div>
-                                    <h3 className="ide-name">{ide.name}</h3>
-                                    <div className="ide-status">
-                                        <span className={`status-dot ${ide.installed ? 'active' : 'inactive'}`}></span>
-                                        <span className="status-text">{ide.installed ? 'Installed' : 'Not Installed'}</span>
-                                    </div>
-                                    <button
-                                        className={`ide-action-btn ${ide.installed ? 'launch-btn' : 'install-btn'}`}
-                                        onClick={(e) => {
-                                            e.stopPropagation();
-                                            handleLaunchIDE(ide);
-                                        }}
-                                    >
-                                        {ide.installed ? '🚀 Launch' : '📥 Install'}
-                                    </button>
-                                </div>
-                            </div>
-                        ))
-                    )}
-                </div>
-
                 {/* MCP Sync CTA Section */}
                 <section className="mcp-sync-cta">
-                    <div className="mcp-cta-glow"></div>
                     <div className="mcp-cta-content">
                         <div className="mcp-cta-info">
-                            <div className="mcp-cta-icon">🔄</div>
+                            <div className="mcp-cta-icon">
+                                <Icon name="sync" />
+                            </div>
                             <div className="mcp-cta-text">
                                 <h3>MCP Configuration Sync</h3>
                                 <p>
@@ -413,33 +415,89 @@ const App: React.FC = () => {
                                         Syncing...
                                     </>
                                 ) : (
-                                    <>🔄 Sync All Now</>
+                                    <>
+                                        <Icon name="sync" size={16} />
+                                        Sync All Now
+                                    </>
                                 )}
                             </button>
                             <button
                                 className="mcp-sync-btn secondary"
                                 onClick={() => {
                                     setSettingsTab('mcp');
-                                    setIsSettingsOpen(true);
+                                    setActiveView('settings');
                                 }}
                             >
-                                ⚙️ Configure
+                                <Icon name="settings" size={16} />
+                                Configure
                             </button>
                         </div>
                     </div>
                 </section>
+
+                {/* IDE Grid */}
+                <div id="ide-grid">
+                    {isLoadingIDEs ? (
+                        <div className="loading-state">
+                            <div className="loading-spinner"></div>
+                            <p>Scanning for installed IDEs...</p>
+                        </div>
+                    ) : (
+                        ides.map(ide => (
+                            <div
+                                key={ide.name}
+                                className={`ide-card ${ide.installed ? 'installed' : 'not-installed'}`}
+                                style={{ '--accent-color': ide.color } as React.CSSProperties}
+                                onClick={() => handleLaunchIDE(ide)}
+                            >
+                                <div className="card-content">
+                                    <div className="ide-icon-wrapper">
+                                        <IdeIcon ide={ide.name} />
+                                    </div>
+                                    <h3 className="ide-name">{ide.name}</h3>
+                                    <div className="ide-status">
+                                        <span className={`status-dot ${ide.installed ? 'active' : 'inactive'}`}></span>
+                                        <span className="status-text">{ide.installed ? 'Installed' : 'Not Installed'}</span>
+                                    </div>
+                                    <button
+                                        className={`ide-action-btn ${ide.installed ? 'launch-btn' : 'install-btn'}`}
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            handleLaunchIDE(ide);
+                                        }}
+                                    >
+                                        {ide.installed ? (
+                                            <>
+                                                <Icon name="launch" size={16} />
+                                                Launch
+                                            </>
+                                        ) : (
+                                            <>
+                                                <Icon name="download" size={16} />
+                                                Install
+                                            </>
+                                        )}
+                                    </button>
+                                </div>
+                            </div>
+                        ))
+                    )}
+                </div>
 
                 {/* Projects Section */}
                 <section className="projects-section">
                     <div className="section-header">
                         <h2 className="section-title">Projects</h2>
                         <button id="add-project-btn" className="add-project-btn" onClick={handleAddProject}>
-                            <span>+</span> Add Project
+                            <Icon name="add" />
+                            <span>Add Project</span>
                         </button>
                     </div>
                     <div className="project-toolbar">
                         <div className="search-input">
-                            <span aria-hidden="true">🔍</span>
+                            <span aria-hidden="true" className="search-icon">
+                                <Icon name="search" />
+                            </span>
                             <input
                                 id="project-search"
                                 type="text"
@@ -488,14 +546,14 @@ const App: React.FC = () => {
                                                     handleLaunchProject(project);
                                                 }}
                                             >
-                                                🚀
+                                                <Icon name="launch" size={16} />
                                             </button>
                                             <button
                                                 className="project-action-btn delete"
                                                 title="Remove Project"
                                                 onClick={(e) => handleDeleteProject(e, project.id, project.name)}
                                             >
-                                                🗑️
+                                                <Icon name="delete" size={16} />
                                             </button>
                                         </div>
                                     </div>
@@ -538,14 +596,14 @@ const App: React.FC = () => {
                                                     handleLaunchProject(project);
                                                 }}
                                             >
-                                                🚀
+                                                <Icon name="launch" size={16} />
                                             </button>
                                             <button
                                                 className="project-action-btn delete"
                                                 title="Remove Project"
                                                 onClick={(e) => handleDeleteProject(e, project.id, project.name)}
                                             >
-                                                🗑️
+                                                <Icon name="delete" size={16} />
                                             </button>
                                         </div>
                                     </div>
@@ -560,117 +618,6 @@ const App: React.FC = () => {
             <footer className="footer">
                 <p>DevSynq v1.0.0 · Built with Electron + React + TypeScript</p>
             </footer>
-
-            {/* Settings Modal */}
-            {isSettingsOpen && (
-                <div id="settings-modal" className="modal show" onClick={(e) => { if (e.target === e.currentTarget) setIsSettingsOpen(false); }}>
-                    <div className="modal-content modal-content-large">
-                        <div className="modal-header">
-                            <h2>Settings</h2>
-                            <button className="close-modal" onClick={() => setIsSettingsOpen(false)}>✕</button>
-                        </div>
-
-                        {/* Settings Tabs */}
-                        <div className="settings-tabs">
-                            <button
-                                className={`settings-tab ${settingsTab === 'general' ? 'active' : ''}`}
-                                onClick={() => setSettingsTab('general')}
-                            >
-                                ⚙️ General
-                            </button>
-                            <button
-                                className={`settings-tab ${settingsTab === 'mcp' ? 'active' : ''}`}
-                                onClick={() => setSettingsTab('mcp')}
-                            >
-                                🔄 MCP Sync
-                            </button>
-                            <button
-                                className={`settings-tab ${settingsTab === 'processes' ? 'active' : ''}`}
-                                onClick={() => setSettingsTab('processes')}
-                            >
-                                ⚡ Processes
-                            </button>
-                            <button
-                                className={`settings-tab ${settingsTab === 'apikeys' ? 'active' : ''}`}
-                                onClick={() => setSettingsTab('apikeys')}
-                            >
-                                🔑 API Keys
-                            </button>
-                        </div>
-
-                        <div className="modal-body">
-                            {settingsTab === 'general' && (
-                                <>
-                                    <div className="setting-item">
-                                        <label>Default IDE</label>
-                                        <select
-                                            id="default-ide-select"
-                                            value={settings.defaultIDE}
-                                            onChange={(e) => setSettings({ ...settings, defaultIDE: e.target.value as IDEType })}
-                                        >
-                                            {ides.length > 0 ? (
-                                                ides.map(ide => (
-                                                    <option key={ide.name} value={ide.name}>{ide.name}</option>
-                                                ))
-                                            ) : (
-                                                <option value="Cursor">Cursor</option>
-                                            )}
-                                        </select>
-                                    </div>
-                                    <div className="setting-item">
-                                        <label className="checkbox-label">
-                                            <input
-                                                type="checkbox"
-                                                id="launch-startup-check"
-                                                checked={settings.launchAtStartup}
-                                                onChange={(e) => setSettings({ ...settings, launchAtStartup: e.target.checked })}
-                                            />
-                                            Launch at Startup
-                                        </label>
-                                    </div>
-                                    <div className="setting-item">
-                                        <label className="checkbox-label">
-                                            <input
-                                                type="checkbox"
-                                                id="auto-detect-check"
-                                                checked={settings.autoDetectIDEs}
-                                                onChange={(e) => setSettings({ ...settings, autoDetectIDEs: e.target.checked })}
-                                            />
-                                            Auto-detect new IDEs on launch
-                                        </label>
-                                    </div>
-                                    <div className="setting-item">
-                                        <label className="checkbox-label">
-                                            <input
-                                                type="checkbox"
-                                                id="theme-toggle"
-                                                checked={settings.theme === 'light'}
-                                                onChange={(e) => setSettings({ ...settings, theme: e.target.checked ? 'light' : 'dark' })}
-                                            />
-                                            Light theme
-                                        </label>
-                                    </div>
-                                </>
-                            )}
-                            {settingsTab === 'mcp' && (
-                                <MCPSyncSettings onToast={showToast} />
-                            )}
-                            {settingsTab === 'processes' && (
-                                <ProcessManager />
-                            )}
-                            {settingsTab === 'apikeys' && (
-                                <APIKeysManager />
-                            )}
-                        </div>
-
-                        {settingsTab === 'general' && (
-                            <div className="modal-footer">
-                                <button id="save-settings-btn" className="primary-btn" onClick={handleSaveSettings}>Save Changes</button>
-                            </div>
-                        )}
-                    </div>
-                </div>
-            )}
 
             {/* Toast */}
             {toastMessage && (

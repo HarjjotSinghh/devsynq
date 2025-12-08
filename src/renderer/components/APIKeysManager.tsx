@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { APIKeysSettings, APIKeys } from '../../types';
 import { APIKeyType, APIKeySyncStatusItem } from '../types.d';
+import { Icon } from './Icons';
 
 function APIKeysManager() {
     const [settings, setSettings] = useState<APIKeysSettings | null>(null);
@@ -11,7 +12,7 @@ function APIKeysManager() {
     const [editingKey, setEditingKey] = useState<string | null>(null);
     const [keyInput, setKeyInput] = useState('');
     const [validationError, setValidationError] = useState<string | null>(null);
-    const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
+    const [toast, setToast] = useState<{ message: React.ReactNode; type: 'success' | 'error' } | null>(null);
 
     const loadData = useCallback(async () => {
         try {
@@ -33,7 +34,7 @@ function APIKeysManager() {
         loadData();
     }, [loadData]);
 
-    const showToast = (message: string, type: 'success' | 'error') => {
+    const showToast = (message: React.ReactNode, type: 'success' | 'error') => {
         setToast({ message, type });
         setTimeout(() => setToast(null), 3000);
     };
@@ -57,9 +58,10 @@ function APIKeysManager() {
             setEditingKey(null);
             setKeyInput('');
             setValidationError(null);
-            showToast(`${keyName} key saved successfully`, 'success');
+            setValidationError(null);
+            showToast(<><Icon name="checkCircle" size={14} /> {keyName} key saved successfully</>, 'success');
         } catch (error) {
-            showToast('Failed to save key', 'error');
+            showToast(<><Icon name="xCircle" size={14} /> Failed to save key</>, 'error');
         }
     };
 
@@ -69,9 +71,9 @@ function APIKeysManager() {
         try {
             await window.electronAPI.deleteAPIKey(keyName);
             await loadData();
-            showToast(`${keyName} key deleted`, 'success');
+            showToast(<><Icon name="checkCircle" size={14} /> {keyName} key deleted</>, 'success');
         } catch (error) {
-            showToast('Failed to delete key', 'error');
+            showToast(<><Icon name="xCircle" size={14} /> Failed to delete key</>, 'error');
         }
     };
 
@@ -80,13 +82,13 @@ function APIKeysManager() {
         try {
             const result = await window.electronAPI.syncAPIKeysToAll();
             if (result.success.length > 0) {
-                showToast(`Synced to ${result.success.join(', ')}`, 'success');
+                showToast(<><Icon name="checkCircle" size={14} /> Synced to {result.success.join(', ')}</>, 'success');
             }
             if (result.failed.length > 0) {
-                showToast(`Failed: ${result.failed.map(f => f.ide).join(', ')}`, 'error');
+                showToast(<><Icon name="xCircle" size={14} /> Failed: {result.failed.map(f => f.ide).join(', ')}</>, 'error');
             }
         } catch (error) {
-            showToast('Failed to sync API keys', 'error');
+            showToast(<><Icon name="xCircle" size={14} /> Failed to sync API keys</>, 'error');
         }
         setIsSyncing(false);
     };
@@ -96,7 +98,7 @@ function APIKeysManager() {
             await window.electronAPI.toggleIDEKeySync(ideId, enabled);
             await loadData();
         } catch (error) {
-            showToast('Failed to update settings', 'error');
+            showToast(<><Icon name="xCircle" size={14} /> Failed to update settings</>, 'error');
         }
     };
 
@@ -126,7 +128,7 @@ function APIKeysManager() {
             {/* Toast Notification */}
             {toast && (
                 <div className={`apikeys-toast ${toast.type}`}>
-                    {toast.type === 'success' ? '✓' : '✕'} {toast.message}
+                    {toast.type === 'success' ? <Icon name="checkCircle" size={16} /> : <Icon name="xCircle" size={16} />} {toast.message}
                 </div>
             )}
 
@@ -134,7 +136,7 @@ function APIKeysManager() {
             <div className="apikeys-header">
                 <div className="apikeys-header-left">
                     <h2>
-                        <span className="apikeys-icon">🔑</span>
+                        <span className="apikeys-icon"><Icon name="key" size={24} /></span>
                         API Keys Sync
                     </h2>
                     <p className="apikeys-subtitle">
@@ -152,7 +154,7 @@ function APIKeysManager() {
                             Syncing...
                         </>
                     ) : (
-                        <>🔄 Sync All Keys</>
+                        <><Icon name="sync" size={14} /> Sync All Keys</>
                     )}
                 </button>
             </div>
@@ -192,7 +194,7 @@ function APIKeysManager() {
                                                 className="apikey-btn apikey-btn-save"
                                                 onClick={() => handleSaveKey(keyType.id)}
                                             >
-                                                ✓ Save
+                                                <Icon name="check" size={14} /> Save
                                             </button>
                                             <button
                                                 className="apikey-btn apikey-btn-cancel"
@@ -202,7 +204,7 @@ function APIKeysManager() {
                                                     setValidationError(null);
                                                 }}
                                             >
-                                                ✕ Cancel
+                                                <Icon name="close" size={14} /> Cancel
                                             </button>
                                         </div>
                                     </div>
@@ -214,13 +216,13 @@ function APIKeysManager() {
                                                 className="apikey-btn apikey-btn-edit"
                                                 onClick={() => setEditingKey(keyType.id)}
                                             >
-                                                ✏️ Edit
+                                                <Icon name="edit" size={14} /> Edit
                                             </button>
                                             <button
                                                 className="apikey-btn apikey-btn-delete"
                                                 onClick={() => handleDeleteKey(keyType.id)}
                                             >
-                                                🗑️ Delete
+                                                <Icon name="delete" size={14} /> Delete
                                             </button>
                                         </div>
                                     </div>
@@ -229,7 +231,7 @@ function APIKeysManager() {
                                         className="apikey-add-btn"
                                         onClick={() => setEditingKey(keyType.id)}
                                     >
-                                        ➕ Add Key
+                                        <Icon name="add" size={14} /> Add Key
                                     </button>
                                 )}
                             </div>
@@ -262,7 +264,7 @@ function APIKeysManager() {
                             </div>
                             <div className="apikeys-ide-status">
                                 {ide.configExists ? (
-                                    <span className="status-installed">✓ Installed</span>
+                                    <span className="status-installed"><Icon name="check" size={14} /> Installed</span>
                                 ) : (
                                     <span className="status-not-installed">Not Installed</span>
                                 )}
@@ -277,7 +279,7 @@ function APIKeysManager() {
 
             {/* Info Section */}
             <div className="apikeys-info">
-                <div className="info-icon">💡</div>
+                <div className="info-icon"><Icon name="lightbulb" size={24} /></div>
                 <div className="info-content">
                     <strong>How it works:</strong>
                     <p>

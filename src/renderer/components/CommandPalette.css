@@ -8,21 +8,18 @@
     justify-content: center;
     padding-top: 60px;
     background: transparent;
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-family: 'Manrope', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
 
 .command-palette-container {
     width: 100%;
     max-width: 620px;
-    background: linear-gradient(145deg, rgba(18, 18, 28, 0.98), rgba(10, 10, 18, 0.99));
-    border: 1px solid rgba(139, 92, 246, 0.2);
+    background: linear-gradient(145deg, rgba(7, 16, 20, 0.95), rgba(10, 24, 28, 0.95));
+    border: 1px solid rgba(15, 181, 166, 0.35);
     border-radius: 16px;
-    box-shadow:
-        0 8px 32px rgba(0, 0, 0, 0.4),
-        0 0 0 1px rgba(255, 255, 255, 0.05) inset,
-        0 0 100px rgba(139, 92, 246, 0.1);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
     overflow: hidden;
-    backdrop-filter: blur(20px);
+    backdrop-filter: blur(14px);
     animation: slideIn 0.15s ease-out;
 }
 
@@ -44,24 +41,25 @@
     align-items: center;
     gap: 12px;
     padding: 16px 20px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
     background: rgba(255, 255, 255, 0.02);
 }
 
 .search-icon {
     font-size: 18px;
     opacity: 0.6;
+    color: white;
 }
 
 .search-input {
     flex: 1;
     background: transparent;
     border: none;
-    color: #fff;
+    color: #e8f3f4;
     font-size: 16px;
     font-weight: 400;
     outline: none;
-    caret-color: #8b5cf6;
+    caret-color: #0fb5a6;
 }
 
 .search-input::placeholder {
@@ -128,11 +126,11 @@
 
 .command-item:hover,
 .command-item.selected {
-    background: rgba(139, 92, 246, 0.1);
+    background: rgba(15, 181, 166, 0.1);
 }
 
 .command-item.selected {
-    background: rgba(139, 92, 246, 0.15);
+    background: rgba(15, 181, 166, 0.18);
 }
 
 .item-icon {
@@ -141,10 +139,11 @@
     justify-content: center;
     width: 40px;
     height: 40px;
-    background: rgba(255, 255, 255, 0.05);
+    background: rgba(15, 181, 166, 0.08);
     border-radius: 10px;
     font-size: 18px;
     flex-shrink: 0;
+    color: white;
 }
 
 .item-content {
@@ -154,8 +153,8 @@
 
 .item-title {
     font-size: 14px;
-    font-weight: 500;
-    color: #fff;
+    font-weight: 600;
+    color: #e8f3f4;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -163,7 +162,7 @@
 
 .item-subtitle {
     font-size: 12px;
-    color: rgba(255, 255, 255, 0.4);
+    color: rgba(232, 243, 244, 0.65);
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -186,13 +185,13 @@
 }
 
 .item-type.type-project {
-    background: rgba(59, 130, 246, 0.2);
-    color: #3b82f6;
+    background: rgba(15, 181, 166, 0.14);
+    color: #0fb5a6;
 }
 
 .item-type.type-ide {
-    background: rgba(139, 92, 246, 0.2);
-    color: #8b5cf6;
+    background: rgba(15, 181, 166, 0.14);
+    color: #0fb5a6;
 }
 
 .item-type.type-action {
@@ -214,8 +213,8 @@
 .loading-spinner {
     width: 20px;
     height: 20px;
-    border: 2px solid rgba(139, 92, 246, 0.3);
-    border-top-color: #8b5cf6;
+    border: 2px solid rgba(15, 181, 166, 0.25);
+    border-top-color: #0fb5a6;
     border-radius: 50%;
     animation: spin 0.8s linear infinite;
 }
@@ -241,6 +240,7 @@
 .empty-icon {
     font-size: 32px;
     opacity: 0.5;
+    color: white;
 }
 
 /* Footer */

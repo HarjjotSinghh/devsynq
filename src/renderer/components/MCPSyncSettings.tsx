@@ -1,9 +1,10 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { MCPSyncStatus, SyncSettings, SyncResult } from '../../types';
 import './MCPSyncSettings.css';
+import { Icon, IdeIcon } from './Icons';
 
 interface Props {
-    onToast: (message: string) => void;
+    onToast: (message: React.ReactNode) => void;
 }
 
 export const MCPSyncSettings: React.FC<Props> = ({ onToast }) => {
@@ -63,9 +64,9 @@ export const MCPSyncSettings: React.FC<Props> = ({ onToast }) => {
             await loadData();
 
             if (result.success.length > 0) {
-                onToast(`✅ Synced to ${result.success.join(', ')}`);
+                onToast(<><Icon name="checkCircle" size={14} /> Synced to {result.success.join(', ')}</>);
             } else if (result.failed.length > 0) {
-                onToast(`❌ Failed: ${result.failed[0]?.error ?? 'Unknown error'}`);
+                onToast(<><Icon name="xCircle" size={14} /> Failed: {result.failed[0]?.error ?? 'Unknown error'}</>);
             }
         } catch (error) {
             console.error('Sync failed:', error);
@@ -84,10 +85,10 @@ export const MCPSyncSettings: React.FC<Props> = ({ onToast }) => {
             await loadData();
 
             if (result.success.length > 0) {
-                onToast(`✅ Synced to ${result.success.length} IDE(s)`);
+                onToast(<><Icon name="checkCircle" size={14} /> Synced to {result.success.length} IDE(s)</>);
             }
             if (result.failed.length > 0) {
-                onToast(`⚠️ ${result.failed.length} failed`);
+                onToast(<><Icon name="alert" size={14} /> {result.failed.length} failed</>);
             }
         } catch (error) {
             console.error('Sync all failed:', error);
@@ -102,10 +103,10 @@ export const MCPSyncSettings: React.FC<Props> = ({ onToast }) => {
         try {
             const result = await window.electronAPI.importMCPFromIDE(ideId);
             if (result.success) {
-                onToast(`✅ Imported config from ${ideId}`);
+                onToast(<><Icon name="checkCircle" size={14} /> Imported config from {ideId}</>);
                 await loadData();
             } else {
-                onToast(`❌ Import failed: ${result.error}`);
+                onToast(<><Icon name="xCircle" size={14} /> Import failed: {result.error}</>);
             }
         } catch (error: any) {
             console.error('Import failed:', error);
@@ -210,7 +211,7 @@ export const MCPSyncSettings: React.FC<Props> = ({ onToast }) => {
             {/* Header */}
             <div className="mcp-header">
                 <div className="mcp-header-info">
-                    <h3>🔄 MCP Configuration Manager</h3>
+                    <h3 className="mcp-header-title"><Icon name="sync" /> MCP Configuration Manager</h3>
                     <p className="mcp-description">
                         Sync your MCP (Model Context Protocol) servers across all AI IDEs
                     </p>
@@ -226,7 +227,9 @@ export const MCPSyncSettings: React.FC<Props> = ({ onToast }) => {
                             Syncing...
                         </>
                     ) : (
-                        <>🔄 Sync All</>
+                        <>
+                            <Icon name="sync" size={16} /> Sync All
+                        </>
                     )}
                 </button>
             </div>
@@ -252,9 +255,9 @@ export const MCPSyncSettings: React.FC<Props> = ({ onToast }) => {
                     {/* Master Config Section */}
                     <div className="mcp-section mcp-master-config">
                         <div className="section-header">
-                            <h4>📁 Master Configuration</h4>
+                            <h4><Icon name="window" /> Master Configuration</h4>
                             <button className="mcp-edit-btn" onClick={handleOpenMasterConfig}>
-                                Edit in Editor
+                                <Icon name="launch" size={16} /> Edit in Editor
                             </button>
                         </div>
                         <div className="master-config-info">
@@ -269,7 +272,7 @@ export const MCPSyncSettings: React.FC<Props> = ({ onToast }) => {
 
                     {/* IDE List */}
                     <div className="mcp-section">
-                        <h4>🖥️ Synced IDEs</h4>
+                        <h4><Icon name="project" /> Synced IDEs</h4>
                         <div className="mcp-ide-list">
                             {ideStatuses.map(ide => (
                                 <div
@@ -285,7 +288,7 @@ export const MCPSyncSettings: React.FC<Props> = ({ onToast }) => {
                                                 disabled={!ide.isInstalled}
                                             />
                                             <span className="ide-info">
-                                                <span className="ide-icon">{ide.icon}</span>
+                                                <span className="ide-icon"><IdeIcon ide={ide.name} size={22} /></span>
                                                 <span className="ide-name">{ide.name}</span>
                                                 {ide.hasOverride && (
                                                     <span className="override-badge">Custom</span>
@@ -293,10 +296,10 @@ export const MCPSyncSettings: React.FC<Props> = ({ onToast }) => {
                                             </span>
                                         </label>
                                         <div className={`ide-status ${getStatusClass(ide.status)}`}>
-                                            {ide.status === 'synced' && '✓ Synced'}
-                                            {ide.status === 'pending' && '○ Pending'}
-                                            {ide.status === 'failed' && '✗ Failed'}
-                                            {ide.status === 'not-installed' && '— Not Installed'}
+                                            {ide.status === 'synced' && <><Icon name="check" size={12} /> Synced</>}
+                                            {ide.status === 'pending' && <><Icon name="circle" size={12} /> Pending</>}
+                                            {ide.status === 'failed' && <><Icon name="close" size={12} /> Failed</>}
+                                            {ide.status === 'not-installed' && <><Icon name="minimize" size={12} /> Not Installed</>}
                                             {ide.lastSynced && ide.status !== 'not-installed' && (
                                                 <span className="sync-time">
                                                     {formatRelativeTime(ide.lastSynced)}
@@ -314,7 +317,7 @@ export const MCPSyncSettings: React.FC<Props> = ({ onToast }) => {
                                             disabled={!ide.enabled || !ide.isInstalled || syncing}
                                             title="Sync Now"
                                         >
-                                            🔄
+                                            <Icon name="sync" size={14} />
                                         </button>
                                         <button
                                             className="ide-action-btn"
@@ -322,7 +325,7 @@ export const MCPSyncSettings: React.FC<Props> = ({ onToast }) => {
                                             disabled={!ide.isInstalled}
                                             title="Import from IDE"
                                         >
-                                            📥
+                                            <Icon name="download" size={14} />
                                         </button>
                                         <button
                                             className="ide-action-btn"
@@ -330,7 +333,7 @@ export const MCPSyncSettings: React.FC<Props> = ({ onToast }) => {
                                             disabled={!ide.isInstalled}
                                             title={ide.hasOverride ? 'Remove Override' : 'Create Override'}
                                         >
-                                            {ide.hasOverride ? '🗑️' : '📝'}
+                                            {ide.hasOverride ? <Icon name="delete" size={14} /> : <Icon name="launch" size={14} />}
                                         </button>
                                     </div>
                                 </div>
@@ -340,7 +343,7 @@ export const MCPSyncSettings: React.FC<Props> = ({ onToast }) => {
 
                     {/* Sync Options */}
                     <div className="mcp-section mcp-options">
-                        <h4>⚙️ Sync Options</h4>
+                        <h4><Icon name="settings" size={16} /> Sync Options</h4>
                         <div className="mcp-option-list">
                             <label className="mcp-option">
                                 <input
@@ -364,21 +367,21 @@ export const MCPSyncSettings: React.FC<Props> = ({ onToast }) => {
                     {/* Last Result */}
                     {lastResult && (
                         <div className="mcp-section mcp-result">
-                            <h4>📊 Last Sync Result</h4>
+                            <h4><Icon name="barChart" size={16} /> Last Sync Result</h4>
                             <div className="result-details">
                                 {lastResult.success.length > 0 && (
                                     <div className="result-item result-success">
-                                        ✓ Synced: {lastResult.success.join(', ')}
+                                        <Icon name="check" size={12} /> Synced: {lastResult.success.join(', ')}
                                     </div>
                                 )}
                                 {lastResult.skipped.length > 0 && (
                                     <div className="result-item result-skipped">
-                                        ⊘ Skipped: {lastResult.skipped.join(', ')}
+                                        <Icon name="slash" size={12} /> Skipped: {lastResult.skipped.join(', ')}
                                     </div>
                                 )}
                                 {lastResult.failed.length > 0 && (
                                     <div className="result-item result-failed">
-                                        ✗ Failed:
+                                        <Icon name="close" size={12} /> Failed:
                                         {lastResult.failed.map(f => (
                                             <div key={f.ide} className="failed-detail">
                                                 {f.ide}: {f.error}
@@ -388,7 +391,7 @@ export const MCPSyncSettings: React.FC<Props> = ({ onToast }) => {
                                 )}
                                 {lastResult.requireRestart.length > 0 && (
                                     <div className="result-item result-warning">
-                                        ⚠ Restart required: {lastResult.requireRestart.join(', ')}
+                                        <Icon name="alert" size={12} /> Restart required: {lastResult.requireRestart.join(', ')}
                                     </div>
                                 )}
                             </div>
@@ -399,9 +402,9 @@ export const MCPSyncSettings: React.FC<Props> = ({ onToast }) => {
                 /* Sync Log Tab */
                 <div className="mcp-section mcp-log">
                     <div className="section-header">
-                        <h4>📜 Sync History</h4>
+                        <h4><Icon name="fileText" size={16} /> Sync History</h4>
                         <button className="mcp-refresh-btn" onClick={loadSyncLog}>
-                            🔄 Refresh
+                            <Icon name="refresh" size={14} /> Refresh
                         </button>
                     </div>
                     <div className="sync-log-list">
@@ -414,10 +417,10 @@ export const MCPSyncSettings: React.FC<Props> = ({ onToast }) => {
                                     className={`log-entry ${entry.success ? 'success' : 'failed'}`}
                                 >
                                     <span className="log-icon">
-                                        {entry.success ? '✓' : '✗'}
+                                        {entry.success ? <Icon name="check" size={12} /> : <Icon name="close" size={12} />}
                                     </span>
-                                    <span className="log-action">{entry.action}</span>
-                                    <span className="log-ide">{entry.ideId}</span>
+                                    <span className="log-action">{entry.action.charAt(0).toUpperCase() + entry.action.slice(1)}</span>
+                                    <span className="log-ide">{entry.ideId.charAt(0).toUpperCase() + entry.ideId.slice(1)}</span>
                                     <span className="log-time">
                                         {new Date(entry.timestamp).toLocaleString()}
                                     </span>

@@ -56,7 +56,7 @@
 
 .mcp-sync-all-btn:hover:not(:disabled) {
     transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(var(--accent-primary-rgb), 0.3);
+    box-shadow: 0 4px 12px hsla(160, 100%, 68%, 0.2);
 }
 
 .mcp-sync-all-btn:disabled {
@@ -147,7 +147,7 @@
     padding: var(--spacing-sm) var(--spacing-md);
     background: var(--surface-primary);
     border-radius: var(--radius-sm);
-    font-family: 'SF Mono', 'Monaco', 'Consolas', monospace;
+    font-family: 'JetBrains Mono', 'SF Mono', 'Consolas', monospace;
     font-size: 0.8rem;
     color: var(--accent-secondary);
     overflow-x: auto;
@@ -277,7 +277,7 @@
 }
 
 .ide-path {
-    font-family: 'SF Mono', 'Monaco', 'Consolas', monospace;
+    font-family: 'JetBrains Mono', 'SF Mono', 'Consolas', monospace;
     font-size: 0.7rem;
     color: var(--text-muted);
     overflow: hidden;

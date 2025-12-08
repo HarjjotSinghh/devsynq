@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Settings, IDEType, IDE } from '../../types';
 import { MCPSyncSettings } from './MCPSyncSettings';
 import ProcessManager from './ProcessManager';
 import APIKeysManager from './APIKeysManager';
+import { Icon, IdeIcon } from './Icons';
 import './SettingsPage.css';
 
 interface SettingsPageProps {
@@ -11,23 +12,27 @@ interface SettingsPageProps {
     onSettingsChange: (settings: Settings) => void;
     onSave: () => void;
     onClose: () => void;
-    onToast: (message: string) => void;
+    onToast: (message: React.ReactNode) => void;
+    activeTab: TabId;
+    onTabChange: (tab: TabId) => void;
+    resolveShortcutIDE: (index: number) => IDEType | undefined;
 }
 
-type TabId = 'general' | 'mcp' | 'processes' | 'apikeys';
+type TabId = 'general' | 'shortcuts' | 'mcp' | 'processes' | 'apikeys';
 
 interface Tab {
     id: TabId;
     label: string;
-    icon: string;
+    icon: React.ReactNode;
     description: string;
 }
 
 const TABS: Tab[] = [
-    { id: 'general', label: 'General', icon: '⚙️', description: 'App preferences and defaults' },
-    { id: 'mcp', label: 'MCP Sync', icon: '🔄', description: 'Model Context Protocol configuration' },
-    { id: 'processes', label: 'Processes', icon: '⚡', description: 'Running IDE management' },
-    { id: 'apikeys', label: 'API Keys', icon: '🔑', description: 'API key storage and sync' },
+    { id: 'general', label: 'General', icon: <Icon name="settings" />, description: 'App preferences and defaults' },
+    { id: 'shortcuts', label: 'Shortcuts', icon: <Icon name="keyboard" />, description: 'Configure keyboard bindings' },
+    { id: 'mcp', label: 'MCP Sync', icon: <Icon name="sync" />, description: 'Model Context Protocol configuration' },
+    { id: 'processes', label: 'Processes', icon: <Icon name="project" />, description: 'Running IDE management' },
+    { id: 'apikeys', label: 'API Keys', icon: <Icon name="theme" />, description: 'API key storage and sync' },
 ];
 
 function SettingsPage({
@@ -37,12 +42,15 @@ function SettingsPage({
     onSave,
     onClose,
     onToast,
+    activeTab,
+    onTabChange,
+    resolveShortcutIDE,
 }: SettingsPageProps) {
-    const [activeTab, setActiveTab] = useState<TabId>('general');
-
     const handleSettingChange = <K extends keyof Settings>(key: K, value: Settings[K]) => {
         onSettingsChange({ ...settings, [key]: value });
     };
+
+    const shortcutBindingKey = (n: number) => `cmdorctrl+${n}`;
 
     return (
         <div className="settings-page">
@@ -50,7 +58,8 @@ function SettingsPage({
             <header className="settings-header">
                 <div className="settings-header-left">
                     <button className="settings-back-btn" onClick={onClose}>
-                        ← Back
+                        <Icon name="arrowLeft" />
+                        <span>Back</span>
                     </button>
                     <h1>Settings</h1>
                 </div>
@@ -68,7 +77,7 @@ function SettingsPage({
                             <button
                                 key={tab.id}
                                 className={`settings-nav-item ${activeTab === tab.id ? 'active' : ''}`}
-                                onClick={() => setActiveTab(tab.id)}
+                                onClick={() => onTabChange(tab.id)}
                             >
                                 <span className="nav-icon">{tab.icon}</span>
                                 <div className="nav-content">
@@ -83,7 +92,7 @@ function SettingsPage({
                     <div className="settings-sidebar-footer">
                         <div className="shortcut-info">
                             <span className="shortcut-label">Quick Access</span>
-                            <kbd>Alt+Shift+Space</kbd>
+                            <kbd>Cmd/Ctrl + ,</kbd>
                         </div>
                     </div>
                 </aside>
@@ -110,7 +119,7 @@ function SettingsPage({
                                     {ides.length > 0 ? (
                                         ides.map((ide) => (
                                             <option key={ide.name} value={ide.name}>
-                                                {ide.icon} {ide.name}
+                                                {ide.name}
                                             </option>
                                         ))
                                     ) : (
@@ -172,7 +181,63 @@ function SettingsPage({
 
                             <div className="panel-actions">
                                 <button className="btn-primary" onClick={onSave}>
-                                    💾 Save Changes
+                                    <Icon name="download" size={16} />
+                                    <span>Save Changes</span>
+                                </button>
+                            </div>
+                        </div>
+                    )}
+
+                    {activeTab === 'shortcuts' && (
+                        <div className="settings-panel">
+                            <div className="panel-header">
+                                <h2>Keyboard Shortcuts</h2>
+                                <p>Bind Cmd/Ctrl + number keys to launch specific IDEs</p>
+                            </div>
+                            <div className="shortcut-grid">
+                                {[1, 2, 3, 4, 5].map((n) => {
+                                    const key = shortcutBindingKey(n);
+                                    const value = settings.shortcutBindings?.[key] || '';
+                                    const resolved = resolveShortcutIDE(n);
+                                    return (
+                                        <div key={n} className="shortcut-row">
+                                            <div className="shortcut-label">
+                                                <Icon name="keyboard" size={16} />
+                                                <span>Cmd/Ctrl + {n}</span>
+                                            </div>
+                                            <select
+                                                className="settings-select"
+                                                value={value}
+                                                onChange={(e) => {
+                                                    const nextBindings = { ...(settings.shortcutBindings || {}) };
+                                                    nextBindings[key] = e.target.value ? (e.target.value as IDEType) : null;
+                                                    onSettingsChange({ ...settings, shortcutBindings: nextBindings });
+                                                }}
+                                            >
+                                                <option value="">Follow installed order</option>
+                                                {ides
+                                                    .filter((ide) => ide.installed)
+                                                    .map((ide) => (
+                                                        <option key={ide.name} value={ide.name}>
+                                                            {ide.name}
+                                                        </option>
+                                                    ))}
+                                            </select>
+                                            <div className="shortcut-resolved">
+                                                <span className="resolved-label">Will launch:</span>
+                                                <span className="resolved-ide">
+                                                    {resolved ? <IdeIcon ide={resolved} size={20} /> : '—'}
+                                                    <span style={{ marginLeft: 6 }}>{resolved || 'First available'}</span>
+                                                </span>
+                                            </div>
+                                        </div>
+                                    );
+                                })}
+                            </div>
+                            <div className="panel-actions">
+                                <button className="btn-primary" onClick={onSave}>
+                                    <Icon name="download" size={16} />
+                                    <span>Save Shortcuts</span>
                                 </button>
                             </div>
                         </div>

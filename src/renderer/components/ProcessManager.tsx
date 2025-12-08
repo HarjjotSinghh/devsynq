@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { RunningIDE, ProcessStats } from '../../types';
 import { ResourceUsage } from '../types.d';
+import { Icon } from './Icons';
 
 interface ProcessManagerProps {
     onClose?: () => void;
@@ -100,7 +101,7 @@ function ProcessManager({ onClose }: ProcessManagerProps) {
             <div className="process-manager-header">
                 <div className="pm-header-left">
                     <h2>
-                        <span className="pm-icon">⚡</span>
+                        <span className="pm-icon"><Icon name="zap" size={24} /></span>
                         IDE Process Manager
                     </h2>
                     <span className="pm-subtitle">
@@ -113,7 +114,7 @@ function ProcessManager({ onClose }: ProcessManagerProps) {
                         onClick={loadData}
                         disabled={isLoading}
                     >
-                        🔄 Refresh
+                        <Icon name="refresh" size={14} /> Refresh
                     </button>
                     {runningIDEs.length > 0 && (
                         <button
@@ -121,7 +122,7 @@ function ProcessManager({ onClose }: ProcessManagerProps) {
                             onClick={handleKillAll}
                             disabled={actionInProgress !== null}
                         >
-                            ⚠️ Kill All
+                            <Icon name="alert" size={14} /> Kill All
                         </button>
                     )}
                 </div>
@@ -130,21 +131,21 @@ function ProcessManager({ onClose }: ProcessManagerProps) {
             {/* Resource Usage Stats */}
             <div className="pm-stats-grid">
                 <div className="pm-stat-card">
-                    <div className="pm-stat-icon">🖥️</div>
+                    <div className="pm-stat-icon"><Icon name="monitor" size={20} /></div>
                     <div className="pm-stat-content">
                         <div className="pm-stat-value">{runningIDEs.length}</div>
                         <div className="pm-stat-label">Running IDEs</div>
                     </div>
                 </div>
                 <div className="pm-stat-card">
-                    <div className="pm-stat-icon">💾</div>
+                    <div className="pm-stat-icon"><Icon name="hardDrive" size={20} /></div>
                     <div className="pm-stat-content">
                         <div className="pm-stat-value">{formatMemory(resourceUsage?.ideMemoryUsage)}</div>
                         <div className="pm-stat-label">IDE Memory</div>
                     </div>
                 </div>
                 <div className="pm-stat-card">
-                    <div className="pm-stat-icon">📊</div>
+                    <div className="pm-stat-icon"><Icon name="barChart" size={20} /></div>
                     <div className="pm-stat-content">
                         <div className="pm-stat-value">
                             {resourceUsage ? Math.round((resourceUsage.ideMemoryUsage / resourceUsage.totalSystemMemory) * 100) : 0}%
@@ -153,7 +154,7 @@ function ProcessManager({ onClose }: ProcessManagerProps) {
                     </div>
                 </div>
                 <div className="pm-stat-card">
-                    <div className="pm-stat-icon">⏱️</div>
+                    <div className="pm-stat-icon"><Icon name="clock" size={20} /></div>
                     <div className="pm-stat-content">
                         <div className="pm-stat-value">{lastRefresh.toLocaleTimeString()}</div>
                         <div className="pm-stat-label">Last Update</div>
@@ -170,7 +171,7 @@ function ProcessManager({ onClose }: ProcessManagerProps) {
                     </div>
                 ) : runningIDEs.length === 0 ? (
                     <div className="pm-empty">
-                        <span className="pm-empty-icon">😴</span>
+                        <span className="pm-empty-icon"><Icon name="moon" size={48} /></span>
                         <h3>No IDEs Running</h3>
                         <p>Launch an IDE to see it here</p>
                     </div>
@@ -189,18 +190,18 @@ function ProcessManager({ onClose }: ProcessManagerProps) {
                                 <div className="pm-process-name">{ide.name}</div>
                                 <div className="pm-process-details">
                                     <span className="pm-detail">
-                                        <span className="pm-detail-icon">💾</span>
+                                        <span className="pm-detail-icon"><Icon name="hardDrive" size={12} /></span>
                                         {formatMemory(ide.memoryUsage)}
                                     </span>
                                     {ide.cpuUsage !== undefined && (
                                         <span className="pm-detail">
-                                            <span className="pm-detail-icon">⚡</span>
+                                            <span className="pm-detail-icon"><Icon name="zap" size={12} /></span>
                                             {ide.cpuUsage.toFixed(1)}% CPU
                                         </span>
                                     )}
                                     {ide.startTime && (
                                         <span className="pm-detail">
-                                            <span className="pm-detail-icon">⏱️</span>
+                                            <span className="pm-detail-icon"><Icon name="clock" size={12} /></span>
                                             {formatUptime(ide.startTime)}
                                         </span>
                                     )}
@@ -216,7 +217,7 @@ function ProcessManager({ onClose }: ProcessManagerProps) {
                                     disabled={actionInProgress !== null}
                                     title="Bring to front"
                                 >
-                                    {actionInProgress === `focus-${ide.pid}` ? '...' : '👁️ Focus'}
+                                    {actionInProgress === `focus-${ide.pid}` ? '...' : <><Icon name="eye" size={14} /> Focus</>}
                                 </button>
                                 <button
                                     className="pm-action-btn pm-action-kill"
@@ -224,7 +225,7 @@ function ProcessManager({ onClose }: ProcessManagerProps) {
                                     disabled={actionInProgress !== null}
                                     title="Quit IDE"
                                 >
-                                    {actionInProgress === `kill-${ide.pid}` ? '...' : '✕ Quit'}
+                                    {actionInProgress === `kill-${ide.pid}` ? '...' : <><Icon name="close" size={14} /> Quit</>}
                                 </button>
                             </div>
                         </div>

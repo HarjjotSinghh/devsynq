@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useRef, useCallback } from 'react';
 import { IDE, Project, RunningIDE } from '../../types';
+import { Icon, IdeIcon } from './Icons';
 import './CommandPalette.css';
 
 interface CommandItem {
@@ -7,7 +8,7 @@ interface CommandItem {
     type: 'project' | 'ide' | 'running' | 'action';
     title: string;
     subtitle?: string;
-    icon: string;
+    icon: React.ReactNode;
     color?: string;
     action: () => void;
     shortcut?: string;
@@ -42,7 +43,7 @@ function CommandPalette() {
                     type: 'running',
                     title: ide.name,
                     subtitle: `Running • ${ide.memoryUsage ?? 0} MB`,
-                    icon: ide.icon,
+                    icon: <IdeIcon ide={ide.name} size={20} />,
                     color: ide.color,
                     keywords: ['running', 'focus', 'switch'],
                     action: async () => {
@@ -60,7 +61,7 @@ function CommandPalette() {
                     type: 'project',
                     title: project.name,
                     subtitle: project.path,
-                    icon: ide?.icon ?? '📁',
+                    icon: ide ? <IdeIcon ide={ide.name} size={20} /> : <Icon name="folder" size={20} />,
                     color: ide?.color,
                     keywords: ['project', 'open', 'folder', project.preferredIDE.toLowerCase()],
                     action: async () => {
@@ -77,7 +78,7 @@ function CommandPalette() {
                     type: 'ide',
                     title: `Launch ${ide.name}`,
                     subtitle: 'Open IDE',
-                    icon: ide.icon,
+                    icon: <IdeIcon ide={ide.name} size={20} />,
                     color: ide.color,
                     keywords: ['launch', 'open', 'start', ide.name.toLowerCase()],
                     action: async () => {
@@ -93,7 +94,7 @@ function CommandPalette() {
                 type: 'action',
                 title: 'Add Project',
                 subtitle: 'Add a new project folder',
-                icon: '➕',
+                icon: <Icon name="add" size={20} />,
                 keywords: ['add', 'new', 'project', 'folder'],
                 action: async () => {
                     await window.electronAPI.addProject();
@@ -106,7 +107,7 @@ function CommandPalette() {
                 type: 'action',
                 title: 'Sync MCP Configs',
                 subtitle: 'Sync to all enabled IDEs',
-                icon: '🔄',
+                icon: <Icon name="sync" size={20} />,
                 keywords: ['sync', 'mcp', 'config', 'settings'],
                 action: async () => {
                     await window.electronAPI.syncMCPConfigs();
@@ -119,7 +120,7 @@ function CommandPalette() {
                 type: 'action',
                 title: 'Sync API Keys',
                 subtitle: 'Sync API keys to all IDEs',
-                icon: '🔑',
+                icon: <Icon name="key" size={20} />,
                 keywords: ['sync', 'api', 'keys', 'settings'],
                 action: async () => {
                     await window.electronAPI.syncAPIKeysToAll();
@@ -133,7 +134,7 @@ function CommandPalette() {
                     type: 'action',
                     title: 'Kill All IDEs',
                     subtitle: `Stop ${data.runningIDEs.length} running IDE(s)`,
-                    icon: '⚠️',
+                    icon: <Icon name="alert" size={20} />,
                     keywords: ['kill', 'stop', 'quit', 'close', 'all'],
                     action: async () => {
                         await window.electronAPI.killAllIDEs();
@@ -239,7 +240,7 @@ function CommandPalette() {
         <div className="command-palette">
             <div className="command-palette-container">
                 <div className="command-search">
-                    <span className="search-icon">🔍</span>
+                    <span className="search-icon"><Icon name="search" size={20} /></span>
                     <input
                         ref={inputRef}
                         type="text"
@@ -269,7 +270,7 @@ function CommandPalette() {
                         </div>
                     ) : items.length === 0 ? (
                         <div className="command-empty">
-                            <span className="empty-icon">🔎</span>
+                            <span className="empty-icon"><Icon name="search" size={48} /></span>
                             <span>No results found</span>
                         </div>
                     ) : (
@@ -302,7 +303,7 @@ function CommandPalette() {
 
                 <div className="command-footer">
                     <span className="footer-tip">
-                        💡 Press <kbd>Alt+Shift+Space</kbd> anywhere to open
+                        <Icon name="lightbulb" size={12} /> Press <kbd>Alt+Shift+Space</kbd> anywhere to open
                     </span>
                 </div>
             </div>
