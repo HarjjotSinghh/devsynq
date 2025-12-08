@@ -21,15 +21,24 @@
       "output": "release"
     },
     "files": [
-      "dist/**/*"
+      "dist/**/*",
+      "package.json",
+      "node_modules/**/*"
     ],
     "win": {
-      "target": "nsis",
+      "target": [
+        "nsis",
+        "zip"
+      ],
       "icon": "assets/icon.ico"
     },
     "mac": {
-      "target": "dmg",
-      "icon": "assets/icon.icns"
+      "target": [
+        "dmg",
+        "zip"
+      ],
+      "icon": "assets/icon.icns",
+      "category": "public.app-category.developer-tools"
     },
     "linux": {
       "target": "AppImage",
