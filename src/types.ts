@@ -1,33 +1,37 @@
-export type IDEType =
-    | 'Cursor'
-    | 'VS Code'
-    | 'Windsurf'
-    | 'Zed'
-    | 'WebStorm'
-    | 'Trae'
-    | 'Replit'
-    | 'Cody'
-    | 'Continue'
-    | 'IntelliJ IDEA'
-    | 'PyCharm';
+export enum IDEType {
+  Cursor = "Cursor",
+  VSCode = "VS Code",
+  Windsurf = "Windsurf",
+  Zed = "Zed",
+  WebStorm = "WebStorm",
+  Trae = "Trae",
+  Replit = "Replit",
+  Cody = "Cody",
+  Continue = "Continue",
+  IntelliJIDEA = "IntelliJ IDEA",
+  PyCharm = "PyCharm",
+  Antigravity = "Antigravity",
+  Kiro = "Kiro",
+  Qoder = "Qoder",
+}
 
 export interface IDE {
-    name: IDEType;
-    icon: string;
-    macPaths: string[];
-    winPaths: string[];
-    linuxPaths: string[];
-    downloadUrl: string;
-    color: string;
-    installed?: boolean; // Optional because main process adds this
+  name: IDEType;
+  icon: string;
+  macPaths: string[];
+  winPaths: string[];
+  linuxPaths: string[];
+  downloadUrl: string;
+  color: string;
+  installed?: boolean; // Optional because main process adds this
 }
 
 export interface Project {
-    id: string;
-    name: string;
-    path: string;
-    preferredIDE: IDEType;
-    lastOpened?: number;
+  id: string;
+  name: string;
+  path: string;
+  preferredIDE: IDEType;
+  lastOpened?: number;
 }
 
 export interface Settings {

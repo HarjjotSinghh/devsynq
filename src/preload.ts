@@ -22,6 +22,10 @@ contextBridge.exposeInMainWorld("electronAPI", {
     updateProjectIDE: (projectId: string, ideName: string) =>
         ipcRenderer.invoke("update-project-ide", projectId, ideName),
 
+    // Add multiple projects from master directory
+    scanProjectDirectory: () => ipcRenderer.invoke("scan-project-directory"),
+    addMultipleProjects: (projectPaths: string[]) => ipcRenderer.invoke("add-multiple-projects", projectPaths),
+
     // Settings
     getSettings: () => ipcRenderer.invoke("get-settings"),
     saveSettings: (settings: any) =>

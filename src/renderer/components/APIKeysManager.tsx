@@ -269,7 +269,7 @@ function APIKeysManager() {
                                     <span className="status-not-installed">Not Installed</span>
                                 )}
                             </div>
-                            <div className="apikeys-ide-keys">
+                            <div className="apikeys-ide-keys" style={{ textTransform: 'capitalize' }}>
                                 Supports: {ide.supportedKeys.join(', ')}
                             </div>
                         </div>

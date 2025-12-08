@@ -289,7 +289,7 @@ export const MCPSyncSettings: React.FC<Props> = ({ onToast }) => {
                                             />
                                             <span className="ide-info">
                                                 <span className="ide-icon"><IdeIcon ide={ide.name} size={22} /></span>
-                                                <span className="ide-name">{ide.name}</span>
+                                                <span className="ide-name" style={{ textTransform: 'capitalize' }}>{ide.name}</span>
                                                 {ide.hasOverride && (
                                                     <span className="override-badge">Custom</span>
                                                 )}

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { IDE, IDEType, Project, Settings } from '../types';
 import { Icon, IdeIcon } from './components/Icons';
 import SettingsPage from './components/SettingsPage';
+import Modal from './components/Modal';
 
 const SETTINGS_DEFAULTS: Settings = {
     defaultIDE: 'Cursor',
@@ -24,6 +25,10 @@ const App: React.FC = () => {
     const [mcpSyncCount, setMcpSyncCount] = useState<number>(0);
     const [isSyncingMCP, setIsSyncingMCP] = useState(false);
     const [lastMcpSync, setLastMcpSync] = useState<number | null>(null);
+
+    // Master Directory Scan State
+    const [foundProjects, setFoundProjects] = useState<{ name: string, path: string }[]>([]);
+    const [isProjectScanModalOpen, setIsProjectScanModalOpen] = useState(false);
 
     // --- Initialization ---
     useEffect(() => {
@@ -186,6 +191,34 @@ const App: React.FC = () => {
         }
     };
 
+    const handleAddMasterDirectory = async () => {
+        try {
+            const projects = await window.electronAPI.scanProjectDirectory();
+            if (projects && projects.length > 0) {
+                setFoundProjects(projects);
+                setIsProjectScanModalOpen(true);
+            } else if (projects && projects.length === 0) {
+                showToast('No sub-directories found in selected folder');
+            }
+        } catch (error) {
+            console.error('Failed to scan directory:', error);
+            showToast('Failed to scan directory');
+        }
+    };
+
+    const confirmAddProjects = async () => {
+        try {
+            setIsProjectScanModalOpen(false);
+            const projectPaths = foundProjects.map(p => p.path);
+            await window.electronAPI.addMultipleProjects(projectPaths);
+            await loadProjects();
+            showToast(`Added ${foundProjects.length} projects!`);
+        } catch (error) {
+            console.error('Failed to add projects:', error);
+            showToast('Failed to add projects');
+        }
+    };
+
     const handleDeleteProject = async (e: React.MouseEvent, projectId: string, projectName: string) => {
         e.stopPropagation();
         if (confirm(`Remove "${projectName}" from list?`)) {
@@ -225,6 +258,18 @@ const App: React.FC = () => {
         } catch (error) {
             showToast('Error launching project');
             console.error(error);
+        }
+    };
+
+    const handleUpdateProjectIDE = async (e: React.ChangeEvent<HTMLSelectElement>, projectId: string) => {
+        const newIDE = e.target.value as IDEType;
+        try {
+            await window.electronAPI.updateProjectIDE(projectId, newIDE);
+            await loadProjects(); // Reload to reflect changes
+            showToast(`Project IDE updated to ${newIDE}`);
+        } catch (error) {
+            console.error('Failed to update project IDE:', error);
+            showToast('Failed to update project IDE');
         }
     };
 
@@ -492,6 +537,10 @@ const App: React.FC = () => {
                             <Icon name="add" />
                             <span>Add Project</span>
                         </button>
+                        <button className="add-project-btn secondary" onClick={handleAddMasterDirectory} style={{ marginLeft: '10px' }}>
+                            <Icon name="folder" />
+                            <span>Add Master Dir</span>
+                        </button>
                     </div>
                     <div className="project-toolbar">
                         <div className="search-input">
@@ -529,8 +578,24 @@ const App: React.FC = () => {
                                             <div className="project-details">
                                                 <div className="project-name">{project.name}</div>
                                                 <div className="project-path" title={project.path}>{project.path}</div>
-                                                <div className="project-ide" style={{ fontSize: '11px', color: 'var(--accent-primary)', marginTop: '2px' }}>
-                                                    {project.preferredIDE}
+                                                <div className="project-ide" style={{ fontSize: '11px', color: 'var(--accent-primary)', marginTop: '2px' }} onClick={(e) => e.stopPropagation()}>
+                                                    <select
+                                                        value={project.preferredIDE}
+                                                        onChange={(e) => handleUpdateProjectIDE(e, project.id)}
+                                                        className="project-ide-select"
+                                                        title="Change preferred IDE"
+                                                    >
+                                                        {ides.filter(i => i.installed).map(ide => (
+                                                            <option key={ide.name} value={ide.name}>
+                                                                {ide.name}
+                                                            </option>
+                                                        ))}
+                                                        {!ides.some(i => i.installed && i.name === project.preferredIDE) && (
+                                                            <option value={project.preferredIDE} disabled>
+                                                                {project.preferredIDE}
+                                                            </option>
+                                                        )}
+                                                    </select>
                                                 </div>
                                                 <div className="project-meta">
                                                     Last opened {project.lastOpened ? new Date(project.lastOpened).toLocaleString() : ''}
@@ -582,8 +647,24 @@ const App: React.FC = () => {
                                             <div className="project-details">
                                                 <div className="project-name">{project.name}</div>
                                                 <div className="project-path" title={project.path}>{project.path}</div>
-                                                <div className="project-ide" style={{ fontSize: '11px', color: 'var(--accent-primary)', marginTop: '2px' }}>
-                                                    {project.preferredIDE}
+                                                <div className="project-ide" style={{ fontSize: '11px', color: 'var(--accent-primary)', marginTop: '2px' }} onClick={(e) => e.stopPropagation()}>
+                                                    <select
+                                                        value={project.preferredIDE}
+                                                        onChange={(e) => handleUpdateProjectIDE(e, project.id)}
+                                                        className="project-ide-select"
+                                                        title="Change preferred IDE"
+                                                    >
+                                                        {ides.filter(i => i.installed).map(ide => (
+                                                            <option key={ide.name} value={ide.name}>
+                                                                {ide.name}
+                                                            </option>
+                                                        ))}
+                                                        {!ides.some(i => i.installed && i.name === project.preferredIDE) && (
+                                                            <option value={project.preferredIDE} disabled>
+                                                                {project.preferredIDE}
+                                                            </option>
+                                                        )}
+                                                    </select>
                                                 </div>
                                             </div>
                                         </div>
@@ -614,18 +695,62 @@ const App: React.FC = () => {
                 </section>
             </main>
 
+            {/* Scan Projects Modal */}
+            <Modal
+                isOpen={isProjectScanModalOpen}
+                onClose={() => setIsProjectScanModalOpen(false)}
+                title={`Add ${foundProjects.length} Projects?`}
+                footer={
+                    <>
+                        <button className="btn-secondary" onClick={() => setIsProjectScanModalOpen(false)}>Cancel</button>
+                        <button className="btn-primary" onClick={confirmAddProjects}>Import All</button>
+                    </>
+                }
+            >
+                <div>
+                    <p style={{ marginBottom: '16px', color: 'var(--text-secondary)' }}>
+                        Are you sure you want to add the following projects to DevSynq?
+                    </p>
+                    <div style={{
+                        maxHeight: '300px',
+                        overflowY: 'auto',
+                        border: '1px solid var(--border-color)',
+                        borderRadius: 'var(--radius-md)',
+                        backgroundColor: 'var(--bg-card-secondary)'
+                    }}>
+                        {foundProjects.map(project => (
+                            <div key={project.path} style={{
+                                padding: '8px 12px',
+                                borderBottom: '1px solid var(--border-color)',
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '8px'
+                            }}>
+                                <Icon name="folder" size={16} color="var(--text-muted)" />
+                                <div>
+                                    <div style={{ fontWeight: 500 }}>{project.name}</div>
+                                    <div style={{ fontSize: '12px', color: 'var(--text-muted)' }}>{project.path}</div>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            </Modal>
+
             {/* Footer */}
             <footer className="footer">
                 <p>DevSynq v1.0.0 · Built with Electron + React + TypeScript</p>
             </footer>
 
             {/* Toast */}
-            {toastMessage && (
-                <div className="toast show">
-                    {toastMessage}
-                </div>
-            )}
-        </div>
+            {
+                toastMessage && (
+                    <div className="toast show">
+                        {toastMessage}
+                    </div>
+                )
+            }
+        </div >
     );
 };
 

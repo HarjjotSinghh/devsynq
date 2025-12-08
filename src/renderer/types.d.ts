@@ -51,6 +51,8 @@ export interface ElectronAPI {
     addProject: () => Promise<Project | null>;
     deleteProject: (projectId: string) => Promise<Project[]>;
     updateProjectIDE: (projectId: string, ideName: string) => Promise<Project[]>;
+    scanProjectDirectory: () => Promise<{ name: string; path: string }[] | null>;
+    addMultipleProjects: (projectPaths: string[]) => Promise<Project[]>;
 
     // Settings APIs
     getSettings: () => Promise<Settings>;
