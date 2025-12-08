@@ -255,6 +255,7 @@ async function loadIDEs(forceScan = false): Promise<void> {
       const card = createIDECard(ide);
       grid.appendChild(card);
     });
+    renderSettingsUI();
   } catch (error) {
     grid.innerHTML = `
       <div class="error-state">
@@ -481,6 +482,12 @@ function resolveIDEForProject(project: Project): string {
 }
 
 async function handleLaunchProject(project: Project): Promise<void> {
+  const hasInstalled = currentIDEs.some((ide) => ide.installed);
+  if (!hasInstalled) {
+    showToast("No installed IDE found. Install one or refresh.");
+    return;
+  }
+
   const ideName = resolveIDEForProject(project);
   showToast(`Opening ${project.name} in ${ideName}...`);
   try {

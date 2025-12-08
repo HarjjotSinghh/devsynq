@@ -390,6 +390,7 @@ function createWindow(): void {
   const appPath = app.getAppPath();
   const preloadPath = path.join(appPath, "dist", "preload.js");
   const indexPath = path.join(appPath, "dist", "index.html");
+  const settings = loadSettings();
 
   console.log("App path:", appPath);
   console.log("Preload path:", preloadPath);
@@ -403,7 +404,7 @@ function createWindow(): void {
     frame: false,
     // Disable transparency for now to fix "stuck" issues on some Windows configs
     transparent: false,
-    backgroundColor: "#0a0a0f", // Match CSS bg-primary
+    backgroundColor: settings.theme === "light" ? "#f7f7fb" : "#0a0a0f",
     webPreferences: {
       nodeIntegration: false,
       contextIsolation: true,
@@ -541,7 +542,7 @@ ipcMain.handle("get-settings", () => {
 });
 
 ipcMain.handle("save-settings", (_event: unknown, settings: Settings) => {
-  saveSettings(settings);
+  saveSettings({ ...defaultSettings, ...settings });
   return { success: true };
 });
 

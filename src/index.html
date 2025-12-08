@@ -624,6 +624,13 @@
       color: var(--text-primary);
     }
 
+    .section-subtitle {
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--text-secondary);
+      margin-bottom: var(--spacing-sm);
+    }
+
     .add-project-btn {
       background: var(--bg-card);
       border: 1px solid var(--border-color);
@@ -663,7 +670,6 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      group: project-card;
     }
 
     .project-card.compact {
@@ -876,7 +882,7 @@
   </style>
 </head>
 
-<body>
+<body data-theme="dark">
   <div class="app-container">
     <!-- Custom Title Bar -->
     <div class="title-bar">
@@ -929,8 +935,22 @@
             <span>+</span> Add Project
           </button>
         </div>
-        <div id="projects-grid" class="projects-grid">
-          <!-- Project cards will be dynamically inserted here -->
+        <div class="project-toolbar">
+          <div class="search-input">
+            <span aria-hidden="true">🔍</span>
+            <input id="project-search" type="text" placeholder="Search projects by name or path (Cmd/Ctrl + P)" />
+            <span class="shortcut-hint">⌘/Ctrl + P</span>
+          </div>
+        </div>
+        <div>
+          <h3 class="section-subtitle">Recent</h3>
+          <div id="recent-projects" class="projects-grid recent-grid"></div>
+        </div>
+        <div style="margin-top: var(--spacing-md);">
+          <h3 class="section-subtitle">All Projects</h3>
+          <div id="projects-grid" class="projects-grid">
+            <!-- Project cards will be dynamically inserted here -->
+          </div>
         </div>
       </section>
     </main>
@@ -951,13 +971,17 @@
           <div class="setting-item">
             <label>Default IDE</label>
             <select id="default-ide-select">
-              <option value="VS Code">VS Code</option>
               <option value="Cursor">Cursor</option>
+              <option value="VS Code">VS Code</option>
               <option value="Windsurf">Windsurf</option>
               <option value="Zed">Zed</option>
               <option value="WebStorm">WebStorm</option>
               <option value="Trae">Trae</option>
               <option value="Replit">Replit</option>
+              <option value="Cody">Cody</option>
+              <option value="Continue">Continue</option>
+              <option value="IntelliJ IDEA">IntelliJ IDEA</option>
+              <option value="PyCharm">PyCharm</option>
             </select>
           </div>
           <div class="setting-item">
@@ -968,8 +992,14 @@
           </div>
           <div class="setting-item">
             <label class="checkbox-label">
-              <input type="checkbox" id="auto-update-check">
-              Check for Updates Automatically
+              <input type="checkbox" id="auto-detect-check">
+              Auto-detect new IDEs on launch
+            </label>
+          </div>
+          <div class="setting-item">
+            <label class="checkbox-label">
+              <input type="checkbox" id="theme-toggle">
+              Light theme
             </label>
           </div>
         </div>
