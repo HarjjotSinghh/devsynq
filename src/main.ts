@@ -7,6 +7,8 @@ const {
     Tray,
     Menu,
     nativeImage,
+    globalShortcut,
+    screen,
 } = require("electron");
 const path = require("path");
 const fs = require("fs");
@@ -17,6 +19,45 @@ const { exec } = require("child_process");
 // IDE Configuration
 
 import { IDE, IDEType, Project, Settings } from "./types";
+
+// Import MCP sync functions
+import {
+    getMCPSyncStatus,
+    loadSyncSettings,
+    saveSyncSettings,
+    toggleIDESync,
+    syncMCPConfigs,
+    importFromIDE,
+    createOverride,
+    deleteOverride,
+    getMasterConfigPath,
+    loadSyncLog,
+} from "./lib/mcp-sync";
+
+// Import process manager functions
+import {
+    getRunningIDEs,
+    getProcessStats,
+    focusIDE,
+    killIDE,
+    killAllIDEs,
+    getResourceUsage,
+} from "./lib/process-manager";
+
+// Import API keys sync functions
+import {
+    loadAPIKeysSettings,
+    saveAPIKeysSettings,
+    updateAPIKey,
+    deleteAPIKey,
+    syncToIDE,
+    syncToAllIDEs,
+    toggleIDEKeySync,
+    getAPIKeyTypes,
+    getAPIKeySyncStatus,
+    maskAPIKey,
+    validateAPIKey,
+} from "./lib/api-keys-sync";
 
 // Helper to expand paths with environment variables
 function expandPath(pathStr: string): string {
@@ -33,6 +74,7 @@ const defaultSettings: Settings = {
     launchAtStartup: false,
     theme: "dark",
     autoDetectIDEs: true,
+    shortcutBindings: {},
 };
 
 let idesCache: Array<IDE & { installed: boolean }> = [];
@@ -385,6 +427,31 @@ function getIDEsWithStatus(
 }
 
 let mainWindow: typeof BrowserWindow | null = null;
+let windowStateSaveTimeout: NodeJS.Timeout | null = null;
+
+function persistWindowState(): void {
+    if (!mainWindow) return;
+    const bounds = mainWindow.getNormalBounds();
+    const settings = loadSettings();
+
+    saveSettings({
+        ...settings,
+        windowState: {
+            width: bounds.width,
+            height: bounds.height,
+            x: bounds.x,
+            y: bounds.y,
+            isMaximized: mainWindow.isMaximized(),
+        },
+    });
+}
+
+function schedulePersistWindowState(): void {
+    if (windowStateSaveTimeout) {
+        clearTimeout(windowStateSaveTimeout);
+    }
+    windowStateSaveTimeout = setTimeout(persistWindowState, 300);
+}
 
 function createWindow(): void {
     const appPath = app.getAppPath();
@@ -396,9 +463,15 @@ function createWindow(): void {
     console.log("Preload path:", preloadPath);
     console.log("Index path:", indexPath);
 
+    const initialBounds = {
+        width: settings.windowState?.width || 1200,
+        height: settings.windowState?.height || 800,
+        x: typeof settings.windowState?.x === "number" ? settings.windowState.x : undefined,
+        y: typeof settings.windowState?.y === "number" ? settings.windowState.y : undefined,
+    };
+
     mainWindow = new BrowserWindow({
-        width: 1200,
-        height: 800,
+        ...initialBounds,
         minWidth: 800,
         minHeight: 600,
         frame: false,
@@ -413,6 +486,10 @@ function createWindow(): void {
     });
 
     mainWindow.loadFile(indexPath);
+
+    if (settings.windowState?.isMaximized) {
+        mainWindow.maximize();
+    }
 
     // Open DevTools for debugging (remove in production)
     // mainWindow.webContents.openDevTools();
@@ -435,6 +512,10 @@ function createWindow(): void {
     ipcMain.on("window-close", () => {
         if (mainWindow) mainWindow.close();
     });
+
+    mainWindow.on("resize", schedulePersistWindowState);
+    mainWindow.on("move", schedulePersistWindowState);
+    mainWindow.on("close", persistWindowState);
 }
 
 // IPC Handlers
@@ -452,6 +533,28 @@ ipcMain.handle(
         const ide = IDEs.find((i) => i.name === (ideName as IDEType));
         if (!ide) {
             return { success: false, error: "IDE not found" };
+        }
+
+        // Auto-sync MCP config before launching if enabled
+        try {
+            const syncSettings = loadSyncSettings();
+            if (syncSettings.autoSyncOnLaunch) {
+                // Map IDE name to MCP config IDE ID
+                const ideIdMap: Record<string, string> = {
+                    'Cursor': 'cursor',
+                    'Windsurf': 'windsurf',
+                    'VS Code': 'vscode',
+                    'Trae': 'trae',
+                };
+                const ideId = ideIdMap[ideName];
+                if (ideId && syncSettings.enabledIDEs[ideId]) {
+                    await syncMCPConfigs([ideId]);
+                    console.log(`Auto-synced MCP config for ${ideName}`);
+                }
+            }
+        } catch (error) {
+            console.error('Auto-sync failed:', error);
+            // Don't block IDE launch if sync fails
         }
 
         // Update project lastOpened if projectPath is provided
@@ -546,9 +649,287 @@ ipcMain.handle("save-settings", (_event: unknown, settings: Settings) => {
     return { success: true };
 });
 
+// ============================================================================
+// MCP Sync IPC Handlers
+// ============================================================================
+
+// Get sync status for all IDEs
+ipcMain.handle("get-mcp-sync-status", () => {
+    return getMCPSyncStatus();
+});
+
+// Get sync settings
+ipcMain.handle("get-mcp-sync-settings", () => {
+    return loadSyncSettings();
+});
+
+// Save sync settings
+ipcMain.handle("save-mcp-sync-settings", (_event: unknown, settings: any) => {
+    saveSyncSettings(settings);
+    return { success: true };
+});
+
+// Toggle IDE sync enabled/disabled
+ipcMain.handle("toggle-mcp-ide-sync", (_event: unknown, ideId: string, enabled: boolean) => {
+    return toggleIDESync(ideId, enabled);
+});
+
+// Sync MCP configs to IDEs
+ipcMain.handle("sync-mcp-configs", async (_event: unknown, ideIds?: string[]) => {
+    return await syncMCPConfigs(ideIds);
+});
+
+// Import config from an IDE
+ipcMain.handle("import-mcp-from-ide", async (_event: unknown, ideId: string) => {
+    return await importFromIDE(ideId);
+});
+
+// Create IDE-specific override
+ipcMain.handle("create-mcp-override", (_event: unknown, ideId: string) => {
+    createOverride(ideId);
+    return { success: true };
+});
+
+// Delete IDE-specific override
+ipcMain.handle("delete-mcp-override", (_event: unknown, ideId: string) => {
+    deleteOverride(ideId);
+    return { success: true };
+});
+
+// Open master config in default editor
+ipcMain.handle("open-mcp-master-config", async () => {
+    const configPath = getMasterConfigPath();
+    await shell.openPath(configPath);
+    return { success: true };
+});
+
+// Get sync log
+ipcMain.handle("get-mcp-sync-log", () => {
+    return loadSyncLog();
+});
+
+// ============================================================================
+// Process Management IPC Handlers
+// ============================================================================
+
+// Get running IDEs
+ipcMain.handle("get-running-ides", async () => {
+    return await getRunningIDEs();
+});
+
+// Get process stats
+ipcMain.handle("get-process-stats", async () => {
+    return await getProcessStats();
+});
+
+// Focus an IDE
+ipcMain.handle("focus-ide", async (_event: unknown, pid: number) => {
+    return await focusIDE(pid);
+});
+
+// Kill an IDE
+ipcMain.handle("kill-ide", async (_event: unknown, pid: number) => {
+    return await killIDE(pid);
+});
+
+// Kill all IDEs
+ipcMain.handle("kill-all-ides", async () => {
+    return await killAllIDEs();
+});
+
+// Get resource usage
+ipcMain.handle("get-resource-usage", async () => {
+    return await getResourceUsage();
+});
+
+// ============================================================================
+// API Keys Sync IPC Handlers
+// ============================================================================
+
+// Get API keys settings
+ipcMain.handle("get-api-keys-settings", () => {
+    return loadAPIKeysSettings();
+});
+
+// Save API keys settings
+ipcMain.handle("save-api-keys-settings", (_event: unknown, settings: any) => {
+    saveAPIKeysSettings(settings);
+    return { success: true };
+});
+
+// Update a specific API key
+ipcMain.handle("update-api-key", (_event: unknown, keyName: string, value: string | undefined) => {
+    updateAPIKey(keyName as any, value);
+    return { success: true };
+});
+
+// Delete an API key
+ipcMain.handle("delete-api-key", (_event: unknown, keyName: string) => {
+    deleteAPIKey(keyName as any);
+    return { success: true };
+});
+
+// Sync API keys to a specific IDE
+ipcMain.handle("sync-api-keys-to-ide", async (_event: unknown, ideId: string) => {
+    return await syncToIDE(ideId);
+});
+
+// Sync API keys to all enabled IDEs
+ipcMain.handle("sync-api-keys-to-all", async () => {
+    return await syncToAllIDEs();
+});
+
+// Toggle IDE key sync
+ipcMain.handle("toggle-ide-key-sync", (_event: unknown, ideId: string, enabled: boolean) => {
+    toggleIDEKeySync(ideId, enabled);
+    return { success: true };
+});
+
+// Get API key types
+ipcMain.handle("get-api-key-types", () => {
+    return getAPIKeyTypes();
+});
+
+// Get API key sync status
+ipcMain.handle("get-api-key-sync-status", () => {
+    return getAPIKeySyncStatus();
+});
+
+// Mask an API key
+ipcMain.handle("mask-api-key", (_event: unknown, key: string) => {
+    return maskAPIKey(key);
+});
+
+// Validate an API key
+ipcMain.handle("validate-api-key", (_event: unknown, keyName: string, value: string) => {
+    return validateAPIKey(keyName as any, value);
+});
+
+// ============================================================================
+// Command Palette Window
+// ============================================================================
+
+let commandPaletteWindow: typeof BrowserWindow | null = null;
+
+function createCommandPaletteWindow(): void {
+    if (commandPaletteWindow && !commandPaletteWindow.isDestroyed()) {
+        commandPaletteWindow.show();
+        commandPaletteWindow.focus();
+        return;
+    }
+
+    const appPath = app.getAppPath();
+    const preloadPath = path.join(appPath, "dist", "preload.js");
+    const settings = loadSettings();
+
+    // Get the display where the mouse is
+    const { getCursorScreenPoint, getDisplayNearestPoint } = screen;
+    const cursor = getCursorScreenPoint();
+    const display = getDisplayNearestPoint(cursor);
+    const { width: screenWidth, height: screenHeight } = display.workAreaSize;
+    const { x: screenX, y: screenY } = display.workArea;
+
+    const windowWidth = 650;
+    const windowHeight = 500;
+
+    commandPaletteWindow = new BrowserWindow({
+        width: windowWidth,
+        height: windowHeight,
+        x: Math.round(screenX + (screenWidth - windowWidth) / 2),
+        y: Math.round(screenY + screenHeight * 0.2),
+        frame: false,
+        transparent: true,
+        alwaysOnTop: true,
+        skipTaskbar: true,
+        resizable: false,
+        movable: false,
+        show: false,
+        backgroundColor: "#00000000",
+        webPreferences: {
+            nodeIntegration: false,
+            contextIsolation: true,
+            preload: preloadPath,
+        },
+    });
+
+    // Load the command palette HTML
+    const indexPath = path.join(appPath, "dist", "command-palette.html");
+    if (fs.existsSync(indexPath)) {
+        commandPaletteWindow.loadFile(indexPath);
+    } else {
+        // Fallback: load the same index.html but with a query param
+        const mainIndexPath = path.join(appPath, "dist", "index.html");
+        commandPaletteWindow.loadFile(mainIndexPath, { query: { mode: 'palette' } });
+    }
+
+    commandPaletteWindow.once("ready-to-show", () => {
+        commandPaletteWindow?.show();
+        commandPaletteWindow?.focus();
+    });
+
+    // Hide window when it loses focus
+    commandPaletteWindow.on("blur", () => {
+        if (commandPaletteWindow && !commandPaletteWindow.isDestroyed()) {
+            commandPaletteWindow.hide();
+        }
+    });
+
+    commandPaletteWindow.on("closed", () => {
+        commandPaletteWindow = null;
+    });
+}
+
+function toggleCommandPalette(): void {
+    if (commandPaletteWindow && !commandPaletteWindow.isDestroyed() && commandPaletteWindow.isVisible()) {
+        commandPaletteWindow.hide();
+    } else {
+        createCommandPaletteWindow();
+    }
+}
+
+// IPC handler for hiding the command palette
+ipcMain.on("hide-command-palette", () => {
+    if (commandPaletteWindow && !commandPaletteWindow.isDestroyed()) {
+        commandPaletteWindow.hide();
+    }
+});
+
+// IPC handler for getting command palette data
+ipcMain.handle("get-command-palette-data", async () => {
+    const ides = getIDEsWithStatus(false);
+    const projects = loadProjects();
+    const runningIDEs = await getRunningIDEs();
+
+    return {
+        ides: ides.filter((ide: any) => ide.installed),
+        projects,
+        runningIDEs,
+    };
+});
+
+// ============================================================================
+// App Initialization
+// ============================================================================
+
 app.whenReady().then(() => {
     createWindow();
     getIDEsWithStatus(true);
+
+    // Register global shortcut for command palette
+    // Using Alt+Shift+Space to avoid conflicts with other apps like Raycast
+    const shortcut = process.platform === "darwin"
+        ? "Alt+Shift+Space"
+        : "Alt+Shift+Space";
+
+    const registered = globalShortcut.register(shortcut, () => {
+        toggleCommandPalette();
+    });
+
+    if (!registered) {
+        console.error(`Failed to register global shortcut: ${shortcut}`);
+    } else {
+        console.log(`Global shortcut registered: ${shortcut}`);
+    }
 
     app.on("activate", () => {
         if (BrowserWindow.getAllWindows().length === 0) {
@@ -557,9 +938,13 @@ app.whenReady().then(() => {
     });
 });
 
+app.on("will-quit", () => {
+    // Unregister all shortcuts when app is quitting
+    globalShortcut.unregisterAll();
+});
+
 app.on("window-all-closed", () => {
     if (process.platform !== "darwin") {
         app.quit();
     }
 });
-

@@ -1,0 +1,29 @@
+{
+    "mcpServers": {
+        "filesystem": {
+            "command": "npx",
+            "args": [
+                "-y",
+                "@modelcontextprotocol/server-filesystem",
+                "/path/to/allowed/directory"
+            ]
+        },
+        "github": {
+            "command": "npx",
+            "args": [
+                "-y",
+                "@modelcontextprotocol/server-github"
+            ],
+            "env": {
+                "GITHUB_PERSONAL_ACCESS_TOKEN": "your-github-token-here"
+            }
+        },
+        "fetch": {
+            "command": "npx",
+            "args": [
+                "-y",
+                "@modelcontextprotocol/server-fetch"
+            ]
+        }
+    }
+}

@@ -1,11 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import { IDE, IDEType, Project, Settings } from '../types';
+import { MCPSyncSettings } from './components/MCPSyncSettings';
+import ProcessManager from './components/ProcessManager';
+import APIKeysManager from './components/APIKeysManager';
 
 const SETTINGS_DEFAULTS: Settings = {
     defaultIDE: 'Cursor',
     launchAtStartup: false,
     theme: 'dark',
     autoDetectIDEs: true,
+    shortcutBindings: {},
 };
 
 const App: React.FC = () => {
@@ -14,9 +18,13 @@ const App: React.FC = () => {
     const [settings, setSettings] = useState<Settings>(SETTINGS_DEFAULTS);
     const [projectSearchTerm, setProjectSearchTerm] = useState('');
     const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+    const [settingsTab, setSettingsTab] = useState<'general' | 'mcp' | 'processes' | 'apikeys'>('general');
     const [isLoadingIDEs, setIsLoadingIDEs] = useState(true);
     const [isRefreshing, setIsRefreshing] = useState(false);
     const [toastMessage, setToastMessage] = useState<string | null>(null);
+    const [mcpSyncCount, setMcpSyncCount] = useState<number>(0);
+    const [isSyncingMCP, setIsSyncingMCP] = useState(false);
+    const [lastMcpSync, setLastMcpSync] = useState<number | null>(null);
 
     // --- Initialization ---
     useEffect(() => {
@@ -42,12 +50,56 @@ const App: React.FC = () => {
             // Load Projects
             await loadProjects();
 
+            // Load MCP sync status
+            await loadMCPStatus();
+
             // Listen for settings shortcut from main process
             window.electronAPI.onShowSettings(() => setIsSettingsOpen(true));
         };
 
         init();
     }, []);
+
+    // --- MCP Status Loading ---
+    const loadMCPStatus = async () => {
+        try {
+            const [status, syncSettings] = await Promise.all([
+                window.electronAPI.getMCPSyncStatus(),
+                window.electronAPI.getMCPSyncSettings(),
+            ]);
+            const enabledCount = status.filter(s => s.enabled && s.isInstalled).length;
+            setMcpSyncCount(enabledCount);
+            if (syncSettings.lastGlobalSync) {
+                setLastMcpSync(syncSettings.lastGlobalSync);
+            }
+        } catch (error) {
+            console.error('Failed to load MCP status:', error);
+        }
+    };
+
+    // --- Quick MCP Sync ---
+    const handleQuickMCPSync = async () => {
+        setIsSyncingMCP(true);
+        try {
+            const result = await window.electronAPI.syncMCPConfigs();
+            await loadMCPStatus();
+
+            if (result.success.length > 0) {
+                showToast(`✅ Synced MCP config to ${result.success.length} IDE(s)`);
+            }
+            if (result.failed.length > 0) {
+                showToast(`⚠️ ${result.failed.length} failed to sync`);
+            }
+            if (result.success.length === 0 && result.failed.length === 0) {
+                showToast('No IDEs enabled for sync');
+            }
+        } catch (error) {
+            console.error('MCP sync failed:', error);
+            showToast('❌ MCP sync failed');
+        } finally {
+            setIsSyncingMCP(false);
+        }
+    };
 
     // --- Data Loading ---
     const loadIDEs = async (forceScan = false) => {
@@ -78,6 +130,19 @@ const App: React.FC = () => {
     const showToast = (message: string) => {
         setToastMessage(message);
         setTimeout(() => setToastMessage(null), 3000);
+    };
+
+    // Format relative time for display
+    const formatRelativeTime = (timestamp: number) => {
+        const diff = Date.now() - timestamp;
+        const minutes = Math.floor(diff / 60000);
+        const hours = Math.floor(diff / 3600000);
+        const days = Math.floor(diff / 86400000);
+
+        if (minutes < 1) return 'Just now';
+        if (minutes < 60) return `${minutes}m ago`;
+        if (hours < 24) return `${hours}h ago`;
+        return `${days}d ago`;
     };
 
     const handleRefreshIDEs = async () => {
@@ -315,6 +380,55 @@ const App: React.FC = () => {
                     )}
                 </div>
 
+                {/* MCP Sync CTA Section */}
+                <section className="mcp-sync-cta">
+                    <div className="mcp-cta-glow"></div>
+                    <div className="mcp-cta-content">
+                        <div className="mcp-cta-info">
+                            <div className="mcp-cta-icon">🔄</div>
+                            <div className="mcp-cta-text">
+                                <h3>MCP Configuration Sync</h3>
+                                <p>
+                                    {mcpSyncCount > 0
+                                        ? `Sync your MCP servers to ${mcpSyncCount} configured IDE${mcpSyncCount !== 1 ? 's' : ''}`
+                                        : 'Configure and sync MCP servers across all your AI IDEs'
+                                    }
+                                </p>
+                                {lastMcpSync && (
+                                    <span className="mcp-last-sync">
+                                        Last synced: {formatRelativeTime(lastMcpSync)}
+                                    </span>
+                                )}
+                            </div>
+                        </div>
+                        <div className="mcp-cta-actions">
+                            <button
+                                className="mcp-sync-btn primary"
+                                onClick={handleQuickMCPSync}
+                                disabled={isSyncingMCP}
+                            >
+                                {isSyncingMCP ? (
+                                    <>
+                                        <span className="btn-spinner"></span>
+                                        Syncing...
+                                    </>
+                                ) : (
+                                    <>🔄 Sync All Now</>
+                                )}
+                            </button>
+                            <button
+                                className="mcp-sync-btn secondary"
+                                onClick={() => {
+                                    setSettingsTab('mcp');
+                                    setIsSettingsOpen(true);
+                                }}
+                            >
+                                ⚙️ Configure
+                            </button>
+                        </div>
+                    </div>
+                </section>
+
                 {/* Projects Section */}
                 <section className="projects-section">
                     <div className="section-header">
@@ -450,65 +564,110 @@ const App: React.FC = () => {
             {/* Settings Modal */}
             {isSettingsOpen && (
                 <div id="settings-modal" className="modal show" onClick={(e) => { if (e.target === e.currentTarget) setIsSettingsOpen(false); }}>
-                    <div className="modal-content">
+                    <div className="modal-content modal-content-large">
                         <div className="modal-header">
                             <h2>Settings</h2>
                             <button className="close-modal" onClick={() => setIsSettingsOpen(false)}>✕</button>
                         </div>
+
+                        {/* Settings Tabs */}
+                        <div className="settings-tabs">
+                            <button
+                                className={`settings-tab ${settingsTab === 'general' ? 'active' : ''}`}
+                                onClick={() => setSettingsTab('general')}
+                            >
+                                ⚙️ General
+                            </button>
+                            <button
+                                className={`settings-tab ${settingsTab === 'mcp' ? 'active' : ''}`}
+                                onClick={() => setSettingsTab('mcp')}
+                            >
+                                🔄 MCP Sync
+                            </button>
+                            <button
+                                className={`settings-tab ${settingsTab === 'processes' ? 'active' : ''}`}
+                                onClick={() => setSettingsTab('processes')}
+                            >
+                                ⚡ Processes
+                            </button>
+                            <button
+                                className={`settings-tab ${settingsTab === 'apikeys' ? 'active' : ''}`}
+                                onClick={() => setSettingsTab('apikeys')}
+                            >
+                                🔑 API Keys
+                            </button>
+                        </div>
+
                         <div className="modal-body">
-                            <div className="setting-item">
-                                <label>Default IDE</label>
-                                <select
-                                    id="default-ide-select"
-                                    value={settings.defaultIDE}
-                                    onChange={(e) => setSettings({ ...settings, defaultIDE: e.target.value as IDEType })}
-                                >
-                                    {ides.length > 0 ? (
-                                        ides.map(ide => (
-                                            <option key={ide.name} value={ide.name}>{ide.name}</option>
-                                        ))
-                                    ) : (
-                                        <option value="Cursor">Cursor</option>
-                                    )}
-                                </select>
-                            </div>
-                            <div className="setting-item">
-                                <label className="checkbox-label">
-                                    <input
-                                        type="checkbox"
-                                        id="launch-startup-check"
-                                        checked={settings.launchAtStartup}
-                                        onChange={(e) => setSettings({ ...settings, launchAtStartup: e.target.checked })}
-                                    />
-                                    Launch at Startup
-                                </label>
-                            </div>
-                            <div className="setting-item">
-                                <label className="checkbox-label">
-                                    <input
-                                        type="checkbox"
-                                        id="auto-detect-check"
-                                        checked={settings.autoDetectIDEs}
-                                        onChange={(e) => setSettings({ ...settings, autoDetectIDEs: e.target.checked })}
-                                    />
-                                    Auto-detect new IDEs on launch
-                                </label>
-                            </div>
-                            <div className="setting-item">
-                                <label className="checkbox-label">
-                                    <input
-                                        type="checkbox"
-                                        id="theme-toggle"
-                                        checked={settings.theme === 'light'}
-                                        onChange={(e) => setSettings({ ...settings, theme: e.target.checked ? 'light' : 'dark' })}
-                                    />
-                                    Light theme
-                                </label>
-                            </div>
+                            {settingsTab === 'general' && (
+                                <>
+                                    <div className="setting-item">
+                                        <label>Default IDE</label>
+                                        <select
+                                            id="default-ide-select"
+                                            value={settings.defaultIDE}
+                                            onChange={(e) => setSettings({ ...settings, defaultIDE: e.target.value as IDEType })}
+                                        >
+                                            {ides.length > 0 ? (
+                                                ides.map(ide => (
+                                                    <option key={ide.name} value={ide.name}>{ide.name}</option>
+                                                ))
+                                            ) : (
+                                                <option value="Cursor">Cursor</option>
+                                            )}
+                                        </select>
+                                    </div>
+                                    <div className="setting-item">
+                                        <label className="checkbox-label">
+                                            <input
+                                                type="checkbox"
+                                                id="launch-startup-check"
+                                                checked={settings.launchAtStartup}
+                                                onChange={(e) => setSettings({ ...settings, launchAtStartup: e.target.checked })}
+                                            />
+                                            Launch at Startup
+                                        </label>
+                                    </div>
+                                    <div className="setting-item">
+                                        <label className="checkbox-label">
+                                            <input
+                                                type="checkbox"
+                                                id="auto-detect-check"
+                                                checked={settings.autoDetectIDEs}
+                                                onChange={(e) => setSettings({ ...settings, autoDetectIDEs: e.target.checked })}
+                                            />
+                                            Auto-detect new IDEs on launch
+                                        </label>
+                                    </div>
+                                    <div className="setting-item">
+                                        <label className="checkbox-label">
+                                            <input
+                                                type="checkbox"
+                                                id="theme-toggle"
+                                                checked={settings.theme === 'light'}
+                                                onChange={(e) => setSettings({ ...settings, theme: e.target.checked ? 'light' : 'dark' })}
+                                            />
+                                            Light theme
+                                        </label>
+                                    </div>
+                                </>
+                            )}
+                            {settingsTab === 'mcp' && (
+                                <MCPSyncSettings onToast={showToast} />
+                            )}
+                            {settingsTab === 'processes' && (
+                                <ProcessManager />
+                            )}
+                            {settingsTab === 'apikeys' && (
+                                <APIKeysManager />
+                            )}
                         </div>
-                        <div className="modal-footer">
-                            <button id="save-settings-btn" className="primary-btn" onClick={handleSaveSettings}>Save Changes</button>
-                        </div>
+
+                        {settingsTab === 'general' && (
+                            <div className="modal-footer">
+                                <button id="save-settings-btn" className="primary-btn" onClick={handleSaveSettings}>Save Changes</button>
+                            </div>
+                        )}
                     </div>
                 </div>
             )}

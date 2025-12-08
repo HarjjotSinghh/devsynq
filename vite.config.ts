@@ -12,7 +12,10 @@ export default defineConfig({
         outDir: path.join(__dirname, 'dist'),
         emptyOutDir: true,
         rollupOptions: {
-            input: path.join(__dirname, 'src/renderer/index.html'),
+            input: {
+                main: path.join(__dirname, 'src/renderer/index.html'),
+                'command-palette': path.join(__dirname, 'src/renderer/command-palette.html'),
+            },
         },
     },
     resolve: {
