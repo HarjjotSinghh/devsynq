@@ -1,9 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com;">
+  <meta http-equiv="Content-Security-Policy"
+    content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com;">
   <title>DevSynq - AI IDE Launcher</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -19,28 +21,28 @@
       --bg-tertiary: #1a1a25;
       --bg-card: rgba(26, 26, 37, 0.8);
       --bg-card-hover: rgba(35, 35, 50, 0.9);
-      
+
       --text-primary: #ffffff;
       --text-secondary: #a0a0b0;
       --text-muted: #6b6b7b;
-      
+
       --accent-primary: #7c3aed;
       --accent-secondary: #06b6d4;
       --accent-gradient: linear-gradient(135deg, #7c3aed 0%, #06b6d4 100%);
-      
+
       --success: #10b981;
       --warning: #f59e0b;
       --error: #ef4444;
-      
+
       --border-color: rgba(255, 255, 255, 0.08);
       --border-hover: rgba(255, 255, 255, 0.15);
-      
+
       /* Shadows */
       --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.3);
       --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.4);
       --shadow-lg: 0 16px 48px rgba(0, 0, 0, 0.5);
       --shadow-glow: 0 0 40px rgba(124, 58, 237, 0.3);
-      
+
       /* Spacing */
       --spacing-xs: 4px;
       --spacing-sm: 8px;
@@ -48,18 +50,36 @@
       --spacing-lg: 24px;
       --spacing-xl: 32px;
       --spacing-2xl: 48px;
-      
+
       /* Border Radius */
       --radius-sm: 6px;
       --radius-md: 12px;
       --radius-lg: 16px;
       --radius-xl: 24px;
       --radius-full: 9999px;
-      
+
       /* Transitions */
       --transition-fast: 150ms ease;
       --transition-normal: 250ms ease;
       --transition-slow: 400ms ease;
+    }
+
+    [data-theme="light"] {
+      --bg-primary: #f7f7fb;
+      --bg-secondary: #ffffff;
+      --bg-tertiary: #eef0f6;
+      --bg-card: rgba(255, 255, 255, 0.95);
+      --bg-card-hover: #eef0f6;
+
+      --text-primary: #0f172a;
+      --text-secondary: #334155;
+      --text-muted: #6b7280;
+
+      --border-color: rgba(15, 23, 42, 0.08);
+      --border-hover: rgba(15, 23, 42, 0.15);
+
+      --shadow-md: 0 8px 24px rgba(15, 23, 42, 0.08);
+      --shadow-lg: 0 16px 48px rgba(15, 23, 42, 0.12);
     }
 
     /* ========================================
@@ -71,7 +91,8 @@
       box-sizing: border-box;
     }
 
-    html, body {
+    html,
+    body {
       height: 100%;
       overflow: hidden;
     }
@@ -89,6 +110,7 @@
     ======================================== */
     .app-container {
       height: 100vh;
+      width: 100vw;
       display: flex;
       flex-direction: column;
       background: var(--bg-primary);
@@ -104,7 +126,7 @@
       left: -50%;
       width: 200%;
       height: 200%;
-      background: 
+      background:
         radial-gradient(ellipse at 20% 20%, rgba(124, 58, 237, 0.15) 0%, transparent 50%),
         radial-gradient(ellipse at 80% 80%, rgba(6, 182, 212, 0.1) 0%, transparent 50%),
         radial-gradient(ellipse at 50% 50%, rgba(245, 158, 11, 0.05) 0%, transparent 50%);
@@ -113,8 +135,17 @@
     }
 
     @keyframes bgPulse {
-      0%, 100% { transform: translate(0, 0) scale(1); opacity: 1; }
-      50% { transform: translate(-5%, -5%) scale(1.1); opacity: 0.8; }
+
+      0%,
+      100% {
+        transform: translate(0, 0) scale(1);
+        opacity: 1;
+      }
+
+      50% {
+        transform: translate(-5%, -5%) scale(1.1);
+        opacity: 0.8;
+      }
     }
 
     /* ========================================
@@ -295,7 +326,8 @@
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
       gap: var(--spacing-lg);
-      max-width: 1200px;
+      width: 100%;
+      max-width: 1400px;
       margin: 0 auto;
     }
 
@@ -319,7 +351,9 @@
     }
 
     @keyframes spin {
-      to { transform: rotate(360deg); }
+      to {
+        transform: rotate(360deg);
+      }
     }
 
     /* ========================================
@@ -340,7 +374,7 @@
     .ide-card:hover {
       transform: translateY(-4px);
       border-color: var(--accent-color, var(--accent-primary));
-      box-shadow: 
+      box-shadow:
         var(--shadow-lg),
         0 0 30px color-mix(in srgb, var(--accent-color, var(--accent-primary)) 30%, transparent);
     }
@@ -364,11 +398,9 @@
       left: 0;
       right: 0;
       height: 100%;
-      background: linear-gradient(
-        180deg,
-        color-mix(in srgb, var(--accent-color, var(--accent-primary)) 10%, transparent) 0%,
-        transparent 50%
-      );
+      background: linear-gradient(180deg,
+          color-mix(in srgb, var(--accent-color, var(--accent-primary)) 10%, transparent) 0%,
+          transparent 50%);
       opacity: 0;
       transition: var(--transition-normal);
       pointer-events: none;
@@ -422,8 +454,15 @@
     }
 
     @keyframes pulse {
-      0%, 100% { opacity: 1; }
-      50% { opacity: 0.5; }
+
+      0%,
+      100% {
+        opacity: 1;
+      }
+
+      50% {
+        opacity: 0.5;
+      }
     }
 
     .status-text {
@@ -521,8 +560,322 @@
     .footer a:hover {
       text-decoration: underline;
     }
+
+    /* ========================================
+       Projects Section
+    ======================================== */
+    .projects-section {
+      width: 100%;
+      max-width: 1400px;
+      margin: var(--spacing-2xl) auto 0;
+      padding-top: var(--spacing-xl);
+      border-top: 1px solid var(--border-color);
+    }
+
+    .section-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: var(--spacing-lg);
+    }
+
+    .project-toolbar {
+      display: flex;
+      gap: var(--spacing-md);
+      flex-wrap: wrap;
+      align-items: center;
+      margin-bottom: var(--spacing-md);
+    }
+
+    .search-input {
+      flex: 1;
+      min-width: 260px;
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-sm);
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 0 var(--spacing-sm);
+    }
+
+    .search-input input {
+      flex: 1;
+      background: transparent;
+      border: none;
+      color: var(--text-primary);
+      padding: var(--spacing-sm) var(--spacing-xs);
+      outline: none;
+      font-size: 14px;
+    }
+
+    .shortcut-hint {
+      font-size: 12px;
+      color: var(--text-muted);
+      background: var(--bg-tertiary);
+      padding: 4px 8px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border-color);
+    }
+
+    .section-title {
+      font-size: 24px;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+
+    .add-project-btn {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      color: var(--text-primary);
+      padding: var(--spacing-sm) var(--spacing-md);
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-sm);
+      transition: var(--transition-fast);
+      font-size: 14px;
+    }
+
+    .add-project-btn:hover {
+      background: var(--bg-card-hover);
+      border-color: var(--accent-primary);
+    }
+
+    .projects-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: var(--spacing-md);
+    }
+
+    .recent-grid {
+      margin-top: var(--spacing-sm);
+    }
+
+    .project-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: var(--spacing-md);
+      cursor: pointer;
+      transition: var(--transition-fast);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      group: project-card;
+    }
+
+    .project-card.compact {
+      padding: var(--spacing-sm) var(--spacing-md);
+    }
+
+    .project-card:hover {
+      background: var(--bg-card-hover);
+      border-color: var(--border-hover);
+      transform: translateY(-2px);
+    }
+
+    .project-info {
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-md);
+      overflow: hidden;
+    }
+
+    .project-icon {
+      width: 40px;
+      height: 40px;
+      background: var(--bg-tertiary);
+      border-radius: var(--radius-sm);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      flex-shrink: 0;
+    }
+
+    .project-details {
+      overflow: hidden;
+    }
+
+    .project-name {
+      font-size: 16px;
+      font-weight: 500;
+      color: var(--text-primary);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .project-path {
+      font-size: 12px;
+      color: var(--text-muted);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .project-meta {
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    .project-actions {
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-sm);
+      opacity: 0;
+      transition: var(--transition-fast);
+    }
+
+    .project-card:hover .project-actions {
+      opacity: 1;
+    }
+
+    .project-action-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-secondary);
+      cursor: pointer;
+      padding: 4px;
+      border-radius: 4px;
+    }
+
+    .project-action-btn:hover {
+      background: rgba(255, 255, 255, 0.1);
+      color: var(--text-primary);
+    }
+
+    .project-action-btn.delete:hover {
+      background: rgba(239, 68, 68, 0.2);
+      color: var(--error);
+    }
+
+    /* ========================================
+       Modal
+    ======================================== */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.7);
+      backdrop-filter: blur(5px);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .modal.show {
+      display: flex;
+    }
+
+    .modal-content {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      width: 100%;
+      max-width: 500px;
+      box-shadow: var(--shadow-lg);
+      animation: modalSlideIn 0.3s ease;
+    }
+
+    @keyframes modalSlideIn {
+      from {
+        transform: translateY(20px);
+        opacity: 0;
+      }
+
+      to {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+
+    .modal-header {
+      padding: var(--spacing-lg);
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .modal-header h2 {
+      font-size: 20px;
+      font-weight: 600;
+    }
+
+    .close-modal {
+      background: transparent;
+      border: none;
+      color: var(--text-secondary);
+      cursor: pointer;
+      font-size: 20px;
+    }
+
+    .modal-body {
+      padding: var(--spacing-lg);
+    }
+
+    .setting-item {
+      margin-bottom: var(--spacing-lg);
+    }
+
+    .setting-item label {
+      display: block;
+      margin-bottom: var(--spacing-sm);
+      color: var(--text-secondary);
+      font-size: 14px;
+    }
+
+    .setting-item select {
+      width: 100%;
+      background: var(--bg-primary);
+      border: 1px solid var(--border-color);
+      color: var(--text-primary);
+      padding: var(--spacing-sm);
+      border-radius: var(--radius-sm);
+      outline: none;
+    }
+
+    .checkbox-label {
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-sm);
+      cursor: pointer;
+    }
+
+    .checkbox-label input {
+      width: 16px;
+      height: 16px;
+    }
+
+    .modal-footer {
+      padding: var(--spacing-lg);
+      border-top: 1px solid var(--border-color);
+      display: flex;
+      justify-content: flex-end;
+    }
+
+    .primary-btn {
+      background: var(--accent-gradient);
+      color: white;
+      border: none;
+      padding: var(--spacing-sm) var(--spacing-lg);
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      font-weight: 500;
+    }
+
+    .primary-btn:hover {
+      opacity: 0.9;
+    }
   </style>
 </head>
+
 <body>
   <div class="app-container">
     <!-- Custom Title Bar -->
@@ -532,9 +885,12 @@
         <span>DevSynq</span>
       </div>
       <div class="window-controls">
+
+        <button id="settings-btn" class="window-control-btn" title="Settings">⚙️</button>
         <button id="minimize-btn" class="window-control-btn" title="Minimize">─</button>
         <button id="maximize-btn" class="window-control-btn" title="Maximize">□</button>
         <button id="close-btn" class="window-control-btn close" title="Close">✕</button>
+
       </div>
     </div>
 
@@ -544,7 +900,7 @@
       <header class="header">
         <h1 class="header-title">AI IDE Launcher</h1>
         <p class="header-subtitle">Launch your favorite AI-powered development environments instantly</p>
-        
+
         <div class="stats-bar">
           <div class="stat-item">
             <span class="stat-value" id="installed-count">-</span>
@@ -564,14 +920,68 @@
       <div id="ide-grid">
         <!-- IDE cards will be dynamically inserted here -->
       </div>
+
+      <!-- Projects Section -->
+      <section class="projects-section">
+        <div class="section-header">
+          <h2 class="section-title">Projects</h2>
+          <button id="add-project-btn" class="add-project-btn">
+            <span>+</span> Add Project
+          </button>
+        </div>
+        <div id="projects-grid" class="projects-grid">
+          <!-- Project cards will be dynamically inserted here -->
+        </div>
+      </section>
     </main>
 
     <!-- Footer -->
     <footer class="footer">
       <p>DevSynq v1.0.0 · Built with Electron + TypeScript</p>
     </footer>
+
+    <!-- Settings Modal -->
+    <div id="settings-modal" class="modal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2>Settings</h2>
+          <button class="close-modal">✕</button>
+        </div>
+        <div class="modal-body">
+          <div class="setting-item">
+            <label>Default IDE</label>
+            <select id="default-ide-select">
+              <option value="VS Code">VS Code</option>
+              <option value="Cursor">Cursor</option>
+              <option value="Windsurf">Windsurf</option>
+              <option value="Zed">Zed</option>
+              <option value="WebStorm">WebStorm</option>
+              <option value="Trae">Trae</option>
+              <option value="Replit">Replit</option>
+            </select>
+          </div>
+          <div class="setting-item">
+            <label class="checkbox-label">
+              <input type="checkbox" id="launch-startup-check">
+              Launch at Startup
+            </label>
+          </div>
+          <div class="setting-item">
+            <label class="checkbox-label">
+              <input type="checkbox" id="auto-update-check">
+              Check for Updates Automatically
+            </label>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button id="save-settings-btn" class="primary-btn">Save Changes</button>
+        </div>
+      </div>
+    </div>
+
   </div>
 
-  <script src="renderer.js"></script>
+    <script src="renderer.js"></script>
 </body>
+
 </html>
