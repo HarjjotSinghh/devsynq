@@ -1,0 +1,49 @@
+{
+  "name": "devsynq",
+  "version": "1.0.0",
+  "description": "AI IDE Launcher - Launch your favorite AI-powered development environments",
+  "main": "dist/main.js",
+  "private": true,
+  "scripts": {
+    "build": "bun run build:main && bun run build:preload && bun run build:renderer && bun run build:html",
+    "build:main": "bun build ./src/main.ts --outfile=./dist/main.js --target=node --format=cjs --external electron",
+    "build:preload": "bun build ./src/preload.ts --outfile=./dist/preload.js --target=node --format=cjs --external electron",
+    "build:renderer": "bun build ./src/renderer.ts --outfile=./dist/renderer.js --target=browser",
+    "build:html": "powershell -Command \"Copy-Item -Path 'src/index.html' -Destination 'dist/index.html' -Force\"",
+    "start": "bun run build && electron .",
+    "dev": "bun run build && electron .",
+    "pack": "electron-builder --dir",
+    "dist": "electron-builder"
+  },
+  "build": {
+    "appId": "com.devsynq.idelauncher",
+    "productName": "DevSynq",
+    "directories": {
+      "output": "release"
+    },
+    "files": [
+      "dist/**/*"
+    ],
+    "win": {
+      "target": "nsis",
+      "icon": "assets/icon.ico"
+    },
+    "mac": {
+      "target": "dmg",
+      "icon": "assets/icon.icns"
+    },
+    "linux": {
+      "target": "AppImage",
+      "icon": "assets/icon.png"
+    }
+  },
+  "devDependencies": {
+    "@types/bun": "latest",
+    "@types/node": "^24.10.1",
+    "electron": "^39.2.6",
+    "electron-builder": "^26.0.12"
+  },
+  "peerDependencies": {
+    "typescript": "^5"
+  }
+}

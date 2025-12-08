@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com;">
+  <title>DevSynq - AI IDE Launcher</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    /* ========================================
+       CSS Variables & Design Tokens
+    ======================================== */
+    :root {
+      /* Colors */
+      --bg-primary: #0a0a0f;
+      --bg-secondary: #12121a;
+      --bg-tertiary: #1a1a25;
+      --bg-card: rgba(26, 26, 37, 0.8);
+      --bg-card-hover: rgba(35, 35, 50, 0.9);
+      
+      --text-primary: #ffffff;
+      --text-secondary: #a0a0b0;
+      --text-muted: #6b6b7b;
+      
+      --accent-primary: #7c3aed;
+      --accent-secondary: #06b6d4;
+      --accent-gradient: linear-gradient(135deg, #7c3aed 0%, #06b6d4 100%);
+      
+      --success: #10b981;
+      --warning: #f59e0b;
+      --error: #ef4444;
+      
+      --border-color: rgba(255, 255, 255, 0.08);
+      --border-hover: rgba(255, 255, 255, 0.15);
+      
+      /* Shadows */
+      --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.3);
+      --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.4);
+      --shadow-lg: 0 16px 48px rgba(0, 0, 0, 0.5);
+      --shadow-glow: 0 0 40px rgba(124, 58, 237, 0.3);
+      
+      /* Spacing */
+      --spacing-xs: 4px;
+      --spacing-sm: 8px;
+      --spacing-md: 16px;
+      --spacing-lg: 24px;
+      --spacing-xl: 32px;
+      --spacing-2xl: 48px;
+      
+      /* Border Radius */
+      --radius-sm: 6px;
+      --radius-md: 12px;
+      --radius-lg: 16px;
+      --radius-xl: 24px;
+      --radius-full: 9999px;
+      
+      /* Transitions */
+      --transition-fast: 150ms ease;
+      --transition-normal: 250ms ease;
+      --transition-slow: 400ms ease;
+    }
+
+    /* ========================================
+       Base & Reset
+    ======================================== */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      height: 100%;
+      overflow: hidden;
+    }
+
+    body {
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ========================================
+       App Container
+    ======================================== */
+    .app-container {
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      background: var(--bg-primary);
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Background Effects */
+    .app-container::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: 
+        radial-gradient(ellipse at 20% 20%, rgba(124, 58, 237, 0.15) 0%, transparent 50%),
+        radial-gradient(ellipse at 80% 80%, rgba(6, 182, 212, 0.1) 0%, transparent 50%),
+        radial-gradient(ellipse at 50% 50%, rgba(245, 158, 11, 0.05) 0%, transparent 50%);
+      pointer-events: none;
+      animation: bgPulse 20s ease-in-out infinite;
+    }
+
+    @keyframes bgPulse {
+      0%, 100% { transform: translate(0, 0) scale(1); opacity: 1; }
+      50% { transform: translate(-5%, -5%) scale(1.1); opacity: 0.8; }
+    }
+
+    /* ========================================
+       Title Bar (Custom Frameless)
+    ======================================== */
+    .title-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: var(--spacing-sm) var(--spacing-md);
+      background: rgba(10, 10, 15, 0.9);
+      border-bottom: 1px solid var(--border-color);
+      -webkit-app-region: drag;
+      position: relative;
+      z-index: 100;
+    }
+
+    .title-bar-title {
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-sm);
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text-secondary);
+    }
+
+    .title-bar-logo {
+      width: 20px;
+      height: 20px;
+      background: var(--accent-gradient);
+      border-radius: var(--radius-sm);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+    }
+
+    .window-controls {
+      display: flex;
+      gap: var(--spacing-xs);
+      -webkit-app-region: no-drag;
+    }
+
+    .window-control-btn {
+      width: 36px;
+      height: 28px;
+      border: none;
+      background: transparent;
+      color: var(--text-secondary);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: var(--radius-sm);
+      transition: var(--transition-fast);
+      font-size: 16px;
+    }
+
+    .window-control-btn:hover {
+      background: rgba(255, 255, 255, 0.1);
+      color: var(--text-primary);
+    }
+
+    .window-control-btn.close:hover {
+      background: var(--error);
+      color: white;
+    }
+
+    /* ========================================
+       Main Content
+    ======================================== */
+    .main-content {
+      flex: 1;
+      overflow-y: auto;
+      padding: var(--spacing-2xl);
+      position: relative;
+      z-index: 10;
+    }
+
+    /* Custom Scrollbar */
+    .main-content::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    .main-content::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    .main-content::-webkit-scrollbar-thumb {
+      background: var(--border-color);
+      border-radius: var(--radius-full);
+    }
+
+    .main-content::-webkit-scrollbar-thumb:hover {
+      background: var(--border-hover);
+    }
+
+    /* ========================================
+       Header Section
+    ======================================== */
+    .header {
+      margin-bottom: var(--spacing-2xl);
+      text-align: center;
+    }
+
+    .header-title {
+      font-size: 42px;
+      font-weight: 700;
+      background: var(--accent-gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: var(--spacing-sm);
+      letter-spacing: -1px;
+    }
+
+    .header-subtitle {
+      font-size: 16px;
+      color: var(--text-secondary);
+      margin-bottom: var(--spacing-lg);
+    }
+
+    /* Stats Bar */
+    .stats-bar {
+      display: flex;
+      justify-content: center;
+      gap: var(--spacing-xl);
+      margin-top: var(--spacing-lg);
+    }
+
+    .stat-item {
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-sm);
+      padding: var(--spacing-sm) var(--spacing-md);
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-full);
+      backdrop-filter: blur(10px);
+    }
+
+    .stat-value {
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+
+    .stat-label {
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+
+    /* Refresh Button */
+    #refresh-btn {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      color: var(--text-secondary);
+      padding: var(--spacing-sm) var(--spacing-md);
+      border-radius: var(--radius-full);
+      cursor: pointer;
+      transition: var(--transition-normal);
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-xs);
+    }
+
+    #refresh-btn:hover {
+      background: var(--bg-card-hover);
+      color: var(--text-primary);
+      border-color: var(--border-hover);
+    }
+
+    /* ========================================
+       IDE Grid
+    ======================================== */
+    #ide-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: var(--spacing-lg);
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    /* Loading State */
+    .loading-state,
+    .error-state {
+      grid-column: 1 / -1;
+      text-align: center;
+      padding: var(--spacing-2xl);
+      color: var(--text-secondary);
+    }
+
+    .loading-spinner {
+      width: 40px;
+      height: 40px;
+      border: 3px solid var(--border-color);
+      border-top-color: var(--accent-primary);
+      border-radius: 50%;
+      margin: 0 auto var(--spacing-md);
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* ========================================
+       IDE Card
+    ======================================== */
+    .ide-card {
+      position: relative;
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      padding: var(--spacing-xl);
+      cursor: pointer;
+      transition: var(--transition-normal);
+      overflow: hidden;
+      backdrop-filter: blur(10px);
+    }
+
+    .ide-card:hover {
+      transform: translateY(-4px);
+      border-color: var(--accent-color, var(--accent-primary));
+      box-shadow: 
+        var(--shadow-lg),
+        0 0 30px color-mix(in srgb, var(--accent-color, var(--accent-primary)) 30%, transparent);
+    }
+
+    .ide-card.installed:hover {
+      background: var(--bg-card-hover);
+    }
+
+    .ide-card.not-installed {
+      opacity: 0.7;
+    }
+
+    .ide-card.not-installed:hover {
+      opacity: 1;
+    }
+
+    /* Card Glow Effect */
+    .card-glow {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 100%;
+      background: linear-gradient(
+        180deg,
+        color-mix(in srgb, var(--accent-color, var(--accent-primary)) 10%, transparent) 0%,
+        transparent 50%
+      );
+      opacity: 0;
+      transition: var(--transition-normal);
+      pointer-events: none;
+    }
+
+    .ide-card:hover .card-glow {
+      opacity: 1;
+    }
+
+    .card-content {
+      position: relative;
+      z-index: 1;
+    }
+
+    .ide-icon {
+      font-size: 48px;
+      margin-bottom: var(--spacing-md);
+      filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.3));
+    }
+
+    .ide-name {
+      font-size: 20px;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: var(--spacing-sm);
+    }
+
+    /* Status Indicator */
+    .ide-status {
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-xs);
+      margin-bottom: var(--spacing-lg);
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--text-muted);
+    }
+
+    .status-dot.active {
+      background: var(--success);
+      box-shadow: 0 0 8px var(--success);
+      animation: pulse 2s ease-in-out infinite;
+    }
+
+    .status-dot.inactive {
+      background: var(--warning);
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+
+    .status-text {
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+
+    /* Action Button */
+    .ide-action-btn {
+      width: 100%;
+      padding: var(--spacing-sm) var(--spacing-md);
+      border: none;
+      border-radius: var(--radius-md);
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: var(--transition-fast);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: var(--spacing-xs);
+    }
+
+    .launch-btn {
+      background: var(--accent-gradient);
+      color: white;
+    }
+
+    .launch-btn:hover {
+      transform: scale(1.02);
+      box-shadow: 0 4px 16px rgba(124, 58, 237, 0.4);
+    }
+
+    .launch-btn:disabled {
+      opacity: 0.7;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .install-btn {
+      background: transparent;
+      color: var(--text-secondary);
+      border: 1px solid var(--border-color);
+    }
+
+    .install-btn:hover {
+      background: var(--bg-tertiary);
+      color: var(--text-primary);
+      border-color: var(--border-hover);
+    }
+
+    /* ========================================
+       Toast Notifications
+    ======================================== */
+    .toast {
+      position: fixed;
+      bottom: -60px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      color: var(--text-primary);
+      padding: var(--spacing-md) var(--spacing-lg);
+      border-radius: var(--radius-lg);
+      font-size: 14px;
+      box-shadow: var(--shadow-lg);
+      transition: var(--transition-normal);
+      z-index: 1000;
+      backdrop-filter: blur(10px);
+    }
+
+    .toast.show {
+      bottom: var(--spacing-xl);
+    }
+
+    /* ========================================
+       Footer
+    ======================================== */
+    .footer {
+      padding: var(--spacing-md) var(--spacing-xl);
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 12px;
+      border-top: 1px solid var(--border-color);
+      background: rgba(10, 10, 15, 0.5);
+      position: relative;
+      z-index: 10;
+    }
+
+    .footer a {
+      color: var(--accent-primary);
+      text-decoration: none;
+    }
+
+    .footer a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <div class="app-container">
+    <!-- Custom Title Bar -->
+    <div class="title-bar">
+      <div class="title-bar-title">
+        <div class="title-bar-logo">⚡</div>
+        <span>DevSynq</span>
+      </div>
+      <div class="window-controls">
+        <button id="minimize-btn" class="window-control-btn" title="Minimize">─</button>
+        <button id="maximize-btn" class="window-control-btn" title="Maximize">□</button>
+        <button id="close-btn" class="window-control-btn close" title="Close">✕</button>
+      </div>
+    </div>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <!-- Header -->
+      <header class="header">
+        <h1 class="header-title">AI IDE Launcher</h1>
+        <p class="header-subtitle">Launch your favorite AI-powered development environments instantly</p>
+        
+        <div class="stats-bar">
+          <div class="stat-item">
+            <span class="stat-value" id="installed-count">-</span>
+            <span class="stat-label">Installed</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-value" id="total-count">-</span>
+            <span class="stat-label">Total IDEs</span>
+          </div>
+          <button id="refresh-btn" title="Refresh IDE list">
+            🔄 Refresh
+          </button>
+        </div>
+      </header>
+
+      <!-- IDE Grid -->
+      <div id="ide-grid">
+        <!-- IDE cards will be dynamically inserted here -->
+      </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <p>DevSynq v1.0.0 · Built with Electron + TypeScript</p>
+    </footer>
+  </div>
+
+  <script src="renderer.js"></script>
+</body>
+</html>
