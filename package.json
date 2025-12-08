@@ -5,11 +5,10 @@
   "main": "dist/main.js",
   "private": true,
   "scripts": {
-    "build": "bun run build:main && bun run build:preload && bun run build:renderer && bun run build:html",
+    "build": "bun run build:renderer && bun run build:main && bun run build:preload",
     "build:main": "bun build ./src/main.ts --outfile=./dist/main.js --target=node --format=cjs --external electron",
     "build:preload": "bun build ./src/preload.ts --outfile=./dist/preload.js --target=node --format=cjs --external electron",
-    "build:renderer": "bun build ./src/renderer.ts --outfile=./dist/renderer.js --target=browser",
-    "build:html": "powershell -Command \"Copy-Item -Path 'src/index.html' -Destination 'dist/index.html' -Force\"",
+    "build:renderer": "vite build",
     "start": "bun run build && electron .",
     "dev": "bun run build && electron .",
     "pack": "electron-builder --dir",
@@ -45,5 +44,13 @@
   },
   "peerDependencies": {
     "typescript": "^5"
+  },
+  "dependencies": {
+    "@types/react": "^19.2.7",
+    "@types/react-dom": "^19.2.3",
+    "@vitejs/plugin-react": "^5.1.1",
+    "react": "^19.2.1",
+    "react-dom": "^19.2.1",
+    "vite": "^7.2.7"
   }
 }

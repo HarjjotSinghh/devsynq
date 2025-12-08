@@ -1,5 +1,18 @@
+export type IDEType =
+    | 'Cursor'
+    | 'VS Code'
+    | 'Windsurf'
+    | 'Zed'
+    | 'WebStorm'
+    | 'Trae'
+    | 'Replit'
+    | 'Cody'
+    | 'Continue'
+    | 'IntelliJ IDEA'
+    | 'PyCharm';
+
 export interface IDE {
-    name: string;
+    name: IDEType;
     icon: string;
     macPaths: string[];
     winPaths: string[];
@@ -13,12 +26,12 @@ export interface Project {
     id: string;
     name: string;
     path: string;
-    preferredIDE: string;
+    preferredIDE: IDEType;
     lastOpened?: number;
 }
 
 export interface Settings {
-    defaultIDE: string;
+    defaultIDE: IDEType;
     launchAtStartup: boolean;
     theme: 'dark' | 'light';
     autoDetectIDEs: boolean;
