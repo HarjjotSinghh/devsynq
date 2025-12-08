@@ -522,7 +522,7 @@ textarea {
 
 .mcp-sync-btn.primary {
     background: var(--accent-gradient);
-    color: #fff;
+    color: #202020;
     box-shadow: 0 4px 12px rgba(20, 184, 166, 0.1);
 }
 

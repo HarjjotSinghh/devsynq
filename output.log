@@ -1,0 +1,24 @@
+﻿  ΓÇó electron-builder  version=26.0.12 os=10.0.26200
+  ΓÇó loaded configuration  file=package.json ("build" field)
+  ΓÇó author is missed in the package.json  appPackageFile=D:\Projects\devsynq\package.json
+  Γ¿» Invalid configuration object. electron-builder 26.0.12 has been initialized using a configuration object that does not match the API schema.
+ - configuration.win has an unknown property 'publisherName'. These properties are valid:
+   object { appId?, artifactName?, asar?, asarUnpack?, azureSignOptions?, compression?, cscKeyPassword?, cscLink?, defaultArch?, detectUpdateChannel?, disableDefaultIgnoredFiles?, electronLanguages?, electronUpdaterCompatibility?, executableName?, extraFiles?, extraResources?, fileAssociations?, files?, forceCodeSigning?, generateUpdatesFilesForAllChannels?, icon?, legalTrademarks?, protocols?, publish?, releaseInfo?, requestedExecutionLevel?, signAndEditExecutable?, signExts?, signtoolOptions?, target?, verifyUpdateCodeSignature? }
+     How to fix:
+     1. Open https://www.electron.build/win
+     2. Search the option name on the page (or type in into Search to find across the docs).
+       * Not found? The option was deprecated or not exists (check spelling).
+       * Found? Check that the option in the appropriate place. e.g. "title" only in the "dmg", not in the root.
+  failedTask=build stackTrace=ValidationError: Invalid configuration object. electron-builder 26.0.12 has been initialized using a configuration object that does not match the API schema.
+ - configuration.win has an unknown property 'publisherName'. These properties are valid:
+   object { appId?, artifactName?, asar?, asarUnpack?, azureSignOptions?, compression?, cscKeyPassword?, cscLink?, defaultArch?, detectUpdateChannel?, disableDefaultIgnoredFiles?, electronLanguages?, electronUpdaterCompatibility?, executableName?, extraFiles?, extraResources?, fileAssociations?, files?, forceCodeSigning?, generateUpdatesFilesForAllChannels?, icon?, legalTrademarks?, protocols?, publish?, releaseInfo?, requestedExecutionLevel?, signAndEditExecutable?, signExts?, signtoolOptions?, target?, verifyUpdateCodeSignature? }
+     How to fix:
+     1. Open https://www.electron.build/win
+     2. Search the option name on the page (or type in into Search to find across the docs).
+       * Not found? The option was deprecated or not exists (check spelling).
+       * Found? Check that the option in the appropriate place. e.g. "title" only in the "dmg", not in the root.
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       at validate (D:\Projects\devsynq\node_modules\@develar\schema-utils\dist\validate.js:86:11)
+    at validateConfiguration (D:\Projects\devsynq\node_modules\app-builder-lib\src\util\config\config.ts:239:3)
+    at Packager.validateConfig (D:\Projects\devsynq\node_modules\app-builder-lib\src\packager.ts:384:5)
+    at Packager.build (D:\Projects\devsynq\node_modules\app-builder-lib\src\packager.ts:392:5)
+    at executeFinally (D:\Projects\devsynq\node_modules\builder-util\src\promise.ts:12:14)

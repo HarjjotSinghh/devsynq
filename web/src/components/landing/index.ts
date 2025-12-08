@@ -1,0 +1,10 @@
+export { Header } from './header';
+export { Hero } from './hero';
+export { SocialProof } from './social-proof';
+export { Problem } from './problem';
+export { Features } from './features';
+export { SupportedIDEs } from './supported-ides';
+export { WaitlistCta } from './waitlist-cta';
+export { Screenshots } from './screenshots';
+export { Faq } from './faq';
+export { Footer } from './footer';
