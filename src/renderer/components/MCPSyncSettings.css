@@ -57,7 +57,7 @@
 
 .mcp-sync-all-btn:hover:not(:disabled) {
     transform: translateY(-1px);
-    box-shadow: 0 4px 12px hsla(160, 100%, 68%, 0.2);
+    box-shadow: 0 4px 12px hsla(160, 100%, 68%, 0.1);
 }
 
 .mcp-sync-all-btn:disabled {

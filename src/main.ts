@@ -148,7 +148,7 @@ const IDEs: IDE[] = [
       `C:\\Program Files (x86)\\Cursor\\Cursor.exe`,
       expandPath("%LOCALAPPDATA%\\Programs\\Cursor\\Cursor.exe"),
     ],
-    linuxPaths: ["/usr/share/cursor/cursor", "/usr/bin/cursor"],
+    linuxPaths: ["/usr/local/bin/cursor", "/usr/bin/cursor", "$HOME/.local/bin/cursor"],
     downloadUrl: "https://cursor.sh/",
     color: "#7c3aed",
   },
@@ -161,7 +161,7 @@ const IDEs: IDE[] = [
       `C:\\Program Files\\Windsurf\\Windsurf.exe`,
       expandPath("%LOCALAPPDATA%\\Programs\\Windsurf\\Windsurf.exe"),
     ],
-    linuxPaths: ["/usr/share/windsurf/windsurf"],
+    linuxPaths: ["/usr/local/bin/windsurf", "/opt/Windsurf/windsurf", "$HOME/.local/bin/windsurf"],
     downloadUrl: "https://codeium.com/windsurf",
     color: "#06b6d4",
   },
@@ -174,19 +174,19 @@ const IDEs: IDE[] = [
       `C:\\Program Files\\Microsoft VS Code\\Code.exe`,
       expandPath("%LOCALAPPDATA%\\Programs\\Microsoft VS Code\\Code.exe"),
     ],
-    linuxPaths: ["/usr/share/code/code", "/usr/bin/code"],
+    linuxPaths: ["/usr/bin/code", "/usr/local/bin/code", "$HOME/.local/bin/code"],
     downloadUrl: "https://code.visualstudio.com/",
     color: "#0078d4",
   },
   {
     name: IDEType.Zed,
     icon: "⚡",
-    macPaths: ["/Applications/Zed.app"],
+    macPaths: ["/Applications/Zed.app", "/Applications/Zed.app/Contents/MacOS/cli"],
     winPaths: [
       `C:\\Users\\${username}\\AppData\\Local\\Programs\\Zed\\Zed.exe`,
       `C:\\Program Files\\Zed\\Zed.exe`,
     ],
-    linuxPaths: ["/usr/bin/zed"],
+    linuxPaths: ["/usr/bin/zed", "/usr/local/bin/zed"],
     downloadUrl: "https://zed.dev/",
     color: "#f59e0b",
   },
@@ -198,7 +198,7 @@ const IDEs: IDE[] = [
       `C:\\Program Files\\JetBrains\\WebStorm\\bin\\webstorm64.exe`,
       `C:\\Users\\${username}\\AppData\\Local\\JetBrains\\WebStorm\\bin\\webstorm64.exe`,
     ],
-    linuxPaths: ["/usr/share/webstorm/bin/webstorm.sh"],
+    linuxPaths: ["/opt/WebStorm/bin/webstorm.sh", "/usr/local/bin/webstorm"],
     downloadUrl: "https://www.jetbrains.com/webstorm/",
     color: "#00d8ff",
   },
@@ -210,7 +210,7 @@ const IDEs: IDE[] = [
       `C:\\Users\\${username}\\AppData\\Local\\Programs\\Trae\\Trae.exe`,
       `C:\\Program Files\\Trae\\Trae.exe`,
     ],
-    linuxPaths: ["/usr/bin/trae"],
+    linuxPaths: ["/usr/local/bin/trae", "/opt/trae/trae"],
     downloadUrl: "https://www.trae.ai/",
     color: "#1e1e1e",
   },
@@ -236,7 +236,7 @@ const IDEs: IDE[] = [
       `C:\\Program Files\\Kiro\\Kiro.exe`,
       expandPath("%LOCALAPPDATA%\\Programs\\Kiro\\Kiro.exe"),
     ],
-    linuxPaths: ["/usr/bin/kiro"],
+    linuxPaths: ["/usr/local/bin/kiro", "/opt/kiro/kiro"],
     downloadUrl: "https://aws.amazon.com/kiro",
     color: "#8e48ff",
   },
@@ -249,7 +249,7 @@ const IDEs: IDE[] = [
       `C:\\Program Files\\Qoder\\Qoder.exe`,
       expandPath("%LOCALAPPDATA%\\Programs\\Qoder\\Qoder.exe"),
     ],
-    linuxPaths: ["/usr/bin/qoder"],
+    linuxPaths: ["/usr/local/bin/qoder", "/opt/qoder/qoder"],
     downloadUrl: "https://qoder.com",
     color: "#18d16f",
   },
@@ -261,7 +261,7 @@ const IDEs: IDE[] = [
       `C:\\Users\\${username}\\AppData\\Local\\Programs\\Replit\\Replit.exe`,
       `C:\\Program Files\\Replit\\Replit.exe`,
     ],
-    linuxPaths: ["/usr/bin/replit"],
+    linuxPaths: ["/usr/local/bin/replit", "/opt/replit/replit"],
     downloadUrl: "https://replit.com/desktop",
     color: "#f26207",
   },
@@ -274,7 +274,7 @@ const IDEs: IDE[] = [
       `C:\\Program Files\\Cody\\Cody.exe`,
       expandPath("%LOCALAPPDATA%\\Programs\\Cody\\Cody.exe"),
     ],
-    linuxPaths: ["/usr/bin/cody"],
+    linuxPaths: ["~/.local/share/code/extensions/Cody*"],
     downloadUrl: "https://sourcegraph.com/cody",
     color: "#ff5b4d",
   },
@@ -286,7 +286,7 @@ const IDEs: IDE[] = [
       `C:\\Users\\${username}\\AppData\\Local\\Programs\\Continue\\Continue.exe`,
       `C:\\Program Files\\Continue\\Continue.exe`,
     ],
-    linuxPaths: ["/usr/bin/continue"],
+    linuxPaths: ["~/.local/share/code/extensions/Continue*"],
     downloadUrl: "https://continue.dev",
     color: "#4ade80",
   },
@@ -299,7 +299,7 @@ const IDEs: IDE[] = [
       `C:\\Program Files\\JetBrains\\IntelliJ IDEA\\bin\\idea64.exe`,
       `C:\\Users\\${username}\\AppData\\Local\\Programs\\IntelliJ IDEA\\bin\\idea64.exe`,
     ],
-    linuxPaths: ["/usr/bin/idea", "/usr/local/bin/idea"],
+    linuxPaths: ["/opt/idea-*/bin/idea.sh", "/usr/local/bin/idea"],
     downloadUrl: "https://www.jetbrains.com/idea/download/",
     color: "#ff4081",
   },
@@ -312,7 +312,7 @@ const IDEs: IDE[] = [
       `C:\\Program Files\\JetBrains\\PyCharm\\bin\\pycharm64.exe`,
       `C:\\Users\\${username}\\AppData\\Local\\Programs\\PyCharm\\bin\\pycharm64.exe`,
     ],
-    linuxPaths: ["/usr/bin/pycharm", "/usr/local/bin/pycharm"],
+    linuxPaths: ["/opt/pycharm-*/bin/pycharm.sh", "/usr/local/bin/pycharm"],
     downloadUrl: "https://www.jetbrains.com/pycharm/download/",
     color: "#21d19f",
   },
@@ -320,6 +320,7 @@ const IDEs: IDE[] = [
 
 function getIDEPath(ide: IDE): string | null {
   const platform = os.platform();
+  const homedir = os.homedir();
   let paths: string[] = [];
 
   switch (platform) {
@@ -334,9 +335,51 @@ function getIDEPath(ide: IDE): string | null {
       break;
   }
 
-  for (const p of paths) {
-    if (fs.existsSync(p)) {
-      return p;
+  for (let p of paths) {
+    // Expand ~ and $HOME
+    if (typeof p === "string") {
+      if (p.startsWith("~")) {
+        p = path.join(homedir, p.slice(1));
+      }
+      p = p.replace("$HOME", homedir);
+    }
+
+    // Handle wildcards
+    if (p.includes("*")) {
+      try {
+        const parts = p.split(path.sep);
+        const wildcardIndex = parts.findIndex((part: string) => part.includes("*"));
+
+        if (wildcardIndex === -1) continue;
+
+        const baseDir = parts.slice(0, wildcardIndex).join(path.sep) || "/";
+        const pattern = parts[wildcardIndex];
+        if (!pattern) continue;
+
+        const suffix = parts.slice(wildcardIndex + 1).join(path.sep);
+
+        if (fs.existsSync(baseDir)) {
+          const files = fs.readdirSync(baseDir);
+          const prefix = pattern.split("*")[0];
+          const matches = files.filter((f: string) => f.startsWith(prefix ?? ""));
+          if (matches.length > 0) {
+            matches.sort();
+            const match = matches[matches.length - 1];
+            if (match) {
+              const resolvedPath = path.join(baseDir, match, suffix);
+              if (fs.existsSync(resolvedPath)) {
+                return resolvedPath;
+              }
+            }
+          }
+        }
+      } catch (e) {
+        // ignore
+      }
+    } else {
+      if (fs.existsSync(p)) {
+        return p;
+      }
     }
   }
   return null;

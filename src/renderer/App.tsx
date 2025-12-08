@@ -30,8 +30,15 @@ const App: React.FC = () => {
     const [foundProjects, setFoundProjects] = useState<{ name: string, path: string }[]>([]);
     const [isProjectScanModalOpen, setIsProjectScanModalOpen] = useState(false);
 
+    const [isLoadingInitial, setIsLoadingInitial] = useState(true);
+
     // --- Initialization ---
     useEffect(() => {
+        // Initial Loader Timer
+        const timer = setTimeout(() => {
+            setIsLoadingInitial(false);
+        }, 1900); // 1.8s animation + buffer
+
         const init = async () => {
             if (!window.electronAPI) {
                 console.error('electronAPI is not available!');
@@ -65,6 +72,7 @@ const App: React.FC = () => {
         };
 
         init();
+        return () => clearTimeout(timer);
     }, []);
 
     // --- MCP Status Loading ---
@@ -355,6 +363,19 @@ const App: React.FC = () => {
         return <IdeIcon ide={preferredIDE} size={26} />;
     };
 
+    if (isLoadingInitial) {
+        return (
+            <div className="initial-loader">
+                <div className="loader-logo-container">
+                    <div className="loader-logo">
+                        <Icon name="logo" size={64} />
+                    </div>
+                </div>
+                <h1 className="loader-text">DevSynq</h1>
+            </div>
+        );
+    }
+
     if (activeView === 'settings') {
         return (
             <SettingsPage
@@ -372,7 +393,7 @@ const App: React.FC = () => {
     }
 
     return (
-        <div className="app-container">
+        <div className="app-container fade-in">
             {/* Title Bar */}
             <div className="title-bar">
                 <div className="title-bar-title">

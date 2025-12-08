@@ -15,9 +15,9 @@
     width: 100%;
     max-width: 620px;
     background: linear-gradient(145deg, rgba(7, 16, 20, 0.95), rgba(10, 24, 28, 0.95));
-    border: 1px solid rgba(15, 181, 166, 0.35);
+    border: 1px solid rgba(15, 181, 166, 0.035);
     border-radius: 16px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.035);
     overflow: hidden;
     backdrop-filter: blur(14px);
     animation: slideIn 0.15s ease-out;

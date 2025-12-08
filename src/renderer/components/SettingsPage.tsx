@@ -52,12 +52,21 @@ function SettingsPage({
 
     const shortcutBindingKey = (n: number) => `cmdorctrl+${n}`;
 
+    const [isClosing, setIsClosing] = React.useState(false);
+
+    const handleClose = () => {
+        setIsClosing(true);
+        setTimeout(() => {
+            onClose();
+        }, 200);
+    };
+
     return (
-        <div className="settings-page">
+        <div className={`settings-page ${isClosing ? 'closing' : ''}`}>
             {/* Header */}
             <header className="settings-header">
                 <div className="settings-header-left">
-                    <button className="settings-back-btn" onClick={onClose}>
+                    <button className="settings-back-btn" onClick={handleClose}>
                         <Icon name="arrowLeft" />
                         <span>Back</span>
                     </button>
@@ -100,7 +109,7 @@ function SettingsPage({
                 {/* Content Area */}
                 <main className="settings-content">
                     {activeTab === 'general' && (
-                        <div className="settings-panel">
+                        <div key="general" className="settings-panel page-transition-enter">
                             <div className="panel-header">
                                 <h2>General Settings</h2>
                                 <p>Configure your default preferences</p>
@@ -189,7 +198,7 @@ function SettingsPage({
                     )}
 
                     {activeTab === 'shortcuts' && (
-                        <div className="settings-panel">
+                        <div key="shortcuts" className="settings-panel page-transition-enter">
                             <div className="panel-header">
                                 <h2>Keyboard Shortcuts</h2>
                                 <p>Bind Cmd/Ctrl + number keys to launch specific IDEs</p>
@@ -244,7 +253,7 @@ function SettingsPage({
                     )}
 
                     {activeTab === 'mcp' && (
-                        <div className="settings-panel">
+                        <div key="mcp" className="settings-panel page-transition-enter">
                             <div className="panel-header">
                                 <h2>MCP Configuration Sync</h2>
                                 <p>Manage Model Context Protocol servers across all your IDEs</p>
@@ -254,13 +263,13 @@ function SettingsPage({
                     )}
 
                     {activeTab === 'processes' && (
-                        <div className="settings-panel">
+                        <div key="processes" className="settings-panel page-transition-enter">
                             <ProcessManager />
                         </div>
                     )}
 
                     {activeTab === 'apikeys' && (
-                        <div className="settings-panel">
+                        <div key="apikeys" className="settings-panel page-transition-enter">
                             <APIKeysManager />
                         </div>
                     )}

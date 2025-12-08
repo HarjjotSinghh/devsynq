@@ -23,6 +23,38 @@
     }
 }
 
+.settings-page.closing {
+    animation: settingsSlideOut 0.2s ease-in forwards;
+}
+
+@keyframes settingsSlideOut {
+    from {
+        opacity: 1;
+        transform: translateX(0);
+    }
+
+    to {
+        opacity: 0;
+        transform: translateX(20px);
+    }
+}
+
+.page-transition-enter {
+    animation: fadeSlideIn 0.3s ease-out forwards;
+}
+
+@keyframes fadeSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
 /* ========================================
    Header
 ======================================== */
@@ -392,7 +424,7 @@
 
 .btn-primary:hover {
     transform: translateY(-2px);
-    box-shadow: 0 4px 16px rgba(106, 255, 210, 0.2);
+    box-shadow: 0 4px 16px rgba(106, 255, 210, 0.02);
 }
 
 /* ========================================
