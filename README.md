@@ -1,3 +1,5 @@
+![DevSynq Banner](assets/branding/github-banner_2x.png)
+
 # DevSynq - AI IDE Launcher
 
 A sleek, modern Electron application to launch your favorite AI-powered development environments.
