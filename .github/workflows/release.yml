@@ -4,8 +4,8 @@ on:
   push:
     tags:
       - 'v*'
-    branches:
-      - 'prod'
+    # branches:
+      # - 'prod'
   # Allow manual trigger for testing
   workflow_dispatch:
 
@@ -61,66 +61,60 @@ jobs:
           if-no-files-found: warn
           retention-days: 5
 
-  # Uncomment to enable macOS builds
-  # build-macos:
-  #   runs-on: macos-latest
-  #   steps:
-  #     - name: Check out Git repository
-  #       uses: actions/checkout@v4
-  #     - name: Setup Bun
-  #       uses: oven-sh/setup-bun@v1
-  #       with:
-  #         bun-version: latest
-  #     - name: Install dependencies
-  #       run: bun install
-  #     - name: Build Frontend & Main
-  #       run: bun run build
-  #     - name: Build Electron App (macOS)
-  #       run: bun run dist --mac
-  #       env:
-  #         GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-  #     - name: Upload macOS Artifacts
-  #       uses: actions/upload-artifact@v4
-  #       with:
-  #         name: macos-build
-  #         path: |
-  #           release/*.dmg
-  #           release/*.zip
-  #         if-no-files-found: warn
-  #         retention-days: 5
+  build-macos:
+    runs-on: macos-latest
+    steps:
+      - name: Check out Git repository
+        uses: actions/checkout@v4
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v1
+        with:
+          bun-version: latest
+      - name: Install dependencies
+        run: bun install
+      - name: Build Frontend & Main
+        run: bun run build
+      - name: Build Electron App (macOS)
+        run: bun run dist --mac
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Upload macOS Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: macos-build
+          path: |
+            release/*.dmg
+            release/*.zip
+          if-no-files-found: warn
+          retention-days: 5
 
-  # Uncomment to enable Linux builds
-  # build-linux:
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - name: Check out Git repository
-  #       uses: actions/checkout@v4
-  #     - name: Setup Bun
-  #       uses: oven-sh/setup-bun@v1
-  #       with:
-  #         bun-version: latest
-  #     - name: Install dependencies
-  #       run: bun install
-  #     - name: Build Frontend & Main
-  #       run: bun run build
-  #     - name: Build Electron App (Linux)
-  #       run: bun run dist --linux
-  #       env:
-  #         GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-  #     - name: Upload Linux Artifacts
-  #       uses: actions/upload-artifact@v4
-  #       with:
-  #         name: linux-build
-  #         path: |
-  #           release/*.AppImage
-  #         if-no-files-found: warn
-  #         retention-days: 5
+  build-linux:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out Git repository
+        uses: actions/checkout@v4
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v1
+        with:
+          bun-version: latest
+      - name: Install dependencies
+        run: bun install
+      - name: Build Frontend & Main
+        run: bun run build
+      - name: Build Electron App (Linux)
+        run: bun run dist --linux
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Upload Linux Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: linux-build
+          path: |
+            release/*.AppImage
+          if-no-files-found: warn
+          retention-days: 5
 
-  # ============================================
-  # Publish Release with All Artifacts
-  # ============================================
   publish-release:
-    # Run only on tag pushes and skip when running locally with act
     if: ${{ startsWith(github.ref, 'refs/tags/') && github.actor != 'nektos/act' }}
     needs: [build-windows]  # Add build-macos, build-linux when enabled
     runs-on: ubuntu-latest
