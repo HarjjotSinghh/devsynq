@@ -185,7 +185,7 @@ export function DownloadSection() {
                 {/* Linux Coming Soon */}
                 <div data-animate data-animate-order="4" className="bg-card border border-white/10 rounded-2xl p-8 text-center mb-16">
                     <div className="w-14 h-14 mx-auto rounded-xl bg-secondary flex items-center justify-center mb-4">
-                        <LinuxIcon className="w-7 h-7 text-primary" />
+                        <LinuxIcon className="w-7 h-7" />
                     </div>
                     <h3 className="text-xl font-bold mb-2">Linux</h3>
                     <p className="text-[#888] mb-4">

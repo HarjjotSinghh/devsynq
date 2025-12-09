@@ -63,7 +63,7 @@
     align-items: center;
     justify-content: space-between;
     padding: var(--spacing-md) var(--spacing-xl);
-    background: rgba(10, 10, 15, 0.95);
+    background: rgba(0, 0, 0, 0.95);
     border-bottom: 1px solid var(--border-color);
     -webkit-app-region: drag;
     flex-shrink: 0;
@@ -166,7 +166,7 @@
 }
 
 .settings-nav-item.active {
-    background: linear-gradient(135deg, rgba(20, 184, 166, 0.15) 0%, rgba(6, 182, 212, 0.1) 100%);
+    background: linear-gradient(135deg, rgba(93, 233, 182, 0.15) 0%, rgba(127, 255, 212, 0.1) 100%);
     border-color: var(--accent-primary);
 }
 
@@ -185,6 +185,7 @@
 
 .settings-nav-item.active .nav-icon {
     background: var(--accent-gradient);
+    color: black;
 }
 
 .nav-content {
@@ -415,7 +416,7 @@
     background: var(--accent-gradient);
     border: none;
     border-radius: var(--radius-md);
-    color: white;
+    color: black;
     font-size: 14px;
     font-weight: 500;
     cursor: pointer;
@@ -424,7 +425,7 @@
 
 .btn-primary:hover {
     transform: translateY(-2px);
-    box-shadow: 0 4px 16px rgba(106, 255, 210, 0.02);
+    box-shadow: 0 4px 16px rgba(93, 233, 182, 0.05);
 }
 
 /* ========================================
@@ -582,7 +583,7 @@
     gap: var(--spacing-sm);
     padding: 8px 16px;
     background: var(--accent-primary);
-    color: white;
+    color: black;
     border: none;
     border-radius: var(--radius-md);
     font-size: 13px;
@@ -740,7 +741,7 @@
 
 .apikey-btn-save {
     background: var(--accent-primary);
-    color: white;
+    color: black;
 }
 
 .apikey-btn-save:hover {

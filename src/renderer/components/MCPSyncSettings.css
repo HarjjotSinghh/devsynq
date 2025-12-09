@@ -48,7 +48,7 @@
     background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
     border: none;
     border-radius: var(--radius-md);
-    color: white;
+    color: black;
     font-weight: 600;
     cursor: pointer;
     transition: all 0.2s ease;
@@ -57,7 +57,7 @@
 
 .mcp-sync-all-btn:hover:not(:disabled) {
     transform: translateY(-1px);
-    box-shadow: 0 4px 12px hsla(160, 100%, 68%, 0.1);
+    box-shadow: 0 4px 12px rgba(93, 233, 182, 0.2);
 }
 
 .mcp-sync-all-btn:disabled {
@@ -108,7 +108,7 @@
 
 .mcp-tab.active {
     background: var(--accent-primary);
-    color: white;
+    color: black;
 }
 
 /* Sections */
@@ -175,7 +175,7 @@
 .mcp-edit-btn:hover,
 .mcp-refresh-btn:hover {
     background: var(--accent-primary);
-    color: white;
+    color: black;
     border-color: var(--accent-primary);
 }
 
@@ -245,7 +245,7 @@
     font-size: 0.7rem;
     background: var(--accent-gradient);
     border-radius: var(--radius-sm);
-    color: white;
+    color: black;
     font-weight: 600;
 }
 

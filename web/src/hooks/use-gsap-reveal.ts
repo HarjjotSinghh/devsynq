@@ -1,8 +1,8 @@
 'use client';
 
 import { useEffect, useRef } from 'react';
-import gsap from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
+
+type GSAPType = typeof import('gsap')['gsap'];
 
 type SectionRevealOptions = {
   y?: number;
@@ -22,12 +22,36 @@ type SequentialOptions = SectionRevealOptions & {
   gap?: number;
 };
 
-function registerScrollTrigger() {
-  if (typeof window === 'undefined') return;
-  const isRegistered = Boolean((gsap as unknown as { plugins?: Record<string, unknown> }).plugins?.ScrollTrigger);
-  if (!isRegistered) {
-    gsap.registerPlugin(ScrollTrigger);
+let gsapInstance: GSAPType | null = null;
+let gsapPromise: Promise<GSAPType | null> | null = null;
+
+async function loadGsap() {
+  if (typeof window === 'undefined') return null;
+
+  if (gsapInstance) return gsapInstance;
+  if (!gsapPromise) {
+    gsapPromise = (async () => {
+      const gsapModule = await import('gsap');
+      const gsap = (gsapModule.gsap ?? gsapModule.default) as GSAPType;
+      const { ScrollTrigger } = await import('gsap/ScrollTrigger');
+
+      const isRegistered = Boolean(
+        (gsap as unknown as { plugins?: Record<string, unknown> }).plugins?.ScrollTrigger
+      );
+
+      if (!isRegistered) {
+        gsap.registerPlugin(ScrollTrigger);
+      }
+
+      gsapInstance = gsap;
+      return gsapInstance;
+    })().catch((error) => {
+      console.error('Failed to load GSAP', error);
+      return null;
+    });
   }
+
+  return gsapPromise;
 }
 
 export function useSectionReveal(options?: SectionRevealOptions) {
@@ -46,34 +70,42 @@ export function useSectionReveal(options?: SectionRevealOptions) {
     const el = ref.current;
     if (!el) return;
 
-    registerScrollTrigger();
+    let isMounted = true;
+    let ctx: ReturnType<GSAPType['context']> | undefined;
 
-    const ctx = gsap.context(() => {
-      const targets =
-        staggerSelector && el
-          ? gsap.utils.toArray<HTMLElement>(staggerSelector, el)
-          : el;
+    loadGsap().then((gsap) => {
+      if (!isMounted || !gsap || !el) return;
 
-      gsap.fromTo(
-        targets,
-        { autoAlpha: 0, y },
-        {
-          autoAlpha: 1,
-          y: 0,
-          delay,
-          duration: Math.min(duration, 1),
-          ease,
-          stagger: staggerSelector ? stagger ?? 0.08 : undefined,
-          scrollTrigger: {
-            trigger: el,
-            start: 'top 80%',
-            once,
-          },
-        }
-      );
-    }, el);
+      ctx = gsap.context(() => {
+        const targets =
+          staggerSelector && el
+            ? gsap.utils.toArray<HTMLElement>(staggerSelector, el)
+            : el;
 
-    return () => ctx.revert();
+        gsap.fromTo(
+          targets,
+          { autoAlpha: 0, y },
+          {
+            autoAlpha: 1,
+            y: 0,
+            delay,
+            duration: Math.min(duration, 1),
+            ease,
+            stagger: staggerSelector ? stagger ?? 0.08 : undefined,
+            scrollTrigger: {
+              trigger: el,
+              start: 'top 80%',
+              once,
+            },
+          }
+        );
+      }, el);
+    });
+
+    return () => {
+      isMounted = false;
+      ctx?.revert();
+    };
   }, [y, duration, delay, ease, stagger, staggerSelector, once]);
 
   return ref;
@@ -100,52 +132,63 @@ export function useSequentialReveal(options?: SequentialOptions) {
     const el = ref.current;
     if (!el) return;
 
-    registerScrollTrigger();
+    let isMounted = true;
+    let ctx: ReturnType<GSAPType['context']> | undefined;
 
-    const ctx = gsap.context(() => {
-      const rawTargets = staggerSelector
-        ? gsap.utils.toArray<HTMLElement>(staggerSelector, el)
-        : gsap.utils.toArray<HTMLElement>(sequenceSelector, el);
+    loadGsap().then((gsap) => {
+      if (!isMounted || !gsap || !el) return;
 
-      const targets = rawTargets
-        .sort((a, b) => {
-          const aOrder = Number((a.dataset as Record<string, string | undefined>)[orderAttribute] ?? Number.MAX_SAFE_INTEGER);
-          const bOrder = Number((b.dataset as Record<string, string | undefined>)[orderAttribute] ?? Number.MAX_SAFE_INTEGER);
+      ctx = gsap.context(() => {
+        const rawTargets = staggerSelector
+          ? gsap.utils.toArray<HTMLElement>(staggerSelector, el)
+          : gsap.utils.toArray<HTMLElement>(sequenceSelector, el);
+
+        const targets = rawTargets.sort((a, b) => {
+          const aOrder = Number(
+            (a.dataset as Record<string, string | undefined>)[orderAttribute] ?? Number.MAX_SAFE_INTEGER
+          );
+          const bOrder = Number(
+            (b.dataset as Record<string, string | undefined>)[orderAttribute] ?? Number.MAX_SAFE_INTEGER
+          );
           return aOrder - bOrder;
         });
 
-      const tl = gsap.timeline({
-        scrollTrigger: {
-          trigger: el,
-          start: 'top 80%',
-          once,
-        },
-        delay,
-      });
-
-      tl.from(el, {
-        autoAlpha: 0,
-        y,
-        duration: Math.min(duration, 1),
-        ease,
-      });
-
-      if (targets.length) {
-        tl.from(
-          targets,
-          {
-            autoAlpha: 0,
-            y: itemY,
-            duration: Math.min(itemDuration, 1),
-            ease,
-            stagger: gap,
+        const tl = gsap.timeline({
+          scrollTrigger: {
+            trigger: el,
+            start: 'top 80%',
+            once,
           },
-          '-=40%'
-        );
-      }
-    }, el);
+          delay,
+        });
 
-    return () => ctx.revert();
+        tl.from(el, {
+          autoAlpha: 0,
+          y,
+          duration: Math.min(duration, 1),
+          ease,
+        });
+
+        if (targets.length) {
+          tl.from(
+            targets,
+            {
+              autoAlpha: 0,
+              y: itemY,
+              duration: Math.min(itemDuration, 1),
+              ease,
+              stagger: gap,
+            },
+            '-=40%'
+          );
+        }
+      }, el);
+    });
+
+    return () => {
+      isMounted = false;
+      ctx?.revert();
+    };
   }, [y, duration, delay, ease, staggerSelector, once, sequenceSelector, orderAttribute, itemY, itemDuration, gap]);
 
   return ref;

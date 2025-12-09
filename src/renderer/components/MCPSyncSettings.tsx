@@ -64,9 +64,9 @@ export const MCPSyncSettings: React.FC<Props> = ({ onToast }) => {
             await loadData();
 
             if (result.success.length > 0) {
-                onToast(<><Icon name="checkCircle" size={14} color="white" /> Synced to {result.success.join(', ')}</>);
+                onToast(<><Icon name="checkCircle" size={14} color="black" /> Synced to {result.success.join(', ')}</>);
             } else if (result.failed.length > 0) {
-                onToast(<><Icon name="xCircle" size={14} color="white" /> Failed: {result.failed[0]?.error ?? 'Unknown error'}</>);
+                onToast(<><Icon name="xCircle" size={14} color="black" /> Failed: {result.failed[0]?.error ?? 'Unknown error'}</>);
             }
         } catch (error) {
             console.error('Sync failed:', error);
@@ -85,10 +85,10 @@ export const MCPSyncSettings: React.FC<Props> = ({ onToast }) => {
             await loadData();
 
             if (result.success.length > 0) {
-                onToast(<><Icon name="checkCircle" size={14} color="white" /> Synced to {result.success.length} IDE(s)</>);
+                onToast(<><Icon name="checkCircle" size={14} color="black" /> Synced to {result.success.length} IDE(s)</>);
             }
             if (result.failed.length > 0) {
-                onToast(<><Icon name="alert" size={14} color="white" /> {result.failed.length} failed</>);
+                onToast(<><Icon name="alert" size={14} color="black" /> {result.failed.length} failed</>);
             }
         } catch (error) {
             console.error('Sync all failed:', error);
@@ -103,10 +103,10 @@ export const MCPSyncSettings: React.FC<Props> = ({ onToast }) => {
         try {
             const result = await window.electronAPI.importMCPFromIDE(ideId);
             if (result.success) {
-                onToast(<><Icon name="checkCircle" size={14} color="white" /> Imported config from {ideId}</>);
+                onToast(<><Icon name="checkCircle" size={14} color="black" /> Imported config from {ideId}</>);
                 await loadData();
             } else {
-                onToast(<><Icon name="xCircle" size={14} color="white" /> Import failed: {result.error}</>);
+                onToast(<><Icon name="xCircle" size={14} color="black" /> Import failed: {result.error}</>);
             }
         } catch (error: any) {
             console.error('Import failed:', error);
@@ -228,7 +228,7 @@ export const MCPSyncSettings: React.FC<Props> = ({ onToast }) => {
                         </>
                     ) : (
                         <>
-                            <Icon name="sync" size={16} color="white" /> Sync All
+                            <Icon name="sync" size={16} color="black" /> Sync All
                         </>
                     )}
                 </button>
@@ -257,7 +257,7 @@ export const MCPSyncSettings: React.FC<Props> = ({ onToast }) => {
                         <div className="section-header">
                             <h4><Icon name="window" /> Master Configuration</h4>
                             <button className="mcp-edit-btn" onClick={handleOpenMasterConfig}>
-                                <Icon name="launch" size={16} color="white" /> Edit in Editor
+                                <Icon name="launch" size={16} /> Edit in Editor
                             </button>
                         </div>
                         <div className="master-config-info">
@@ -317,7 +317,7 @@ export const MCPSyncSettings: React.FC<Props> = ({ onToast }) => {
                                             disabled={!ide.enabled || !ide.isInstalled || syncing}
                                             title="Sync Now"
                                         >
-                                            <Icon name="sync" size={14} color="white" />
+                                            <Icon name="sync" size={14} />
                                         </button>
                                         <button
                                             className="ide-action-btn"
@@ -325,7 +325,7 @@ export const MCPSyncSettings: React.FC<Props> = ({ onToast }) => {
                                             disabled={!ide.isInstalled}
                                             title="Import from IDE"
                                         >
-                                            <Icon name="download" size={14} color="white" />
+                                            <Icon name="download" size={14} />
                                         </button>
                                         <button
                                             className="ide-action-btn"
@@ -333,7 +333,7 @@ export const MCPSyncSettings: React.FC<Props> = ({ onToast }) => {
                                             disabled={!ide.isInstalled}
                                             title={ide.hasOverride ? 'Remove Override' : 'Create Override'}
                                         >
-                                            {ide.hasOverride ? <Icon name="delete" size={14} color="white" /> : <Icon name="launch" size={14} color="white" />}
+                                            {ide.hasOverride ? <Icon name="delete" size={14} /> : <Icon name="launch" size={14} />}
                                         </button>
                                     </div>
                                 </div>
@@ -343,7 +343,7 @@ export const MCPSyncSettings: React.FC<Props> = ({ onToast }) => {
 
                     {/* Sync Options */}
                     <div className="mcp-section mcp-options">
-                        <h4><Icon name="settings" size={16} color="white" /> Sync Options</h4>
+                        <h4><Icon name="settings" size={16} /> Sync Options</h4>
                         <div className="mcp-option-list">
                             <label className="mcp-option">
                                 <input
@@ -402,9 +402,9 @@ export const MCPSyncSettings: React.FC<Props> = ({ onToast }) => {
                 /* Sync Log Tab */
                 <div className="mcp-section mcp-log">
                     <div className="section-header">
-                        <h4><Icon name="fileText" size={16} color="white" /> Sync History</h4>
+                        <h4><Icon name="fileText" size={16} /> Sync History</h4>
                         <button className="mcp-refresh-btn" onClick={loadSyncLog}>
-                            <Icon name="refresh" size={14} color="white" /> Refresh
+                            <Icon name="refresh" size={14} /> Refresh
                         </button>
                     </div>
                     <div className="sync-log-list">

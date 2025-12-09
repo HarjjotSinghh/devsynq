@@ -150,7 +150,7 @@ const IDEs: IDE[] = [
     ],
     linuxPaths: ["/usr/local/bin/cursor", "/usr/bin/cursor", "$HOME/.local/bin/cursor"],
     downloadUrl: "https://cursor.sh/",
-    color: "#7c3aed",
+    color: "#fff1bb",
   },
   {
     name: IDEType.Windsurf,

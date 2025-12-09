@@ -9,15 +9,16 @@
     padding-top: 60px;
     background: transparent;
     font-family: 'Manrope', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    z-index: 9999;
 }
 
 .command-palette-container {
     width: 100%;
     max-width: 620px;
-    background: linear-gradient(145deg, rgba(7, 16, 20, 0.95), rgba(10, 24, 28, 0.95));
-    border: 1px solid rgba(15, 181, 166, 0.035);
-    border-radius: 16px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.035);
+    background: rgba(5, 5, 5, 0.95);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-lg), var(--shadow-glow);
     overflow: hidden;
     backdrop-filter: blur(14px);
     animation: slideIn 0.15s ease-out;
@@ -41,29 +42,29 @@
     align-items: center;
     gap: 12px;
     padding: 16px 20px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    border-bottom: 1px solid var(--border-color);
     background: rgba(255, 255, 255, 0.02);
 }
 
 .search-icon {
     font-size: 18px;
     opacity: 0.6;
-    color: white;
+    color: var(--text-muted);
 }
 
 .search-input {
     flex: 1;
     background: transparent;
     border: none;
-    color: #e8f3f4;
+    color: var(--text-primary);
     font-size: 16px;
     font-weight: 400;
     outline: none;
-    caret-color: #0fb5a6;
+    caret-color: var(--accent-primary);
 }
 
 .search-input::placeholder {
-    color: rgba(255, 255, 255, 0.35);
+    color: var(--text-muted);
 }
 
 .search-shortcut {
@@ -71,7 +72,7 @@
     align-items: center;
     gap: 6px;
     font-size: 11px;
-    color: rgba(255, 255, 255, 0.4);
+    color: var(--text-muted);
 }
 
 .search-shortcut kbd {
@@ -81,13 +82,13 @@
     min-width: 20px;
     height: 20px;
     padding: 0 5px;
-    background: rgba(255, 255, 255, 0.08);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border-color);
     border-radius: 4px;
     font-family: inherit;
     font-size: 10px;
     font-weight: 500;
-    color: rgba(255, 255, 255, 0.6);
+    color: var(--text-secondary);
 }
 
 /* Command List */
@@ -106,12 +107,12 @@
 }
 
 .command-list::-webkit-scrollbar-thumb {
-    background: rgba(255, 255, 255, 0.1);
+    background: var(--border-color);
     border-radius: 3px;
 }
 
 .command-list::-webkit-scrollbar-thumb:hover {
-    background: rgba(255, 255, 255, 0.2);
+    background: var(--text-muted);
 }
 
 /* Command Item */
@@ -126,11 +127,14 @@
 
 .command-item:hover,
 .command-item.selected {
-    background: rgba(15, 181, 166, 0.1);
+    background: var(--bg-tertiary);
 }
 
 .command-item.selected {
-    background: rgba(15, 181, 166, 0.18);
+    background: var(--bg-card-hover);
+    border-left: 2px solid var(--accent-primary);
+    padding-left: 18px;
+    /* Compensate for border */
 }
 
 .item-icon {
@@ -139,11 +143,18 @@
     justify-content: center;
     width: 40px;
     height: 40px;
-    background: rgba(15, 181, 166, 0.08);
-    border-radius: 10px;
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    /* Slightly sharper */
     font-size: 18px;
     flex-shrink: 0;
-    color: white;
+    color: var(--text-secondary);
+}
+
+.command-item.selected .item-icon {
+    color: var(--accent-primary);
+    border-color: var(--accent-primary);
 }
 
 .item-content {
@@ -154,7 +165,7 @@
 .item-title {
     font-size: 14px;
     font-weight: 600;
-    color: #e8f3f4;
+    color: var(--text-primary);
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -162,7 +173,7 @@
 
 .item-subtitle {
     font-size: 12px;
-    color: rgba(232, 243, 244, 0.65);
+    color: var(--text-muted);
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -180,23 +191,27 @@
 }
 
 .item-type.type-running {
-    background: rgba(34, 197, 94, 0.2);
-    color: #22c55e;
+    background: rgba(34, 197, 94, 0.1);
+    color: var(--success);
+    border: 1px solid rgba(34, 197, 94, 0.2);
 }
 
 .item-type.type-project {
-    background: rgba(15, 181, 166, 0.14);
-    color: #0fb5a6;
+    background: rgba(93, 233, 182, 0.1);
+    color: var(--accent-primary);
+    border: 1px solid rgba(93, 233, 182, 0.2);
 }
 
 .item-type.type-ide {
-    background: rgba(15, 181, 166, 0.14);
-    color: #0fb5a6;
+    background: rgba(93, 233, 182, 0.1);
+    color: var(--accent-primary);
+    border: 1px solid rgba(93, 233, 182, 0.2);
 }
 
 .item-type.type-action {
-    background: rgba(251, 146, 60, 0.2);
-    color: #fb923c;
+    background: rgba(245, 158, 11, 0.1);
+    color: var(--warning);
+    border: 1px solid rgba(245, 158, 11, 0.2);
 }
 
 /* Loading State */
@@ -206,15 +221,15 @@
     justify-content: center;
     gap: 12px;
     padding: 60px 20px;
-    color: rgba(255, 255, 255, 0.5);
+    color: var(--text-muted);
     font-size: 14px;
 }
 
 .loading-spinner {
     width: 20px;
     height: 20px;
-    border: 2px solid rgba(15, 181, 166, 0.25);
-    border-top-color: #0fb5a6;
+    border: 2px solid var(--border-color);
+    border-top-color: var(--accent-primary);
     border-radius: 50%;
     animation: spin 0.8s linear infinite;
 }
@@ -233,14 +248,14 @@
     justify-content: center;
     gap: 8px;
     padding: 60px 20px;
-    color: rgba(255, 255, 255, 0.4);
+    color: var(--text-muted);
     font-size: 14px;
 }
 
 .empty-icon {
     font-size: 32px;
     opacity: 0.5;
-    color: white;
+    color: var(--text-muted);
 }
 
 /* Footer */
@@ -249,13 +264,13 @@
     align-items: center;
     justify-content: center;
     padding: 12px 20px;
-    border-top: 1px solid rgba(255, 255, 255, 0.06);
-    background: rgba(0, 0, 0, 0.2);
+    border-top: 1px solid var(--border-color);
+    background: rgba(255, 255, 255, 0.02);
 }
 
 .footer-tip {
     font-size: 11px;
-    color: rgba(255, 255, 255, 0.35);
+    color: var(--text-muted);
     display: flex;
     align-items: center;
     gap: 6px;
@@ -266,11 +281,11 @@
     align-items: center;
     justify-content: center;
     padding: 2px 6px;
-    background: rgba(255, 255, 255, 0.06);
-    border: 1px solid rgba(255, 255, 255, 0.08);
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border-color);
     border-radius: 4px;
     font-family: inherit;
     font-size: 10px;
     font-weight: 500;
-    color: rgba(255, 255, 255, 0.5);
+    color: var(--text-secondary);
 }

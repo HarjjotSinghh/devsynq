@@ -21,7 +21,7 @@ const IDE_PATTERNS: IDEProcessPattern[] = [
   {
     name: IDEType.Cursor,
     icon: "⚡",
-    color: "#7c3aed",
+    color: "#fff1bb",
     winPatterns: ["Cursor.exe"],
     macPatterns: ["Cursor"],
     linuxPatterns: ["cursor"],

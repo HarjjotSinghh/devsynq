@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { RunningIDE, ProcessStats } from '../../types';
 import { ResourceUsage } from '../types.d';
-import { Icon } from './Icons';
+import { Icon, IdeIcon } from './Icons';
 
 interface ProcessManagerProps {
     onClose?: () => void;
@@ -183,7 +183,9 @@ function ProcessManager({ onClose }: ProcessManagerProps) {
                             style={{ '--accent-color': ide.color } as React.CSSProperties}
                         >
                             <div className="pm-process-icon">
-                                <span className="pm-ide-icon">{ide.icon}</span>
+                                <span className="pm-ide-icon">
+                                    <IdeIcon ide={ide.name} size={24} />
+                                </span>
                                 <span className="pm-status-dot"></span>
                             </div>
                             <div className="pm-process-info">
