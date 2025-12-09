@@ -120,8 +120,8 @@ jobs:
   # Publish Release with All Artifacts
   # ============================================
   publish-release:
-    # Skip when running locally with act (github.actor defaults to nektos/act)
-    if: ${{ github.actor != 'nektos/act' }}
+    # Run only on tag pushes and skip when running locally with act
+    if: ${{ startsWith(github.ref, 'refs/tags/') && github.actor != 'nektos/act' }}
     needs: [build-windows]  # Add build-macos, build-linux when enabled
     runs-on: ubuntu-latest
     
