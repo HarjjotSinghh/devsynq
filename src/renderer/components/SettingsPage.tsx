@@ -1,6 +1,7 @@
 import React from 'react';
 import { Settings, IDEType, IDE } from '../../types';
 import { MCPSyncSettings } from './MCPSyncSettings';
+import { ProfileSyncSettings } from './ProfileSyncSettings';
 import ProcessManager from './ProcessManager';
 import APIKeysManager from './APIKeysManager';
 import { Icon, IdeIcon } from './Icons';
@@ -18,7 +19,7 @@ interface SettingsPageProps {
     resolveShortcutIDE: (index: number) => IDEType | undefined;
 }
 
-type TabId = 'general' | 'shortcuts' | 'mcp' | 'processes' | 'apikeys';
+type TabId = 'general' | 'shortcuts' | 'mcp' | 'profile' | 'processes' | 'apikeys';
 
 interface Tab {
     id: TabId;
@@ -31,6 +32,7 @@ const TABS: Tab[] = [
     { id: 'general', label: 'General', icon: <Icon name="settings" />, description: 'App preferences and defaults' },
     { id: 'shortcuts', label: 'Shortcuts', icon: <Icon name="keyboard" />, description: 'Configure keyboard bindings' },
     { id: 'mcp', label: 'MCP Sync', icon: <Icon name="sync" />, description: 'Model Context Protocol configuration' },
+    { id: 'profile', label: 'Profile Sync', icon: <Icon name="profile" />, description: 'Sync .code-profile across IDEs' },
     { id: 'processes', label: 'Processes', icon: <Icon name="project" />, description: 'Running IDE management' },
     { id: 'apikeys', label: 'API Keys', icon: <Icon name="theme" />, description: 'API key storage and sync' },
 ];
@@ -259,6 +261,16 @@ function SettingsPage({
                                 <p>Manage Model Context Protocol servers across all your IDEs</p>
                             </div>
                             <MCPSyncSettings onToast={onToast} />
+                        </div>
+                    )}
+
+                    {activeTab === 'profile' && (
+                        <div key="profile" className="settings-panel page-transition-enter">
+                            <div className="panel-header">
+                                <h2>Profile Sync</h2>
+                                <p>Sync your .code-profile to each configured IDE</p>
+                            </div>
+                            <ProfileSyncSettings onToast={onToast} />
                         </div>
                     )}
 

@@ -1,4 +1,4 @@
-import { IDE, Project, Settings, MCPSyncStatus, SyncSettings, SyncResult, RunningIDE, ProcessStats, APIKeys, APIKeysSettings } from '../types';
+import { IDE, Project, Settings, MCPSyncStatus, SyncSettings, SyncResult, RunningIDE, ProcessStats, APIKeys, APIKeysSettings, ProfileSyncResult, ProfileSyncSettings, ProfileSyncStatus } from '../types';
 
 export interface SyncLogEntry {
     timestamp: number;
@@ -97,6 +97,16 @@ export interface ElectronAPI {
 
     // Get sync log
     getMCPSyncLog: () => Promise<SyncLogEntry[]>;
+
+    // ============================================================================
+    // Profile Sync APIs
+    // ============================================================================
+    getProfileSyncStatus: () => Promise<ProfileSyncStatus[]>;
+    getProfileSyncSettings: () => Promise<ProfileSyncSettings>;
+    saveProfileSyncSettings: (settings: ProfileSyncSettings) => Promise<{ success: boolean }>;
+    toggleProfileIDESync: (ideId: string, enabled: boolean) => Promise<ProfileSyncSettings>;
+    syncProfiles: (ideIds?: string[]) => Promise<ProfileSyncResult>;
+    openProfileMaster: () => Promise<{ success: boolean }>;
 
     // ============================================================================
     // Process Management APIs

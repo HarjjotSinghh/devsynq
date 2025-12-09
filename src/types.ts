@@ -79,6 +79,30 @@ export interface SyncResult {
   skipped: string[];
 }
 
+// Profile Sync Types
+export interface ProfileSyncStatus {
+  ideId: string;
+  name: string;
+  path: string;
+  enabled: boolean;
+  isInstalled: boolean;
+  lastSynced?: number;
+  status: "synced" | "pending" | "not-installed";
+}
+
+export interface ProfileSyncSettings {
+  enabledIDEs: Record<string, boolean>;
+  autoSyncOnLaunch: boolean;
+  lastSynced?: Record<string, number>;
+  lastGlobalSync?: number;
+}
+
+export interface ProfileSyncResult {
+  success: string[];
+  failed: Array<{ ide: string; error: string }>;
+  skipped: string[];
+}
+
 // ============================================================================
 // Process Management Types
 // ============================================================================

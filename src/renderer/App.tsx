@@ -18,13 +18,16 @@ const App: React.FC = () => {
     const [settings, setSettings] = useState<Settings>(SETTINGS_DEFAULTS);
     const [projectSearchTerm, setProjectSearchTerm] = useState('');
     const [activeView, setActiveView] = useState<'home' | 'settings'>('home');
-    const [settingsTab, setSettingsTab] = useState<'general' | 'mcp' | 'processes' | 'apikeys' | 'shortcuts'>('general');
+    const [settingsTab, setSettingsTab] = useState<'general' | 'mcp' | 'processes' | 'apikeys' | 'shortcuts' | 'profile'>('general');
     const [isLoadingIDEs, setIsLoadingIDEs] = useState(true);
     const [isRefreshing, setIsRefreshing] = useState(false);
     const [toastMessage, setToastMessage] = useState<React.ReactNode | null>(null);
     const [mcpSyncCount, setMcpSyncCount] = useState<number>(0);
     const [isSyncingMCP, setIsSyncingMCP] = useState(false);
     const [lastMcpSync, setLastMcpSync] = useState<number | null>(null);
+    const [profileSyncCount, setProfileSyncCount] = useState<number>(0);
+    const [isSyncingProfile, setIsSyncingProfile] = useState(false);
+    const [lastProfileSync, setLastProfileSync] = useState<number | null>(null);
 
     // Master Directory Scan State
     const [foundProjects, setFoundProjects] = useState<{ name: string, path: string }[]>([]);
@@ -63,6 +66,8 @@ const App: React.FC = () => {
 
             // Load MCP sync status
             await loadMCPStatus();
+            // Load profile sync status
+            await loadProfileStatus();
 
             // Listen for settings shortcut from main process
             window.electronAPI.onShowSettings(() => {
@@ -92,6 +97,22 @@ const App: React.FC = () => {
         }
     };
 
+    const loadProfileStatus = async () => {
+        try {
+            const [status, syncSettings] = await Promise.all([
+                window.electronAPI.getProfileSyncStatus(),
+                window.electronAPI.getProfileSyncSettings(),
+            ]);
+            const enabledCount = status.filter(s => s.enabled && s.isInstalled).length;
+            setProfileSyncCount(enabledCount);
+            if (syncSettings.lastGlobalSync) {
+                setLastProfileSync(syncSettings.lastGlobalSync);
+            }
+        } catch (error) {
+            console.error('Failed to load profile sync status:', error);
+        }
+    };
+
     // --- Quick MCP Sync ---
     const handleQuickMCPSync = async () => {
         setIsSyncingMCP(true);
@@ -113,6 +134,30 @@ const App: React.FC = () => {
             showToast(<><Icon name="xCircle" size={16} /> MCP sync failed</>);
         } finally {
             setIsSyncingMCP(false);
+        }
+    };
+
+    // --- Quick Profile Sync ---
+    const handleQuickProfileSync = async () => {
+        setIsSyncingProfile(true);
+        try {
+            const result = await window.electronAPI.syncProfiles();
+            await loadProfileStatus();
+
+            if (result.success.length > 0) {
+                showToast(<><Icon name="checkCircle" size={16} /> Synced profile to {result.success.length} IDE(s)</>);
+            }
+            if (result.failed.length > 0) {
+                showToast(<><Icon name="alert" size={16} /> {result.failed.length} failed to sync</>);
+            }
+            if (result.success.length === 0 && result.failed.length === 0) {
+                showToast('No IDEs enabled for profile sync');
+            }
+        } catch (error) {
+            console.error('Profile sync failed:', error);
+            showToast(<><Icon name="xCircle" size={16} /> Profile sync failed</>);
+        } finally {
+            setIsSyncingProfile(false);
         }
     };
 
@@ -491,6 +536,59 @@ const App: React.FC = () => {
                                 className="mcp-sync-btn secondary"
                                 onClick={() => {
                                     setSettingsTab('mcp');
+                                    setActiveView('settings');
+                                }}
+                            >
+                                <Icon name="settings" size={16} />
+                                Configure
+                            </button>
+                        </div>
+                    </div>
+                </section>
+
+                {/* Profile Sync CTA Section */}
+                <section className="mcp-sync-cta">
+                    <div className="mcp-cta-content">
+                        <div className="mcp-cta-info">
+                            <div className="mcp-cta-icon">
+                                <Icon name="profile" />
+                            </div>
+                            <div className="mcp-cta-text">
+                                <h3>Profile Sync (.code-profile)</h3>
+                                <p>
+                                    {profileSyncCount > 0
+                                        ? `Sync your profile to ${profileSyncCount} configured IDE${profileSyncCount !== 1 ? 's' : ''}`
+                                        : 'Sync your .code-profile across all configured IDEs'}
+                                </p>
+                                {lastProfileSync && (
+                                    <span className="mcp-last-sync">
+                                        Last synced: {formatRelativeTime(lastProfileSync)}
+                                    </span>
+                                )}
+                            </div>
+                        </div>
+                        <div className="mcp-cta-actions">
+                            <button
+                                className="mcp-sync-btn primary"
+                                onClick={handleQuickProfileSync}
+                                disabled={isSyncingProfile}
+                            >
+                                {isSyncingProfile ? (
+                                    <>
+                                        <span className="btn-spinner"></span>
+                                        Syncing...
+                                    </>
+                                ) : (
+                                    <>
+                                        <Icon name="sync" size={16} />
+                                        Sync All Now
+                                    </>
+                                )}
+                            </button>
+                            <button
+                                className="mcp-sync-btn secondary"
+                                onClick={() => {
+                                    setSettingsTab('profile');
                                     setActiveView('settings');
                                 }}
                             >

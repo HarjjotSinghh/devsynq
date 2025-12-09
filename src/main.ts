@@ -58,6 +58,14 @@ import {
   maskAPIKey,
   validateAPIKey,
 } from "./lib/api-keys-sync";
+import {
+  getProfileSyncStatus as getProfileSyncStatusLib,
+  loadProfileSyncSettings,
+  saveProfileSyncSettings,
+  toggleProfileIDESync,
+  syncProfiles,
+  getMasterProfilePath,
+} from "./lib/profile-sync";
 
 // Helper to expand paths with environment variables
 function expandPath(pathStr: string): string {
@@ -648,6 +656,29 @@ ipcMain.handle(
       // Don't block IDE launch if sync fails
     }
 
+    // Auto-sync Profile before launching if enabled
+    try {
+      const profileSettings = loadProfileSyncSettings();
+      if (profileSettings.autoSyncOnLaunch) {
+        const profileIdeMap: Record<string, string> = {
+          Cursor: "cursor",
+          Windsurf: "windsurf",
+          "VS Code": "vscode",
+          WebStorm: "webstorm",
+          "IntelliJ IDEA": "intellij",
+          PyCharm: "pycharm",
+        };
+        const ideId = profileIdeMap[ideName];
+        if (ideId && profileSettings.enabledIDEs[ideId]) {
+          await syncProfiles([ideId]);
+          console.log(`Auto-synced profile for ${ideName}`);
+        }
+      }
+    } catch (error) {
+      console.error("Profile auto-sync failed:", error);
+      // Don't block IDE launch if sync fails
+    }
+
     // Update project lastOpened if projectPath is provided
     if (projectPath) {
       const projects = loadProjects();
@@ -857,6 +888,37 @@ ipcMain.handle("get-mcp-sync-log", () => {
 });
 
 // ============================================================================
+// Profile Sync IPC Handlers
+// ============================================================================
+
+ipcMain.handle("get-profile-sync-status", () => {
+  return getProfileSyncStatusLib();
+});
+
+ipcMain.handle("get-profile-sync-settings", () => {
+  return loadProfileSyncSettings();
+});
+
+ipcMain.handle("save-profile-sync-settings", (_event: unknown, settings: any) => {
+  saveProfileSyncSettings(settings);
+  return { success: true };
+});
+
+ipcMain.handle("toggle-profile-ide-sync", (_event: unknown, ideId: string, enabled: boolean) => {
+  return toggleProfileIDESync(ideId, enabled);
+});
+
+ipcMain.handle("sync-profiles", async (_event: unknown, ideIds?: string[]) => {
+  return await syncProfiles(ideIds);
+});
+
+ipcMain.handle("open-profile-master", async () => {
+  const masterPath = getMasterProfilePath();
+  await shell.openPath(masterPath);
+  return { success: true };
+});
+
+// ============================================================================
 // Process Management IPC Handlers
 // ============================================================================
 
@@ -1062,6 +1124,18 @@ ipcMain.handle("get-command-palette-data", async () => {
 app.whenReady().then(() => {
   createWindow();
   getIDEsWithStatus(true);
+
+  // Auto-sync profile on app launch if enabled
+  try {
+    const profileSettings = loadProfileSyncSettings();
+    if (profileSettings.autoSyncOnLaunch) {
+      syncProfiles().catch((err) =>
+        console.error("Profile sync on launch failed:", err)
+      );
+    }
+  } catch (error) {
+    console.error("Failed to load profile sync settings:", error);
+  }
 
   // Register global shortcut for command palette
   // Using Alt+Shift+Space to avoid conflicts with other apps like Raycast

@@ -76,7 +76,8 @@ type IconName =
     | 'lightbulb'
     | 'key'
     | 'edit'
-    | 'folder';
+    | 'folder'
+    | 'profile';
 
 interface IconProps {
     name: IconName;
@@ -123,6 +124,7 @@ const iconMap: Record<IconName, LucideIcon> = {
     key: Key,
     edit: Edit2,
     folder: Folder,
+    profile: FileText,
 };
 
 export const Icon: React.FC<IconProps> = ({

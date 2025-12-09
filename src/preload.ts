@@ -81,6 +81,21 @@ contextBridge.exposeInMainWorld("electronAPI", {
         ipcRenderer.invoke("get-mcp-sync-log"),
 
     // ============================================================================
+    // Profile Sync APIs
+    // ============================================================================
+
+    getProfileSyncStatus: () => ipcRenderer.invoke("get-profile-sync-status"),
+    getProfileSyncSettings: () => ipcRenderer.invoke("get-profile-sync-settings"),
+    saveProfileSyncSettings: (settings: any) =>
+        ipcRenderer.invoke("save-profile-sync-settings", settings),
+    toggleProfileIDESync: (ideId: string, enabled: boolean) =>
+        ipcRenderer.invoke("toggle-profile-ide-sync", ideId, enabled),
+    syncProfiles: (ideIds?: string[]) =>
+        ipcRenderer.invoke("sync-profiles", ideIds),
+    openProfileMaster: () =>
+        ipcRenderer.invoke("open-profile-master"),
+
+    // ============================================================================
     // Process Management APIs
     // ============================================================================
 
