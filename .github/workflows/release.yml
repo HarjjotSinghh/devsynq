@@ -4,6 +4,8 @@ on:
   push:
     tags:
       - 'v*'
+    branches:
+      - 'prod'
   # Allow manual trigger for testing
   workflow_dispatch:
 
