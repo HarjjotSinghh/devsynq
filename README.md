@@ -1,4 +1,4 @@
-![DevSynq Banner](assets/branding/github-banner_2x.png)
+![DevSynq Banner](assets/branding/twitter%20header.png)
 
 # DevSynq - AI IDE Launcher
 
