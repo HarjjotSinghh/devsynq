@@ -82,10 +82,10 @@ export default function RootLayout({
       <head>
         <link rel="icon" href="/favicon.ico" sizes="any" />
         <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
-        <meta name="theme-color" content="#0a0a0a" />
+        <meta name="theme-color" content="#000000" />
       </head>
       <body
-        className={`${manrope.variable} ${jetbrains.variable} antialiased bg-[#0a0a0f] text-white min-h-screen`}
+        className={`${manrope.variable} ${jetbrains.variable} antialiased bg-background text-foreground min-h-screen`}
       >
         <PostHogProvider>
           {children}

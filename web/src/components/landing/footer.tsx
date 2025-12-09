@@ -26,8 +26,8 @@ const companyLinks = [
 export function Footer() {
     const footerRef = useSequentialReveal({ y: 18, itemDuration: 0.45, gap: 0.08 });
     return (
-        <footer ref={footerRef} className="relative isolate -mt-px py-16 px-6 border-t border-border bg-linear-to-b from-[#05060c] via-[#05070d] to-[#020308] overflow-y-hidden">
-            <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(34,197,235,0.1),transparent_45%),radial-gradient(circle_at_80%_0%,rgba(90,230,187,0.08),transparent_40%)]" />
+        <footer ref={footerRef} className="relative isolate -mt-px py-16 px-6 border-t border-border bg-background overflow-y-hidden">
+            <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(93,233,182,0.05),transparent_45%),radial-gradient(circle_at_80%_0%,rgba(93,233,182,0.05),transparent_40%)]" />
             <div className="absolute inset-x-12 top-10 h-16 rounded-[32px] border border-white/5 bg-white/5 blur-3xl" />
 
             <div className="relative max-w-7xl mx-auto">
@@ -35,8 +35,8 @@ export function Footer() {
                     {/* Logo & Description */}
                     <div data-animate data-animate-order="1" className="col-span-2 md:col-span-1">
                         <Link href="/" className="flex items-center gap-2 mb-4">
-                            <div className="w-8 h-8 rounded-xl bg-linear-to-br from-primary to-cyan-500 flex items-center justify-center shadow shadow-primary/10">
-                                <span className="text-[#022c22] font-black text-sm">D</span>
+                            <div className="w-8 h-8 rounded-xl bg-primary flex items-center justify-center shadow shadow-primary/10">
+                                <span className="text-primary-foreground font-black text-sm">D</span>
                             </div>
                             <span className="font-black text-xl tracking-tight text-foreground">DevSynq</span>
                         </Link>
@@ -126,8 +126,11 @@ export function Footer() {
                         © {new Date().getFullYear()} DevSynq. Open source under MIT License.
                     </p>
                     <p className="text-sm text-muted-foreground flex items-center gap-1">
-                        Made with <Heart className="w-4 h-4 text-destructive" /> for AI
-                        developers
+                        Made with <Heart className="w-4 h-4 text-primary" /> for AI
+                        developers by{' '}
+                        <Link href="https://github.com/HarjjotSinghh" target="_blank" rel="noopener noreferrer" className="text-primary hover:text-primary/80 transition-colors">
+                            this guy
+                        </Link>
                     </p>
                 </div>
             </div>

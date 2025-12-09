@@ -23,9 +23,9 @@ export function ChangelogContent({ changelog }: ChangelogContentProps) {
   return (
     <main
       ref={pageRef}
-      className="relative isolate min-h-screen overflow-hidden bg-linear-to-b from-[#03040a] via-[#04060c] to-[#010206]"
+      className="relative isolate min-h-screen overflow-hidden bg-background"
     >
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(90,230,187,0.12),transparent_40%),radial-gradient(circle_at_80%_0%,rgba(34,197,235,0.12),transparent_40%)]" />
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(93,233,182,0.05),transparent_40%),radial-gradient(circle_at_80%_0%,rgba(93,233,182,0.05),transparent_40%)]" />
       <div className="absolute inset-x-16 top-16 h-24 rounded-[32px] border border-white/5 bg-white/5 blur-3xl" />
 
       <div className="relative z-10">
@@ -52,16 +52,15 @@ export function ChangelogContent({ changelog }: ChangelogContentProps) {
                   className="relative pl-8 border-l-2 border-white/10"
                 >
                   <div
-                    className={`absolute -left-[9px] top-0 w-4 h-4 rounded-full ${
-                      index === 0 ? 'bg-[#00d9ff] ring-4 ring-[#00d9ff]/20' : 'bg-[#333]'
-                    }`}
+                    className={`absolute -left-[9px] top-0 w-4 h-4 rounded-full ${index === 0 ? 'bg-primary ring-4 ring-primary/20' : 'bg-muted-foreground/30'
+                      }`}
                   />
 
                   <div className="mb-6">
                     <div className="flex items-center gap-3 mb-2">
                       <span className="font-mono text-2xl font-bold">v{release.version}</span>
                       {index === 0 && (
-                        <span className="px-2 py-0.5 bg-[#00ff88]/20 text-[#00ff88] text-xs rounded font-semibold">
+                        <span className="px-2 py-0.5 bg-primary/20 text-primary text-xs rounded font-semibold">
                           Latest
                         </span>
                       )}
@@ -72,13 +71,13 @@ export function ChangelogContent({ changelog }: ChangelogContentProps) {
 
                   {release.added.length > 0 && (
                     <div className="mb-6">
-                      <h3 className="flex items-center gap-2 text-[#00ff88] font-semibold mb-3">
+                      <h3 className="flex items-center gap-2 text-primary font-semibold mb-3">
                         <span>✨</span> Added
                       </h3>
                       <ul className="space-y-2">
                         {release.added.map((item, i) => (
-                          <li key={i} className="text-[#ccc] flex items-start gap-2">
-                            <span className="text-[#00ff88] mt-1">•</span>
+                          <li key={i} className="text-muted-foreground flex items-start gap-2">
+                            <span className="text-primary mt-1">•</span>
                             {item}
                           </li>
                         ))}
@@ -88,13 +87,13 @@ export function ChangelogContent({ changelog }: ChangelogContentProps) {
 
                   {release.fixed.length > 0 && (
                     <div className="mb-6">
-                      <h3 className="flex items-center gap-2 text-[#00d9ff] font-semibold mb-3">
+                      <h3 className="flex items-center gap-2 text-primary font-semibold mb-3">
                         <span>🐛</span> Fixed
                       </h3>
                       <ul className="space-y-2">
                         {release.fixed.map((item, i) => (
-                          <li key={i} className="text-[#ccc] flex items-start gap-2">
-                            <span className="text-[#00d9ff] mt-1">•</span>
+                          <li key={i} className="text-muted-foreground flex items-start gap-2">
+                            <span className="text-primary mt-1">•</span>
                             {item}
                           </li>
                         ))}
@@ -104,13 +103,13 @@ export function ChangelogContent({ changelog }: ChangelogContentProps) {
 
                   {release.changed.length > 0 && (
                     <div className="mb-6">
-                      <h3 className="flex items-center gap-2 text-[#ffd93d] font-semibold mb-3">
+                      <h3 className="flex items-center gap-2 text-foreground font-semibold mb-3">
                         <span>🔄</span> Changed
                       </h3>
                       <ul className="space-y-2">
                         {release.changed.map((item, i) => (
-                          <li key={i} className="text-[#ccc] flex items-start gap-2">
-                            <span className="text-[#ffd93d] mt-1">•</span>
+                          <li key={i} className="text-muted-foreground flex items-start gap-2">
+                            <span className="text-foreground/70 mt-1">•</span>
                             {item}
                           </li>
                         ))}
@@ -126,7 +125,7 @@ export function ChangelogContent({ changelog }: ChangelogContentProps) {
                 href="https://github.com/HarjjotSinghh/devsynq/releases"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-[#00d9ff] hover:underline"
+                className="text-primary hover:underline"
               >
                 View full release history on GitHub →
               </a>

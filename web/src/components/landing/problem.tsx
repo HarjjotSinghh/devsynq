@@ -17,16 +17,16 @@ export function Problem() {
     return (
         <section
             ref={sectionRef}
-            className="relative isolate -mt-px py-28 px-6 bg-linear-to-b from-[#0c0506] via-[#0a060c] to-[#05030a]"
+            className="relative isolate -mt-px py-28 px-6 bg-background"
             id="problem"
         >
-            <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_15%_15%,rgba(244,63,94,0.15),transparent_42%),radial-gradient(circle_at_85%_5%,rgba(248,113,113,0.12),transparent_38%)]" />
+            <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_15%_15%,rgba(127,29,29,0.15),transparent_42%),radial-gradient(circle_at_85%_5%,rgba(127,29,29,0.12),transparent_38%)]" />
             <div className="absolute inset-x-12 top-14 h-24 rounded-[32px] border border-white/5 bg-white/5 blur-3xl" />
             <div
                 aria-hidden="true"
                 className="pointer-events-none absolute inset-0 scale-y-[-1]"
             >
-                <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_18%_18%,rgba(90,230,187,0.14),transparent_40%),radial-gradient(circle_at_80%_0%,rgba(34,197,235,0.12),transparent_38%)]" />
+                <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_18%_18%,rgba(93,233,182,0.05),transparent_40%),radial-gradient(circle_at_80%_0%,rgba(93,233,182,0.05),transparent_38%)]" />
                 <div className="absolute inset-x-12 top-16 h-24 rounded-[32px] border border-white/5 bg-white/5 blur-3xl" />
             </div>
 

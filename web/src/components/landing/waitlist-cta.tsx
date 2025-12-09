@@ -67,22 +67,22 @@ export function WaitlistCta({ spotsClaimed = 219 }: WaitlistCtaProps) {
     return (
         <section
             ref={sectionRef}
-            className="relative isolate -mt-px py-24 sm:py-28 bg-linear-to-b from-[#04060c] via-[#05070d] to-[#020308]"
+            className="relative isolate -mt-px py-24 sm:py-28 bg-background"
             id="waitlist"
         >
-            <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(34,211,238,0.08),transparent_40%),radial-gradient(circle_at_30%_20%,rgba(94,234,212,0.08),transparent_35%),radial-gradient(circle_at_70%_10%,rgba(59,130,246,0.08),transparent_30%)]" />
+            <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(93,233,182,0.05),transparent_40%),radial-gradient(circle_at_30%_20%,rgba(93,233,182,0.05),transparent_35%),radial-gradient(circle_at_70%_10%,rgba(93,233,182,0.05),transparent_30%)]" />
             <div className="absolute inset-16 rounded-[32px] border border-white/5 bg-linear-to-b from-white/5 via-transparent to-transparent blur-3xl" />
             <div
                 aria-hidden="true"
                 className="pointer-events-none absolute inset-0 scale-y-[-1]"
             >
-                <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(34,197,235,0.14),transparent_40%),radial-gradient(circle_at_80%_0%,rgba(90,230,187,0.12),transparent_38%)]" />
+                <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(93,233,182,0.05),transparent_40%),radial-gradient(circle_at_80%_0%,rgba(93,233,182,0.05),transparent_38%)]" />
                 {/* <div className="absolute inset-x-12 top-14 h-24 rounded-[32px] border border-white/5 bg-white/5 blur-3xl" /> */}
             </div>
 
             <div className="mx-auto max-w-6xl px-6">
                 <div className="relative grid items-center gap-10 rounded-3xl border border-border/70 bg-card/80 p-8 backdrop-blur-xl lg:grid-cols-[1.05fr_0.95fr] lg:p-12">
-                    <div className="absolute inset-0 rounded-3xl bg-linear-to-r from-primary/10 via-cyan-400/5 to-primary/10 opacity-60 blur-3xl" />
+                    <div className="absolute inset-0 rounded-3xl bg-linear-to-r from-primary/10 via-primary/5 to-primary/10 opacity-60 blur-3xl" />
 
                     <div className="relative space-y-8">
                         <div data-animate data-animate-order="1" className="inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/10 px-3 py-1 text-sm text-primary">
@@ -113,13 +113,13 @@ export function WaitlistCta({ spotsClaimed = 219 }: WaitlistCtaProps) {
                                     <span className="text-3xl font-semibold text-gradient">
                                         {currentSpots}/{totalSpots}
                                     </span>
-                                    <span className="text-xs uppercase tracking-wide text-emerald-300">
+                                    <span className="text-xs uppercase tracking-wide text-primary">
                                         filling fast
                                     </span>
                                 </div>
                                 <div className="mt-3 h-2 rounded-full bg-border/60">
                                     <div
-                                        className="h-2 rounded-full bg-linear-to-r from-primary to-cyan-400 transition-[width]"
+                                        className="h-2 rounded-full bg-primary transition-[width]"
                                         style={{ width: `${progress}%` }}
                                     />
                                 </div>
@@ -129,15 +129,15 @@ export function WaitlistCta({ spotsClaimed = 219 }: WaitlistCtaProps) {
                                 <p className="text-sm text-muted-foreground">Why join now?</p>
                                 <div className="mt-3 space-y-2 text-sm text-muted-foreground">
                                     <div className="flex items-center gap-2">
-                                        <Check className="h-4 w-4 text-emerald-300" />
+                                        <Check className="h-4 w-4 text-primary" />
                                         Lifetime pricing locked
                                     </div>
                                     <div className="flex items-center gap-2">
-                                        <Check className="h-4 w-4 text-emerald-300" />
+                                        <Check className="h-4 w-4 text-primary" />
                                         VIP onboarding support
                                     </div>
                                     <div className="flex items-center gap-2">
-                                        <Check className="h-4 w-4 text-emerald-300" />
+                                        <Check className="h-4 w-4 text-primary" />
                                         Early feature previews
                                     </div>
                                 </div>
@@ -146,7 +146,7 @@ export function WaitlistCta({ spotsClaimed = 219 }: WaitlistCtaProps) {
 
                         <div data-animate data-animate-order="4" className="flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
                             <div className="flex items-center gap-2 rounded-full border border-border/80 px-3 py-1">
-                                <ShieldCheck className="h-4 w-4 text-emerald-300" />
+                                <ShieldCheck className="h-4 w-4 text-primary" />
                                 Secure & spam-free
                             </div>
                             <span className="text-border">•</span>
@@ -157,12 +157,12 @@ export function WaitlistCta({ spotsClaimed = 219 }: WaitlistCtaProps) {
                     </div>
 
                     <div data-animate data-animate-order="5" className="relative">
-                        <div className="absolute inset-0 rounded-3xl bg-primary/10 blur-2xl" />
+                        {/* <div className="absolute inset-0 rounded-3xl bg-primary/10 blur-2xl" /> */}
                         <div className="relative rounded-2xl border border-border/80 bg-secondary/60 p-6 backdrop-blur">
                             {isSuccess ? (
                                 <div className="text-center space-y-4 py-8">
-                                    <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-emerald-500/15">
-                                        <Check className="h-8 w-8 text-emerald-300" />
+                                    <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-primary/10">
+                                        <Check className="h-8 w-8 text-primary" />
                                     </div>
                                     <div className="space-y-2">
                                         <h3 className="text-2xl font-semibold">You&apos;re on the list!</h3>
@@ -177,69 +177,69 @@ export function WaitlistCta({ spotsClaimed = 219 }: WaitlistCtaProps) {
                                     </div>
                                 </div>
                             ) : (
-                                    <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-                                        <div className="space-y-2 text-center">
-                                            <p className="text-sm uppercase tracking-[0.35em] text-primary/80">
-                                                Reserve your spot
-                                            </p>
-                                            <h3 className="text-2xl font-semibold">
-                                                Join {currentSpots}+ developers today
-                                            </h3>
-                                            <p className="text-sm text-muted-foreground">
-                                                Instant confirmation. No spam guaranteed.
-                                            </p>
-                                        </div>
+                                <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+                                    <div className="space-y-2 text-center">
+                                        <p className="text-sm uppercase tracking-[0.35em] text-primary/80">
+                                            Reserve your spot
+                                        </p>
+                                        <h3 className="text-2xl font-semibold">
+                                            Join {currentSpots}+ developers today
+                                        </h3>
+                                        <p className="text-sm text-muted-foreground">
+                                            Instant confirmation. No spam guaranteed.
+                                        </p>
+                                    </div>
 
-                                        <div className="space-y-3">
-                                            <div className="flex flex-col gap-2">
-                                                <Input
-                                                    type="email"
-                                                    placeholder="Your email (no spam guaranteed)"
-                                                    className="h-12 bg-card border-border focus:border-primary text-base px-4 rounded-xl"
-                                                    {...register("email")}
-                                                />
-                                                {errors.email && (
-                                                    <p className="text-destructive text-sm">
-                                                        {errors.email.message}
-                                                    </p>
-                                                )}
-                                            </div>
-                                            <Button
-                                                type="submit"
-                                                disabled={isSubmitting}
-                                                className="h-12 w-full bg-linear-to-r from-primary to-cyan-500 text-[#052e2b] font-semibold rounded-xl transition-all hover:-translate-y-px disabled:opacity-60"
-                                            >
-                                                {isSubmitting ? (
-                                                    <>
-                                                        <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-                                                        Joining...
-                                                    </>
-                                                ) : (
-                                                    "Claim Your Spot"
-                                                )}
-                                            </Button>
-                                            {error && (
-                                                <p className="text-center text-destructive text-sm">
-                                                    {error}
+                                    <div className="space-y-3">
+                                        <div className="flex flex-col gap-2">
+                                            <Input
+                                                type="email"
+                                                placeholder="Your email (no spam guaranteed)"
+                                                className="h-12 bg-card border-border focus:border-primary text-base px-4 rounded-xl"
+                                                {...register("email")}
+                                            />
+                                            {errors.email && (
+                                                <p className="text-destructive text-sm">
+                                                    {errors.email.message}
                                                 </p>
                                             )}
                                         </div>
+                                        <Button
+                                            type="submit"
+                                            disabled={isSubmitting}
+                                            className="h-12 w-full bg-primary text-primary-foreground font-semibold rounded-xl transition-all hover:-translate-y-px disabled:opacity-60"
+                                        >
+                                            {isSubmitting ? (
+                                                <>
+                                                    <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                                                    Joining...
+                                                </>
+                                            ) : (
+                                                "Claim Your Spot"
+                                            )}
+                                        </Button>
+                                        {error && (
+                                            <p className="text-center text-destructive text-sm">
+                                                {error}
+                                            </p>
+                                        )}
+                                    </div>
 
-                                        <div className="grid gap-3 rounded-xl border border-border/60 bg-card/70 p-4 text-sm text-muted-foreground sm:grid-cols-2">
-                                            <div className="flex items-center gap-2">
-                                                <Check className="h-4 w-4 text-emerald-300" />
-                                                Unlimited IDE sync
-                                            </div>
-                                            <div className="flex items-center gap-2">
-                                                <Check className="h-4 w-4 text-emerald-300" />
-                                                Cloud backups on autopilot
-                                            </div>
-                                            <div className="flex items-center gap-2">
-                                                <Check className="h-4 w-4 text-emerald-300" />
-                                                Priority support lane
-                                            </div>
+                                    <div className="grid gap-3 rounded-xl border border-border/60 bg-card/70 p-4 text-sm text-muted-foreground sm:grid-cols-2">
                                         <div className="flex items-center gap-2">
-                                            <Check className="h-4 w-4 text-emerald-300" />
+                                            <Check className="h-4 w-4 text-primary" />
+                                            Unlimited IDE sync
+                                        </div>
+                                        <div className="flex items-center gap-2">
+                                            <Check className="h-4 w-4 text-primary" />
+                                            Cloud backups on autopilot
+                                        </div>
+                                        <div className="flex items-center gap-2">
+                                            <Check className="h-4 w-4 text-primary" />
+                                            Priority support lane
+                                        </div>
+                                        <div className="flex items-center gap-2">
+                                            <Check className="h-4 w-4 text-primary" />
                                             Lifetime updates included
                                         </div>
                                     </div>

@@ -53,8 +53,8 @@ export function Header() {
             >
                 {/* Logo */}
                 <Link data-animate data-animate-order="2" href="/" className="flex items-center gap-2">
-                    <div className="w-8 h-8 rounded-xl bg-linear-to-br from-primary to-cyan-500 flex items-center justify-center shadow shadow-primary/10">
-                        <span className="text-[#022c22] font-black text-sm">D</span>
+                    <div className="w-8 h-8 rounded-xl bg-primary flex items-center justify-center shadow shadow-primary/10">
+                        <span className="text-primary-foreground font-black text-sm">D</span>
                     </div>
                     <span className="font-black text-xl tracking-tight text-foreground">DevSynq</span>
                 </Link>
@@ -89,7 +89,7 @@ export function Header() {
                         Star on GitHub
                     </Link>
                     <Link href="/#waitlist">
-                        <Button className="bg-linear-to-r from-primary to-cyan-500 hover:brightness-110 text-[#022c22] font-semibold px-4 py-2 rounded-2xl transition-all shadow-lg shadow-primary/10">
+                        <Button className="bg-primary hover:bg-primary/90 text-primary-foreground font-semibold px-4 py-2 rounded-2xl transition-all shadow-lg shadow-primary/10">
                             Join Waitlist
                         </Button>
                     </Link>
@@ -145,7 +145,7 @@ export function Header() {
                             Star on GitHub
                         </Link>
                         <Link href="/#waitlist" onClick={() => setMobileMenuOpen(false)}>
-                            <Button className="w-full bg-linear-to-r from-primary to-cyan-500 text-[#022c22] font-semibold">
+                            <Button className="w-full bg-primary text-primary-foreground font-semibold">
                                 Join Waitlist
                             </Button>
                         </Link>

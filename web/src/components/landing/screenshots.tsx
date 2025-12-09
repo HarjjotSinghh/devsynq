@@ -42,16 +42,16 @@ export function Screenshots() {
     return (
         <section
             ref={sectionRef}
-            className="relative isolate -mt-px py-28 px-6 bg-linear-to-b from-[#04060c] via-[#05070d] to-[#020308]"
+            className="relative isolate -mt-px py-28 px-6 bg-background"
             id="screenshots"
         >
-            <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(90,230,187,0.14),transparent_40%),radial-gradient(circle_at_80%_0%,rgba(34,197,235,0.12),transparent_38%)]" />
+            <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(93,233,182,0.05),transparent_40%),radial-gradient(circle_at_80%_0%,rgba(93,233,182,0.05),transparent_38%)]" />
             <div className="absolute inset-x-12 top-16 h-24 rounded-[32px] border border-white/5 bg-white/5 blur-3xl" />
             <div
                 aria-hidden="true"
                 className="pointer-events-none absolute inset-0 scale-y-[-1]"
             >
-                <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(34,197,235,0.14),transparent_40%),radial-gradient(circle_at_80%_0%,rgba(16,185,129,0.1),transparent_38%)]" />
+                <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(93,233,182,0.05),transparent_40%),radial-gradient(circle_at_80%_0%,rgba(93,233,182,0.05),transparent_38%)]" />
                 <div className="absolute inset-x-10 top-16 h-24 rounded-[32px] border border-white/5 bg-white/5 blur-3xl" />
             </div>
 
@@ -68,7 +68,7 @@ export function Screenshots() {
                         A curated peek at the Electron experience—now mirrored on the web. Pixel-perfect screens that match what you ship.
                     </p>
                     <div data-animate data-animate-order="4" className="flex flex-wrap justify-center gap-3 text-sm text-muted-foreground">
-                        <div className="inline-flex items-center gap-2 rounded-full border border-emerald-500/25 bg-emerald-500/10 px-3 py-1 text-emerald-100">
+                        <div className="inline-flex items-center gap-2 rounded-full border border-primary/25 bg-primary/10 px-3 py-1 text-primary">
                             <Monitor className="h-4 w-4" />
                             Live product captures
                         </div>
@@ -90,7 +90,7 @@ export function Screenshots() {
                             <div
                                 className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100"
                                 style={{
-                                    background: `radial-gradient(circle at 20% 15%, rgba(90,230,187,0.16), transparent 40%), radial-gradient(circle at 80% 0%, rgba(34,197,235,0.14), transparent 40%)`,
+                                    background: `radial-gradient(circle at 20% 15%, rgba(93,233,182,0.1), transparent 40%), radial-gradient(circle at 80% 0%, rgba(93,233,182,0.1), transparent 40%)`,
                                 }}
                             />
                             <div className="relative aspect-4/3 overflow-hidden">
@@ -105,7 +105,7 @@ export function Screenshots() {
                                 />
                                 <div className="absolute inset-0 bg-linear-to-t from-background/85 via-background/25 to-transparent pointer-events-none" />
                                 <div className="absolute left-4 top-4 inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-1 text-xs font-medium text-foreground">
-                                    <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
+                                    <span className="h-1.5 w-1.5 rounded-full bg-primary" />
                                     {shot.title}
                                 </div>
                                 <div className="absolute right-4 bottom-4 rounded-full border border-white/15 bg-background/70 px-3 py-1 text-[11px] uppercase tracking-[0.16em] text-muted-foreground">

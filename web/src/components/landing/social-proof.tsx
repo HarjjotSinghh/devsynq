@@ -35,33 +35,33 @@ export function SocialProof({
             label: "Developers",
             value: `${spotsClaimed}+`,
             icon: Users,
-            tint: "from-emerald-400/30 to-primary/30",
+            tint: "from-primary/20 to-primary/5",
             badge: "Live waitlist momentum",
         },
         {
             label: "GitHub Stars",
             value: `${githubStars}+`,
             icon: Github,
-            tint: "from-[#5ae6bb]/30 to-primary/30",
+            tint: "from-primary/20 to-primary/5",
             badge: "Open source trust",
         },
         {
             label: "Downloads",
             value: `${totalDownloads.toLocaleString()}+`,
             icon: Download,
-            tint: "from-cyan-400/30 to-emerald-400/30",
+            tint: "from-primary/20 to-primary/5",
             badge: "Shipped to real teams",
         },
     ];
 
     return (
-        <section ref={sectionRef} className="relative isolate -mt-px py-24 px-6 bg-linear-to-b from-[#05060c] via-[#05070d] to-[#020308]">
-            <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(34,197,235,0.12),transparent_42%),radial-gradient(circle_at_80%_0%,rgba(90,230,187,0.1),transparent_38%)]" />
+        <section ref={sectionRef} className="relative isolate -mt-px py-24 px-6 bg-background">
+            <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(93,233,182,0.05),transparent_42%),radial-gradient(circle_at_80%_0%,rgba(93,233,182,0.05),transparent_38%)]" />
             <div
                 aria-hidden="true"
                 className="pointer-events-none absolute inset-0 scale-y-[-1]"
             >
-                <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_15%_15%,rgba(244,63,94,0.15),transparent_42%),radial-gradient(circle_at_85%_5%,rgba(248,113,113,0.12),transparent_38%)]" />
+                <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_15%_15%,rgba(93,233,182,0.05),transparent_42%),radial-gradient(circle_at_85%_5%,rgba(93,233,182,0.05),transparent_38%)]" />
             </div>
 
             <div className="relative max-w-6xl mx-auto space-y-12">
@@ -93,7 +93,7 @@ export function SocialProof({
                                     <div
                                         className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100"
                                         style={{
-                                            background: `linear-gradient(135deg, rgba(34,197,235,0.14), transparent 45%)`,
+                                            background: `linear-gradient(135deg, rgba(93,233,182,0.1), transparent 45%)`,
                                         }}
                                     />
                                     <div className="relative flex items-center gap-3">
@@ -120,7 +120,7 @@ export function SocialProof({
                 {/* Supported IDEs */}
                 <div data-animate data-animate-order="3" className="space-y-3 text-center">
                     <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-sm text-foreground/80">
-                        <ShieldCheck className="h-4 w-4 text-emerald-300" />
+                        <ShieldCheck className="h-4 w-4 text-primary" />
                         Syncs seamlessly with your favorite AI IDEs
                     </div>
                     <div data-animate data-animate-order="4" className="flex flex-wrap justify-center gap-4">
@@ -129,12 +129,12 @@ export function SocialProof({
                                 key={ide.name}
                                 className="flex items-center gap-2 px-4 py-2 rounded-xl border border-border/70 bg-card/70 hover:border-primary/40 transition-all"
                                 style={{
-                                    boxShadow: `0 12px 40px -32px ${ide.color}80`,
+                                    // boxShadow: `0 12px 40px -32px ${ide.color}80`,
                                 }}
                             >
                                 <div
                                     className="grid h-8 w-8 place-items-center rounded-lg border border-white/10 bg-secondary/70"
-                                    style={{ boxShadow: `0 8px 24px -20px ${ide.color}a0` }}
+                                // style={{ boxShadow: `0 8px 24px -20px ${ide.color}a0` }}
                                 >
                                     <IdeIcon ide={ide.name} size={22} />
                                 </div>

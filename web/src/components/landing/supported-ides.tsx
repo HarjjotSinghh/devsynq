@@ -12,13 +12,13 @@ export function SupportedIDEs() {
     const sectionRef = useSequentialReveal({ y: 24, itemDuration: 0.45, gap: 0.06 });
 
     return (
-        <section ref={sectionRef} className="relative isolate -mt-px py-28 px-6 bg-linear-to-b from-[#05060a] via-[#06080f] to-[#03040a]">
-            <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(34,197,235,0.14),transparent_40%),radial-gradient(circle_at_80%_0%,rgba(16,185,129,0.1),transparent_38%)]" />
+        <section ref={sectionRef} className="relative isolate -mt-px py-28 px-6 bg-background">
+            <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(93,233,182,0.05),transparent_40%),radial-gradient(circle_at_80%_0%,rgba(93,233,182,0.05),transparent_38%)]" />
             <div
                 aria-hidden="true"
                 className="pointer-events-none absolute inset-0 scale-y-[-1]"
             >
-                <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(34,211,238,0.08),transparent_40%),radial-gradient(circle_at_30%_20%,rgba(94,234,212,0.08),transparent_35%),radial-gradient(circle_at_70%_10%,rgba(59,130,246,0.08),transparent_30%)]" />
+                <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(93,233,182,0.05),transparent_40%),radial-gradient(circle_at_30%_20%,rgba(93,233,182,0.05),transparent_35%),radial-gradient(circle_at_70%_10%,rgba(93,233,182,0.05),transparent_30%)]" />
             </div>
 
             <div className="relative max-w-6xl mx-auto">
@@ -35,11 +35,11 @@ export function SupportedIDEs() {
                         Native logos, availability, and quick links to download. DevSynq keeps you in sync across every IDE you use.
                     </p>
                     <div data-animate data-animate-order="4" className="flex flex-wrap justify-center gap-3 text-sm">
-                        <div className="flex items-center gap-2 rounded-full border border-emerald-500/25 bg-emerald-500/10 px-3 py-1 text-emerald-100">
+                        <div className="flex items-center gap-2 rounded-full border border-primary/25 bg-primary/10 px-3 py-1 text-primary">
                             <Check className="h-4 w-4" />
                             {availableCount} available now
                         </div>
-                        <div className="flex items-center gap-2 rounded-full border border-amber-400/25 bg-amber-400/10 px-3 py-1 text-amber-100">
+                        <div className="flex items-center gap-2 rounded-full border border-muted-foreground/25 bg-muted/10 px-3 py-1 text-muted-foreground">
                             <Clock className="h-4 w-4" />
                             {comingSoonCount} coming soon
                         </div>
@@ -61,14 +61,14 @@ export function SupportedIDEs() {
                                 data-animate-order={index + 2}
                                 className="group relative overflow-hidden rounded-2xl border border-border/70 bg-card/70 p-5 transition-all duration-200 hover:-translate-y-1 hover:border-primary/40 hover:shadow-[0_20px_80px_-40px_rgba(0,0,0,0.7)]"
                                 style={{
-                                    borderColor: `${ide.color}33`,
-                                    boxShadow: `0 18px 55px -40px ${ide.color}80`,
+                                    borderColor: `rgba(255,255,255,0.1)`,
+                                    // boxShadow: `0 18px 55px -40px ${ide.color}80`,
                                 }}
                             >
                                 <div
                                     className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-200 group-hover:opacity-100"
                                     style={{
-                                        background: `radial-gradient(circle at 20% 15%, ${ide.color}22, transparent 45%), radial-gradient(circle at 80% 0%, ${ide.color}18, transparent 45%)`,
+                                        background: `radial-gradient(circle at 20% 15%, rgba(255,255,255,0.05), transparent 45%), radial-gradient(circle at 80% 0%, rgba(255,255,255,0.05), transparent 45%)`,
                                     }}
                                 />
                                 <div className="relative flex items-start justify-between gap-3">
@@ -76,7 +76,7 @@ export function SupportedIDEs() {
                                         <div
                                             className="grid h-12 w-12 place-items-center rounded-xl border border-white/10 bg-secondary/70"
                                             style={{
-                                                boxShadow: `0 10px 30px -18px ${ide.color}a0`,
+                                                // boxShadow: `0 10px 30px -18px ${ide.color}a0`,
                                             }}
                                         >
                                             <IdeIcon ide={ide.name} size={26} />
@@ -90,8 +90,8 @@ export function SupportedIDEs() {
                                     </div>
                                     <span
                                         className={`rounded-full px-2.5 py-1 text-xs font-medium border ${isAvailable
-                                            ? "border-emerald-500/30 bg-emerald-500/15 text-emerald-100"
-                                            : "border-amber-400/30 bg-amber-400/15 text-amber-100"
+                                            ? "border-primary/30 bg-primary/15 text-primary"
+                                            : "border-muted-foreground/30 bg-muted/15 text-muted-foreground"
                                             }`}
                                     >
                                         {isAvailable ? "Available" : "Coming soon"}
@@ -102,7 +102,7 @@ export function SupportedIDEs() {
                                     <div className="flex items-center gap-2">
                                         <span
                                             className="h-2.5 w-2.5 rounded-full"
-                                            style={{ backgroundColor: ide.color }}
+                                            style={{ backgroundColor: isAvailable ? "currentColor" : "#525252" }}
                                         />
                                         <span className="uppercase tracking-wide text-[11px]">
                                             {isAvailable ? "Live" : "On the roadmap"}
@@ -121,7 +121,7 @@ export function SupportedIDEs() {
                                             {isAvailable ? "Download" : "Notify me"}
                                         </a>
                                     ) : (
-                                            <span className="text-muted-foreground">No link yet</span>
+                                        <span className="text-muted-foreground">No link yet</span>
                                     )}
                                 </div>
                             </div>

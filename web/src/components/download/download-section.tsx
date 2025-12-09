@@ -2,7 +2,8 @@
 
 import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { Download, Apple, Monitor, Github, ExternalLink } from 'lucide-react';
+import { Download, ExternalLink, Github } from 'lucide-react';
+import { WindowsIcon, AppleIcon, LinuxIcon } from '@/components/icons';
 import { useSequentialReveal } from '@/hooks/use-gsap-reveal';
 
 interface Release {
@@ -72,7 +73,7 @@ export function DownloadSection() {
     }, []);
 
     return (
-        <section ref={sectionRef} className="py-32 px-6">
+        <section className="py-36 px-6">
             <div className="max-w-4xl mx-auto">
                 {/* Header */}
                 <div data-animate data-animate-order="1" className="text-center mb-16">
@@ -90,19 +91,19 @@ export function DownloadSection() {
                     <div
                         data-animate
                         data-animate-order="2"
-                        className={`relative bg-[#141414] border rounded-2xl p-8 transition-all ${detectedOS === 'windows'
-                            ? 'border-[#00d9ff]/50 ring-2 ring-[#00d9ff]/20'
+                        className={`relative bg-card border rounded-2xl p-8 transition-all ${detectedOS === 'windows'
+                            ? 'border-primary/50 ring-2 ring-primary/20'
                             : 'border-white/10 hover:border-white/20'
                             }`}
                     >
                         {detectedOS === 'windows' && (
-                            <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-1 bg-[#00d9ff] text-black text-xs font-semibold rounded-full">
+                            <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-1 bg-primary text-primary-foreground text-xs font-semibold rounded-full">
                                 Recommended for you
                             </div>
                         )}
                         <div className="flex items-center gap-4 mb-6">
-                            <div className="w-14 h-14 rounded-xl bg-[#0078D4]/20 flex items-center justify-center">
-                                <Monitor className="w-7 h-7 text-[#0078D4]" />
+                            <div className="w-14 h-14 rounded-xl bg-primary/20 flex items-center justify-center">
+                                <WindowsIcon className="w-7 h-7 text-primary" />
                             </div>
                             <div>
                                 <h3 className="text-2xl font-bold">Windows</h3>
@@ -111,7 +112,7 @@ export function DownloadSection() {
                         </div>
                         <div className="space-y-3 mb-6">
                             <a href={currentRelease.windows.exe}>
-                                <Button className="w-full bg-linear-to-r from-[#00d9ff] to-[#0088cc] hover:from-[#00e5ff] hover:to-[#00a0e0] text-black font-semibold h-12">
+                                <Button className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-semibold h-12 border-none">
                                     <Download className="w-5 h-5 mr-2" />
                                     Download .exe
                                 </Button>
@@ -137,19 +138,19 @@ export function DownloadSection() {
                     <div
                         data-animate
                         data-animate-order="3"
-                        className={`relative bg-[#141414] border rounded-2xl p-8 transition-all ${detectedOS === 'macos'
-                            ? 'border-[#00d9ff]/50 ring-2 ring-[#00d9ff]/20'
+                        className={`relative bg-card border rounded-2xl p-8 transition-all ${detectedOS === 'macos'
+                            ? 'border-primary/50 ring-2 ring-primary/20'
                             : 'border-white/10 hover:border-white/20'
                             }`}
                     >
                         {detectedOS === 'macos' && (
-                            <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-1 bg-[#00d9ff] text-black text-xs font-semibold rounded-full">
+                            <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-1 bg-primary text-primary-foreground text-xs font-semibold rounded-full">
                                 Recommended for you
                             </div>
                         )}
                         <div className="flex items-center gap-4 mb-6">
                             <div className="w-14 h-14 rounded-xl bg-white/10 flex items-center justify-center">
-                                <Apple className="w-7 h-7 text-white" />
+                                <AppleIcon className="w-7 h-7 text-white" />
                             </div>
                             <div>
                                 <h3 className="text-2xl font-bold">macOS</h3>
@@ -158,7 +159,7 @@ export function DownloadSection() {
                         </div>
                         <div className="space-y-3 mb-6">
                             <a href={currentRelease.macos.dmg}>
-                                <Button className="w-full bg-linear-to-r from-[#00d9ff] to-[#0088cc] hover:from-[#00e5ff] hover:to-[#00a0e0] text-black font-semibold h-12">
+                                <Button className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-semibold h-12 border-none">
                                     <Download className="w-5 h-5 mr-2" />
                                     Download .dmg
                                 </Button>
@@ -182,9 +183,9 @@ export function DownloadSection() {
                 </div>
 
                 {/* Linux Coming Soon */}
-                <div data-animate data-animate-order="4" className="bg-[#141414] border border-white/10 rounded-2xl p-8 text-center mb-16">
-                    <div className="w-14 h-14 mx-auto rounded-xl bg-[#FCC624]/20 flex items-center justify-center mb-4">
-                        <span className="text-2xl">🐧</span>
+                <div data-animate data-animate-order="4" className="bg-card border border-white/10 rounded-2xl p-8 text-center mb-16">
+                    <div className="w-14 h-14 mx-auto rounded-xl bg-secondary flex items-center justify-center mb-4">
+                        <LinuxIcon className="w-7 h-7 text-primary" />
                     </div>
                     <h3 className="text-xl font-bold mb-2">Linux</h3>
                     <p className="text-[#888] mb-4">
@@ -215,7 +216,7 @@ export function DownloadSection() {
                                 href={`https://github.com/HarjjotSinghh/devsynq/releases/tag/v${release.version}`}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="flex items-center justify-between p-4 bg-[#141414] border border-white/10 rounded-xl hover:border-white/20 transition-colors"
+                                className="flex items-center justify-between p-4 bg-card border border-white/10 rounded-xl hover:border-white/20 transition-colors"
                             >
                                 <div className="flex items-center gap-4">
                                     <span className="font-mono font-semibold">
@@ -235,7 +236,7 @@ export function DownloadSection() {
                             href="https://github.com/HarjjotSinghh/devsynq/releases"
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="text-[#00d9ff] hover:underline text-sm"
+                            className="text-primary hover:underline text-sm"
                         >
                             View all releases on GitHub →
                         </a>

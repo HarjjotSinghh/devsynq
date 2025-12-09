@@ -47,15 +47,15 @@ export function Faq() {
     return (
         <section
             ref={sectionRef}
-            className="relative isolate -mt-px py-28 px-6 bg-linear-to-b from-[#05060c] via-[#05070d] to-[#020308]"
+            className="relative isolate -mt-px py-28 px-6 bg-background"
             id="faq"
         >
-            <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(34,197,235,0.14),transparent_40%),radial-gradient(circle_at_80%_0%,rgba(90,230,187,0.12),transparent_38%)]" />
+            <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(93,233,182,0.05),transparent_40%),radial-gradient(circle_at_80%_0%,rgba(93,233,182,0.05),transparent_38%)]" />
             <div
                 aria-hidden="true"
                 className="pointer-events-none absolute inset-0 scale-y-[-1]"
             >
-                <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(34,197,235,0.1),transparent_40%),radial-gradient(circle_at_80%_0%,rgba(90,230,187,0.08),transparent_38%)]" />
+                <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(93,233,182,0.05),transparent_40%),radial-gradient(circle_at_80%_0%,rgba(93,233,182,0.05),transparent_38%)]" />
             </div>
 
             <div className="relative max-w-3xl mx-auto">
@@ -106,7 +106,7 @@ export function Faq() {
                             href="https://github.com/HarjjotSinghh/devsynq/discussions"
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="text-[#00d9ff] hover:underline"
+                            className="text-primary hover:underline"
                         >
                             GitHub Discussions →
                         </a>

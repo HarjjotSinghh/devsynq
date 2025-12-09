@@ -12,7 +12,7 @@ const features = [
         icon: RefreshCw,
         benefits: ["Sync to unlimited IDEs", "Per-IDE overrides available", "Automatic backup on sync"],
         screenshot: "/screenshots/MCP Configuration Sync.png",
-        gradient: "from-primary to-[#5ae6bb]",
+        gradient: "from-primary to-primary/80",
     },
     {
         title: "Store API Keys Once",
@@ -21,7 +21,7 @@ const features = [
         icon: Key,
         benefits: ["Secure local storage", "Auto-inject to configs", "Never leaves your machine"],
         screenshot: "/screenshots/API Keys Sync.png",
-        gradient: "from-emerald-400 to-primary",
+        gradient: "from-primary to-primary/80",
     },
     {
         title: "Launch Anything, Instantly",
@@ -30,7 +30,7 @@ const features = [
         icon: Command,
         benefits: ["Global keyboard shortcut", "Fuzzy search projects", "IDE preference per project"],
         screenshot: "/screenshots/Command Pallete IDE Manager.png",
-        gradient: "from-[#5ae6bb] to-cyan-400",
+        gradient: "from-primary to-primary/80",
     },
     {
         title: "See What's Running",
@@ -39,7 +39,7 @@ const features = [
         icon: Activity,
         benefits: ["Real-time CPU/Memory stats", "One-click focus or kill", "Batch close all IDEs"],
         screenshot: "/screenshots/IDE Process Manager.png",
-        gradient: "from-amber-400 to-rose-400",
+        gradient: "from-primary to-primary/80",
     },
 ];
 
@@ -48,15 +48,15 @@ export function Features() {
     return (
         <section
             ref={sectionRef}
-            className="relative isolate -mt-px overflow-hidden bg-linear-to-b from-[#04060c] via-[#05070d] to-[#010206] py-28 px-6"
+            className="relative isolate -mt-px overflow-hidden bg-background py-28 px-6"
             id="features"
         >
-            <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_18%_18%,rgba(90,230,187,0.14),transparent_40%),radial-gradient(circle_at_80%_0%,rgba(34,197,235,0.12),transparent_38%)]" />
+            <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_18%_18%,rgba(93,233,182,0.05),transparent_40%),radial-gradient(circle_at_80%_0%,rgba(93,233,182,0.05),transparent_38%)]" />
             <div
                 aria-hidden="true"
                 className="pointer-events-none absolute inset-0 scale-y-[-1]"
             >
-                <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(90,230,187,0.14),transparent_40%),radial-gradient(circle_at_80%_0%,rgba(34,197,235,0.12),transparent_38%)]" />
+                <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(93,233,182,0.05),transparent_40%),radial-gradient(circle_at_80%_0%,rgba(93,233,182,0.05),transparent_38%)]" />
             </div>
 
             <div className="relative max-w-6xl mx-auto">
@@ -75,7 +75,7 @@ export function Features() {
                         and just works.
                     </p>
                     <div data-animate data-animate-order="4" className="flex flex-wrap justify-center gap-3 text-sm text-muted-foreground">
-                        <div className="inline-flex items-center gap-2 rounded-full border border-emerald-500/25 bg-emerald-500/10 px-3 py-1 text-emerald-100">
+                        <div className="inline-flex items-center gap-2 rounded-full border border-primary/25 bg-primary/10 px-3 py-1 text-primary">
                             <Check className="h-4 w-4" />
                             Sync, launch, observe
                         </div>
@@ -103,9 +103,9 @@ export function Features() {
                                 {/* Text content */}
                                 <div className={`relative ${isReversed ? "lg:order-2" : ""}`}>
                                     <div
-                                        className={`w-12 h-12 rounded-xl bg-linear-to-br ${feature.gradient} flex items-center justify-center mb-6 shadow-[0_12px_35px_-20px_rgba(34,197,235,0.6)]`}
+                                        className={`w-12 h-12 rounded-xl bg-linear-to-br ${feature.gradient} flex items-center justify-center mb-6 shadow-[0_12px_35px_-20px_rgba(93,233,182,0.6)]`}
                                     >
-                                        <Icon className="w-6 h-6 text-[#022c22]" />
+                                        <Icon className="w-6 h-6 text-primary-foreground" />
                                     </div>
                                     <h3 className="text-3xl md:text-4xl font-bold mb-4 text-foreground">
                                         {feature.title}
@@ -116,8 +116,8 @@ export function Features() {
                                     <ul className="space-y-3">
                                         {feature.benefits.map((benefit) => (
                                             <li key={benefit} className="flex items-center gap-3 text-foreground">
-                                                <div className="w-5 h-5 rounded-full bg-emerald-400/20 flex items-center justify-center shrink-0">
-                                                    <Check className="w-3 h-3 text-emerald-300" />
+                                                <div className="w-5 h-5 rounded-full bg-primary/20 flex items-center justify-center shrink-0">
+                                                    <Check className="w-3 h-3 text-primary" />
                                                 </div>
                                                 {benefit}
                                             </li>
@@ -138,9 +138,9 @@ export function Features() {
                                         {/* Window chrome */}
                                         <div className="bg-secondary/80 px-4 py-3 flex items-center gap-2 border-b border-border/60">
                                             <div className="flex gap-2">
-                                                <div className="w-3 h-3 rounded-full bg-red-400" />
-                                                <div className="w-3 h-3 rounded-full bg-amber-300" />
-                                                <div className="w-3 h-3 rounded-full bg-emerald-400" />
+                                                <div className="w-3 h-3 rounded-full bg-zinc-700" />
+                                                <div className="w-3 h-3 rounded-full bg-zinc-700" />
+                                                <div className="w-3 h-3 rounded-full bg-zinc-700" />
                                             </div>
                                             <span className="text-xs text-muted-foreground ml-4">
                                                 {feature.title}

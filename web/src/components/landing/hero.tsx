@@ -18,17 +18,17 @@ export function Hero({ spotsClaimed = 219 }: HeroProps) {
     return (
         <section
             ref={sectionRef}
-            className="relative flex flex-col items-center justify-center h-fit px-6 py-20 pt-32 pb-0 text-center bg-linear-to-b from-[#03040a] via-[#04060c] to-[#010206]"
+            className="relative flex flex-col items-center justify-center h-fit px-6 py-20 pt-32 pb-0 text-center bg-background"
         >
-            <div className="absolute inset-x-0 -bottom-12 h-16 bg-linear-to-t from-[#010206] via-[#020308]/75 to-transparent pointer-events-none" />
-            <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(90,230,187,0.16),transparent_40%),radial-gradient(circle_at_80%_0%,rgba(34,197,235,0.12),transparent_35%)]" />
+            <div className="absolute inset-x-0 -bottom-12 h-16 bg-linear-to-t from-background via-background/75 to-transparent pointer-events-none" />
+            <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(93,233,182,0.08),transparent_40%),radial-gradient(circle_at_80%_0%,rgba(93,233,182,0.05),transparent_35%)]" />
             <div className="absolute inset-x-14 top-12 h-24 rounded-[32px] border border-white/5 bg-white/5 blur-3xl" />
             <div
                 aria-hidden="true"
                 className="pointer-events-none absolute inset-0 scale-y-[-1]"
             >
-                <div className="absolute inset-x-0 -bottom-12 h-16 bg-linear-to-t from-[#020308] via-[#05070d]/75 to-transparent" />
-                <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(34,197,235,0.12),transparent_42%),radial-gradient(circle_at_80%_0%,rgba(90,230,187,0.1),transparent_38%)]" />
+                <div className="absolute inset-x-0 -bottom-12 h-16 bg-linear-to-t from-background via-background/75 to-transparent" />
+                <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(93,233,182,0.05),transparent_42%),radial-gradient(circle_at_80%_0%,rgba(93,233,182,0.08),transparent_38%)]" />
                 <div className="absolute inset-x-12 top-14 h-20 rounded-[32px] border border-white/5 bg-white/5 blur-3xl" />
             </div>
             {/* Badge */}
@@ -38,8 +38,8 @@ export function Hero({ spotsClaimed = 219 }: HeroProps) {
                 className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/25 text-primary text-sm mb-6 animate-pulse-slow"
             >
                 <span className="relative flex h-2 w-2">
-                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                    <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-400"></span>
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
+                    <span className="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
                 </span>
                 <Sparkles className="w-4 h-4" />
                 {spotsClaimed}/{totalSpots} lifetime free spots claimed
@@ -51,8 +51,8 @@ export function Hero({ spotsClaimed = 219 }: HeroProps) {
                 data-animate-order="2"
                 className="text-5xl md:text-7xl font-black leading-tight mb-6 max-w-6xl"
             >
-                <span className="bg-linear-to-r from-primary via-cyan-400 to-emerald-300 bg-clip-text text-transparent">
-                    Stop Copy-Pasting 
+                <span className="bg-linear-to-l from-primary via-primary/90 to-white/90 to-95% bg-clip-text text-transparent">
+                    Stop Copy-Pasting
                 </span><br />
                 <span className="text-foreground">Your MCP Config Across</span>{' '}
                 <span className="text-foreground">5 Different AI IDEs</span>
@@ -81,7 +81,7 @@ export function Hero({ spotsClaimed = 219 }: HeroProps) {
                 <a href="#waitlist">
                     <Button
                         size="lg"
-                        className="bg-linear-to-r from-primary to-cyan-500 hover:brightness-110 text-[#022c22] font-semibold px-8 py-6 text-lg rounded-xl shadow-lg shadow-primary/10 transition-all hover:shadow-primary/20 "
+                        className="bg-primary hover:bg-primary/90 text-primary-foreground font-semibold px-8 py-6 text-lg rounded-xl shadow-lg shadow-primary/10 transition-all hover:shadow-primary/20 "
                     >
                         Get Lifetime Free Access
                         <ArrowRight className="w-5 h-5 ml-2" />
@@ -106,7 +106,7 @@ export function Hero({ spotsClaimed = 219 }: HeroProps) {
                 data-animate-order="5"
                 className="flex flex-wrap items-center justify-center gap-3 mb-8 text-sm"
             >
-                <div className="inline-flex items-center gap-2 rounded-full border border-emerald-500/25 bg-emerald-500/10 px-3 py-1 text-emerald-100">
+                <div className="inline-flex items-center gap-2 rounded-full border border-primary/25 bg-primary/10 px-3 py-1 text-primary">
                     <ShieldCheck className="w-4 h-4" />
                     Secure, local-first
                 </div>
@@ -130,7 +130,7 @@ export function Hero({ spotsClaimed = 219 }: HeroProps) {
                 </div>
                 <div className="h-2.5 rounded-full bg-border/60 overflow-hidden">
                     <div
-                        className="h-2.5 rounded-full bg-linear-to-r from-primary to-cyan-400 shadow-[0_0_25px_rgba(6,182,212,0.35)] transition-[width]"
+                        className="h-2.5 rounded-full bg-primary shadow-[0_0_25px_rgba(93,233,182,0.35)] transition-[width]"
                         style={{ width: `${progress}%` }}
                     />
                 </div>
@@ -143,9 +143,9 @@ export function Hero({ spotsClaimed = 219 }: HeroProps) {
                     {/* Window chrome */}
                     <div className="bg-secondary/80 px-4 py-3 flex items-center gap-2 border-b border-border/60">
                         <div className="flex gap-2">
-                            <div className="w-3 h-3 rounded-full bg-red-400" />
-                            <div className="w-3 h-3 rounded-full bg-amber-300" />
-                            <div className="w-3 h-3 rounded-full bg-emerald-400" />
+                            <div className="w-3 h-3 rounded-full bg-zinc-700" />
+                            <div className="w-3 h-3 rounded-full bg-zinc-700" />
+                            <div className="w-3 h-3 rounded-full bg-zinc-700" />
                         </div>
                         <span className="text-xs text-muted-foreground ml-4">DevSynq</span>
                     </div>
@@ -182,8 +182,8 @@ export function Hero({ spotsClaimed = 219 }: HeroProps) {
                     style={{ animationDelay: "1s" }}
                 >
                     <div className="flex items-center gap-2">
-                        <div className="w-8 h-8 rounded bg-emerald-400/15 flex items-center justify-center">
-                            <span className="text-emerald-300 text-xs">🔑</span>
+                        <div className="w-8 h-8 rounded bg-primary/15 flex items-center justify-center">
+                            <span className="text-primary text-xs">🔑</span>
                         </div>
                         <div>
                             <p className="text-xs font-medium">API Keys secure</p>

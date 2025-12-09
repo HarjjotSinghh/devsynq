@@ -103,7 +103,10 @@ export const WelcomeEmail = ({
                             </Link>
                         </Text>
                         <Text style={footerText}>
-                            Built with ❤️ for AI developers
+                            Built with ❤️ for AI developers by{' '}
+                            <Link href="https://github.com/HarjjotSinghh" style={footerLink}>
+                                this guy
+                            </Link>
                         </Text>
                         <Text style={footerLinks}>
                             <Link href="https://github.com/HarjjotSinghh/devsynq" style={footerLink}>
