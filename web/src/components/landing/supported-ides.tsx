@@ -2,7 +2,7 @@
 
 import { Check, Clock, Sparkles } from "lucide-react";
 import { IDE_LIST } from "@/lib/ides";
-import { IdeIcon } from "../../../../src/renderer/components/Icons";
+import { IdeIcon } from "@/components/icons";
 import { useSequentialReveal } from "@/hooks/use-gsap-reveal";
 
 export function SupportedIDEs() {
