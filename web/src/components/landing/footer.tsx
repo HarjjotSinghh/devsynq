@@ -1,5 +1,8 @@
+'use client';
+
 import Link from "next/link";
 import { Github, Twitter, Heart } from "lucide-react";
+import { useSequentialReveal } from "@/hooks/use-gsap-reveal";
 
 const productLinks = [
     { label: 'Download', href: '/download' },
@@ -21,14 +24,18 @@ const companyLinks = [
 ];
 
 export function Footer() {
+    const footerRef = useSequentialReveal({ y: 18, itemDuration: 0.45, gap: 0.08 });
     return (
-        <footer className="py-16 px-6 border-t border-border bg-background">
-            <div className="max-w-7xl mx-auto">
+        <footer ref={footerRef} className="relative isolate -mt-px py-16 px-6 border-t border-border bg-linear-to-b from-[#05060c] via-[#05070d] to-[#020308] overflow-y-hidden">
+            <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(34,197,235,0.1),transparent_45%),radial-gradient(circle_at_80%_0%,rgba(90,230,187,0.08),transparent_40%)]" />
+            <div className="absolute inset-x-12 top-10 h-16 rounded-[32px] border border-white/5 bg-white/5 blur-3xl" />
+
+            <div className="relative max-w-7xl mx-auto">
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-12">
                     {/* Logo & Description */}
-                    <div className="col-span-2 md:col-span-1">
+                    <div data-animate data-animate-order="1" className="col-span-2 md:col-span-1">
                         <Link href="/" className="flex items-center gap-2 mb-4">
-                            <div className="w-8 h-8 rounded-lg bg-linear-to-br from-primary to-cyan-500 flex items-center justify-center shadow shadow-primary/20">
+                            <div className="w-8 h-8 rounded-xl bg-linear-to-br from-primary to-cyan-500 flex items-center justify-center shadow shadow-primary/10">
                                 <span className="text-[#022c22] font-black text-sm">D</span>
                             </div>
                             <span className="font-black text-xl tracking-tight text-foreground">DevSynq</span>
@@ -58,7 +65,7 @@ export function Footer() {
                     </div>
 
                     {/* Product */}
-                    <div>
+                    <div data-animate data-animate-order="2">
                         <h4 className="font-semibold mb-4">Product</h4>
                         <ul className="space-y-3">
                             {productLinks.map((link) => (
@@ -75,7 +82,7 @@ export function Footer() {
                     </div>
 
                     {/* Resources */}
-                    <div>
+                    <div data-animate data-animate-order="3">
                         <h4 className="font-semibold mb-4">Resources</h4>
                         <ul className="space-y-3">
                             {resourceLinks.map((link) => (
@@ -94,7 +101,7 @@ export function Footer() {
                     </div>
 
                     {/* Company */}
-                    <div>
+                    <div data-animate data-animate-order="4">
                         <h4 className="font-semibold mb-4">Company</h4>
                         <ul className="space-y-3">
                             {companyLinks.map((link) => (
@@ -114,7 +121,7 @@ export function Footer() {
                 </div>
 
                 {/* Bottom */}
-                <div className="pt-8 border-t border-border flex flex-col md:flex-row justify-between items-center gap-4">
+                <div className="pt-8 border-t border-border flex flex-col md:flex-row justify-between items-center gap-4 pb-36">
                     <p className="text-sm text-muted-foreground">
                         © {new Date().getFullYear()} DevSynq. Open source under MIT License.
                     </p>
@@ -123,6 +130,13 @@ export function Footer() {
                         developers
                     </p>
                 </div>
+            </div>
+
+            {/* Big wordmark */}
+            <div className="pointer-events-none absolute inset-x-0 -bottom-52 flex justify-center">
+                <span className="text-[21dvw] font-black tracking-tight text-white/4">
+                    DEVSYNQ
+                </span>
             </div>
         </footer>
     );

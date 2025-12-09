@@ -20,7 +20,7 @@ async function getWaitlistStats() {
     if (!res.ok) throw new Error('Failed to fetch');
     return res.json();
   } catch {
-    return { spotsClaimed: 319, spotsRemaining: 133 };
+    return { spotsClaimed: 219, spotsRemaining: 133 };
   }
 }
 
@@ -28,7 +28,7 @@ export default async function Home() {
   const stats = await getWaitlistStats();
 
   return (
-    <main className="min-h-screen">
+    <main className="min-h-screen overflow-x-hidden">
       <Header />
       <Hero spotsClaimed={stats.spotsClaimed} />
       <SocialProof spotsClaimed={stats.spotsClaimed} />

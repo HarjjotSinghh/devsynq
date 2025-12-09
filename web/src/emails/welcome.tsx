@@ -25,7 +25,7 @@ export const WelcomeEmail = ({
     return (
         <Html>
             <Head />
-            <Preview>Welcome to DevSynq - You're in! 🎉</Preview>
+            <Preview>Welcome to DevSynq - You&apos;re in! 🎉</Preview>
             <Body style={main}>
                 <Container style={container}>
                     {/* Header */}
@@ -36,10 +36,10 @@ export const WelcomeEmail = ({
                     {/* Hero */}
                     <Section style={heroSection}>
                         <Heading style={heroHeading}>
-                            You're on the list! 🎉
+                            You&apos;re on the list! 🎉
                         </Heading>
                         <Text style={heroSubtext}>
-                            Welcome to the DevSynq waitlist. You're one of the first developers
+                            Welcome to the DevSynq waitlist. You&apos;re one of the first developers
                             to claim lifetime free access.
                         </Text>
                     </Section>
@@ -56,16 +56,16 @@ export const WelcomeEmail = ({
                     <Section style={contentSection}>
                         <Heading style={sectionHeading}>What happens next?</Heading>
                         <Text style={paragraph}>
-                            <strong style={accentText}>1. We're building fast</strong> — DevSynq v1.0
+                            <strong style={accentText}>1. We&apos;re building fast</strong> — DevSynq v1.0
                             is launching soon with full MCP config sync across all your AI IDEs.
                         </Text>
                         <Text style={paragraph}>
-                            <strong style={accentText}>2. You'll get early access</strong> — As a
-                            waitlist member, you'll be the first to try new features before anyone else.
+                            <strong style={accentText}>2. You&apos;ll get early access</strong> — As a
+                            waitlist member, you&apos;ll be the first to try new features before anyone else.
                         </Text>
                         <Text style={paragraph}>
                             <strong style={accentText}>3. Lifetime Pro is yours</strong> — Since you
-                            signed up early, you'll get DevSynq Pro features forever. No catch.
+                            signed up early, you&apos;ll get DevSynq Pro features forever. No catch.
                         </Text>
                     </Section>
 
@@ -73,7 +73,7 @@ export const WelcomeEmail = ({
 
                     {/* Features Preview */}
                     <Section style={contentSection}>
-                        <Heading style={sectionHeading}>What you'll get:</Heading>
+                        <Heading style={sectionHeading}>What you&apos;ll get:</Heading>
                         <Text style={featureItem}>✓ One-click MCP sync to all IDEs</Text>
                         <Text style={featureItem}>✓ Secure API key management</Text>
                         <Text style={featureItem}>✓ Global command palette (launch anything instantly)</Text>
@@ -97,7 +97,7 @@ export const WelcomeEmail = ({
                     {/* Footer */}
                     <Section style={footer}>
                         <Text style={footerText}>
-                            You're receiving this because you signed up at{' '}
+                            You&apos;re receiving this because you signed up at{' '}
                             <Link href="https://devsynq.com" style={footerLink}>
                                 devsynq.com
                             </Link>

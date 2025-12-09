@@ -1,7 +1,11 @@
 {
   "name": "devsynq",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "AI IDE Launcher - Launch your favorite AI-powered development environments",
+  "author": {
+    "name": "DevSynq",
+    "email": "hello@devsynq.com"
+  },
   "main": "dist/main.js",
   "private": true,
   "scripts": {
@@ -41,8 +45,7 @@
           ]
         }
       ],
-      "icon": "assets/icon.ico",
-      "publisherName": "DevSynq"
+      "icon": "assets/icon.ico"
     },
     "nsis": {
       "oneClick": false,

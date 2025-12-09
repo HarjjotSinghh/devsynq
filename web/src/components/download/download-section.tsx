@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Download, Apple, Monitor, Github, ExternalLink } from 'lucide-react';
+import { useSequentialReveal } from '@/hooks/use-gsap-reveal';
 
 interface Release {
     version: string;
@@ -62,16 +63,19 @@ function detectOS(): OS {
 
 export function DownloadSection() {
     const [detectedOS, setDetectedOS] = useState<OS>('unknown');
+    const sectionRef = useSequentialReveal({ y: 24, itemDuration: 0.5, gap: 0.08 });
 
     useEffect(() => {
-        setDetectedOS(detectOS());
+        setTimeout(() => {
+            setDetectedOS(detectOS());
+        }, 100);
     }, []);
 
     return (
-        <section className="py-32 px-6">
+        <section ref={sectionRef} className="py-32 px-6">
             <div className="max-w-4xl mx-auto">
                 {/* Header */}
-                <div className="text-center mb-16">
+                <div data-animate data-animate-order="1" className="text-center mb-16">
                     <h1 className="text-4xl md:text-6xl font-black mb-4">
                         Download <span className="text-gradient">DevSynq</span>
                     </h1>
@@ -84,9 +88,11 @@ export function DownloadSection() {
                 <div className="grid md:grid-cols-2 gap-6 mb-12">
                     {/* Windows */}
                     <div
+                        data-animate
+                        data-animate-order="2"
                         className={`relative bg-[#141414] border rounded-2xl p-8 transition-all ${detectedOS === 'windows'
-                                ? 'border-[#00d9ff]/50 ring-2 ring-[#00d9ff]/20'
-                                : 'border-white/10 hover:border-white/20'
+                            ? 'border-[#00d9ff]/50 ring-2 ring-[#00d9ff]/20'
+                            : 'border-white/10 hover:border-white/20'
                             }`}
                     >
                         {detectedOS === 'windows' && (
@@ -105,7 +111,7 @@ export function DownloadSection() {
                         </div>
                         <div className="space-y-3 mb-6">
                             <a href={currentRelease.windows.exe}>
-                                <Button className="w-full bg-gradient-to-r from-[#00d9ff] to-[#0088cc] hover:from-[#00e5ff] hover:to-[#00a0e0] text-black font-semibold h-12">
+                                <Button className="w-full bg-linear-to-r from-[#00d9ff] to-[#0088cc] hover:from-[#00e5ff] hover:to-[#00a0e0] text-black font-semibold h-12">
                                     <Download className="w-5 h-5 mr-2" />
                                     Download .exe
                                 </Button>
@@ -129,9 +135,11 @@ export function DownloadSection() {
 
                     {/* macOS */}
                     <div
+                        data-animate
+                        data-animate-order="3"
                         className={`relative bg-[#141414] border rounded-2xl p-8 transition-all ${detectedOS === 'macos'
-                                ? 'border-[#00d9ff]/50 ring-2 ring-[#00d9ff]/20'
-                                : 'border-white/10 hover:border-white/20'
+                            ? 'border-[#00d9ff]/50 ring-2 ring-[#00d9ff]/20'
+                            : 'border-white/10 hover:border-white/20'
                             }`}
                     >
                         {detectedOS === 'macos' && (
@@ -150,7 +158,7 @@ export function DownloadSection() {
                         </div>
                         <div className="space-y-3 mb-6">
                             <a href={currentRelease.macos.dmg}>
-                                <Button className="w-full bg-gradient-to-r from-[#00d9ff] to-[#0088cc] hover:from-[#00e5ff] hover:to-[#00a0e0] text-black font-semibold h-12">
+                                <Button className="w-full bg-linear-to-r from-[#00d9ff] to-[#0088cc] hover:from-[#00e5ff] hover:to-[#00a0e0] text-black font-semibold h-12">
                                     <Download className="w-5 h-5 mr-2" />
                                     Download .dmg
                                 </Button>
@@ -174,7 +182,7 @@ export function DownloadSection() {
                 </div>
 
                 {/* Linux Coming Soon */}
-                <div className="bg-[#141414] border border-white/10 rounded-2xl p-8 text-center mb-16">
+                <div data-animate data-animate-order="4" className="bg-[#141414] border border-white/10 rounded-2xl p-8 text-center mb-16">
                     <div className="w-14 h-14 mx-auto rounded-xl bg-[#FCC624]/20 flex items-center justify-center mb-4">
                         <span className="text-2xl">🐧</span>
                     </div>
@@ -198,7 +206,7 @@ export function DownloadSection() {
                 </div>
 
                 {/* Previous Versions */}
-                <div>
+                <div data-animate data-animate-order="5">
                     <h3 className="text-xl font-bold mb-6">Previous Versions</h3>
                     <div className="space-y-3">
                         {previousReleases.map((release) => (

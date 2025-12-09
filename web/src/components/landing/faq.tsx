@@ -1,11 +1,13 @@
 'use client';
 
+import { MessageCircle, Sparkles } from "lucide-react";
 import {
     Accordion,
     AccordionContent,
     AccordionItem,
     AccordionTrigger,
 } from '@/components/ui/accordion';
+import { useSequentialReveal } from "@/hooks/use-gsap-reveal";
 
 const faqs = [
     {
@@ -41,27 +43,46 @@ const faqs = [
 ];
 
 export function Faq() {
+    const sectionRef = useSequentialReveal({ y: 24, itemDuration: 0.4, gap: 0.08 });
     return (
-        <section className="py-32 px-6" id="faq">
-            <div className="max-w-3xl mx-auto">
+        <section
+            ref={sectionRef}
+            className="relative isolate -mt-px py-28 px-6 bg-linear-to-b from-[#05060c] via-[#05070d] to-[#020308]"
+            id="faq"
+        >
+            <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(34,197,235,0.14),transparent_40%),radial-gradient(circle_at_80%_0%,rgba(90,230,187,0.12),transparent_38%)]" />
+            <div
+                aria-hidden="true"
+                className="pointer-events-none absolute inset-0 scale-y-[-1]"
+            >
+                <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(34,197,235,0.1),transparent_40%),radial-gradient(circle_at_80%_0%,rgba(90,230,187,0.08),transparent_38%)]" />
+            </div>
+
+            <div className="relative max-w-3xl mx-auto">
                 {/* Section header */}
-                <div className="text-center mb-16">
-                    <p className="text-[#00d9ff] font-semibold text-sm mb-4 uppercase tracking-wider">
+                <div className="text-center mb-16 space-y-4">
+                    <div data-animate data-animate-order="1" className="inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/10 px-3 py-1 text-sm text-primary">
+                        <Sparkles className="h-4 w-4" />
                         FAQ
-                    </p>
-                    <h2 className="text-4xl md:text-5xl font-black mb-6">
-                        Frequently Asked
-                        <span className="block text-gradient">Questions</span>
+                    </div>
+                    <h2 data-animate data-animate-order="2" className="text-4xl md:text-5xl font-black leading-tight">
+                        Frequently asked
+                        <span className="block text-gradient">questions</span>
                     </h2>
+                    <p data-animate data-animate-order="3" className="text-muted-foreground max-w-2xl mx-auto">
+                        Short, honest answers to the things people ask us most.
+                    </p>
                 </div>
 
                 {/* FAQ Accordion */}
-                <Accordion type="single" collapsible className="space-y-4">
+                <Accordion data-animate data-animate-order="4" type="single" collapsible className="space-y-4">
                     {faqs.map((faq, index) => (
                         <AccordionItem
                             key={index}
+                            data-animate
+                            data-animate-order={`${10 + index}`}
                             value={`item-${index}`}
-                            className="bg-[#141414] border border-white/10 rounded-xl px-6 data-[state=open]:border-[#00d9ff]/30"
+                            className="bg-card/80 border border-white/10 rounded-xl px-6 data-[state=open]:border-primary/30 shadow-[0_14px_60px_-45px_rgba(0,0,0,0.9)] backdrop-blur"
                         >
                             <AccordionTrigger className="text-left text-lg font-semibold hover:no-underline py-6">
                                 {faq.question}
@@ -74,16 +95,20 @@ export function Faq() {
                 </Accordion>
 
                 {/* More questions */}
-                <div className="mt-12 text-center">
+                <div data-animate data-animate-order="5" className="mt-12 text-center space-y-3">
+                    <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-sm text-foreground/80">
+                        <MessageCircle className="h-4 w-4" />
+                        Still wondering something?
+                    </div>
                     <p className="text-[#888]">
-                        Have more questions?{' '}
+                        Ask us on{" "}
                         <a
                             href="https://github.com/HarjjotSinghh/devsynq/discussions"
                             target="_blank"
                             rel="noopener noreferrer"
                             className="text-[#00d9ff] hover:underline"
                         >
-                            Ask on GitHub Discussions →
+                            GitHub Discussions →
                         </a>
                     </p>
                 </div>

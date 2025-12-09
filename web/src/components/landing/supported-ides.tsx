@@ -1,66 +1,135 @@
 'use client';
 
-import { Check, Clock } from "lucide-react";
+import { Check, Clock, Sparkles } from "lucide-react";
 import { IDE_LIST } from "@/lib/ides";
+import { IdeIcon } from "../../../../src/renderer/components/Icons";
+import { useSequentialReveal } from "@/hooks/use-gsap-reveal";
 
 export function SupportedIDEs() {
     const ides = IDE_LIST;
+    const availableCount = ides.filter((ide) => (ide.status ?? "available") === "available").length;
+    const comingSoonCount = ides.length - availableCount;
+    const sectionRef = useSequentialReveal({ y: 24, itemDuration: 0.45, gap: 0.06 });
 
     return (
-        <section className="py-32 px-6 bg-[#0a0a0f] border-y border-border">
-            <div className="max-w-7xl mx-auto">
-                {/* Section header */}
-                <div className="text-center mb-16">
-                    <p className="text-primary font-semibold text-sm mb-4 uppercase tracking-wider">
-                        Compatibility
-                    </p>
-                    <h2 className="text-4xl md:text-5xl font-black mb-6">
-                        Works with Your
-                        <span className="block text-gradient">Favorite AI IDEs</span>
+        <section ref={sectionRef} className="relative isolate -mt-px py-28 px-6 bg-linear-to-b from-[#05060a] via-[#06080f] to-[#03040a]">
+            <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(34,197,235,0.14),transparent_40%),radial-gradient(circle_at_80%_0%,rgba(16,185,129,0.1),transparent_38%)]" />
+            <div
+                aria-hidden="true"
+                className="pointer-events-none absolute inset-0 scale-y-[-1]"
+            >
+                <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(34,211,238,0.08),transparent_40%),radial-gradient(circle_at_30%_20%,rgba(94,234,212,0.08),transparent_35%),radial-gradient(circle_at_70%_10%,rgba(59,130,246,0.08),transparent_30%)]" />
+            </div>
+
+            <div className="relative max-w-6xl mx-auto">
+                <div className="text-center space-y-5">
+                    <div data-animate data-animate-order="1" className="inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/10 px-3 py-1 text-sm text-primary">
+                        <Sparkles className="h-4 w-4" />
+                        Real IDE coverage
+                    </div>
+                    <h2 data-animate data-animate-order="2" className="text-4xl md:text-5xl font-black leading-tight">
+                        Works with your{" "}
+                        <span className="text-gradient">favorite AI IDEs</span>
                     </h2>
-                    <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-                        DevSynq supports all major AI-powered development environments. More
-                        coming soon.
+                    <p data-animate data-animate-order="3" className="text-lg text-muted-foreground max-w-2xl mx-auto">
+                        Native logos, availability, and quick links to download. DevSynq keeps you in sync across every IDE you use.
                     </p>
+                    <div data-animate data-animate-order="4" className="flex flex-wrap justify-center gap-3 text-sm">
+                        <div className="flex items-center gap-2 rounded-full border border-emerald-500/25 bg-emerald-500/10 px-3 py-1 text-emerald-100">
+                            <Check className="h-4 w-4" />
+                            {availableCount} available now
+                        </div>
+                        <div className="flex items-center gap-2 rounded-full border border-amber-400/25 bg-amber-400/10 px-3 py-1 text-amber-100">
+                            <Clock className="h-4 w-4" />
+                            {comingSoonCount} coming soon
+                        </div>
+                        <div className="flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-foreground/80">
+                            <Sparkles className="h-4 w-4 text-primary" />
+                            Fresh logos pulled from the app
+                        </div>
+                    </div>
                 </div>
 
-                {/* IDE Grid */}
-                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
-                    {ides.map((ide) => (
-                        <div
-                            key={ide.name}
-                            className={`relative group p-6 rounded-xl border transition-all ${
-                                (ide.status ?? "available") === "available"
-                                    ? "bg-card border-border hover:border-primary/60 hover:bg-secondary/70"
-                                    : "bg-secondary/60 border-border/40 opacity-80"
-                            }`}
-                        >
-                            <div className="text-center">
-                                <span className="text-4xl mb-3 block">{ide.icon}</span>
-                                <p className="font-medium text-foreground">{ide.name}</p>
-                                <div className="mt-2 flex items-center justify-center gap-1">
-                                    {(ide.status ?? "available") === "available" ? (
-                                        <>
-                                            <Check className="w-3 h-3 text-green-400" />
-                                            <span className="text-xs text-green-400">Available</span>
-                                        </>
+                <div className="mt-14 grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {ides.map((ide, index) => {
+                        const status = ide.status ?? "available";
+                        const isAvailable = status === "available";
+                        return (
+                            <div
+                                key={ide.name}
+                                data-animate
+                                data-animate-order={index + 2}
+                                className="group relative overflow-hidden rounded-2xl border border-border/70 bg-card/70 p-5 transition-all duration-200 hover:-translate-y-1 hover:border-primary/40 hover:shadow-[0_20px_80px_-40px_rgba(0,0,0,0.7)]"
+                                style={{
+                                    borderColor: `${ide.color}33`,
+                                    boxShadow: `0 18px 55px -40px ${ide.color}80`,
+                                }}
+                            >
+                                <div
+                                    className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-200 group-hover:opacity-100"
+                                    style={{
+                                        background: `radial-gradient(circle at 20% 15%, ${ide.color}22, transparent 45%), radial-gradient(circle at 80% 0%, ${ide.color}18, transparent 45%)`,
+                                    }}
+                                />
+                                <div className="relative flex items-start justify-between gap-3">
+                                    <div className="flex items-center gap-3">
+                                        <div
+                                            className="grid h-12 w-12 place-items-center rounded-xl border border-white/10 bg-secondary/70"
+                                            style={{
+                                                boxShadow: `0 10px 30px -18px ${ide.color}a0`,
+                                            }}
+                                        >
+                                            <IdeIcon ide={ide.name} size={26} />
+                                        </div>
+                                        <div>
+                                            <p className="font-semibold text-foreground">{ide.name}</p>
+                                            <p className="text-xs uppercase tracking-[0.16em] text-muted-foreground">
+                                                AI-ready workspace
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <span
+                                        className={`rounded-full px-2.5 py-1 text-xs font-medium border ${isAvailable
+                                            ? "border-emerald-500/30 bg-emerald-500/15 text-emerald-100"
+                                            : "border-amber-400/30 bg-amber-400/15 text-amber-100"
+                                            }`}
+                                    >
+                                        {isAvailable ? "Available" : "Coming soon"}
+                                    </span>
+                                </div>
+
+                                <div className="relative mt-4 flex items-center justify-between text-sm text-muted-foreground">
+                                    <div className="flex items-center gap-2">
+                                        <span
+                                            className="h-2.5 w-2.5 rounded-full"
+                                            style={{ backgroundColor: ide.color }}
+                                        />
+                                        <span className="uppercase tracking-wide text-[11px]">
+                                            {isAvailable ? "Live" : "On the roadmap"}
+                                        </span>
+                                    </div>
+                                    {ide.downloadUrl ? (
+                                        <a
+                                            href={ide.downloadUrl}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className={`inline-flex items-center gap-1 font-medium ${isAvailable
+                                                ? "text-primary hover:underline"
+                                                : "text-muted-foreground pointer-events-none opacity-60"
+                                                }`}
+                                        >
+                                            {isAvailable ? "Download" : "Notify me"}
+                                        </a>
                                     ) : (
-                                        <>
-                                            <Clock className="w-3 h-3 text-muted-foreground" />
-                                            <span className="text-xs text-muted-foreground">Coming Soon</span>
-                                        </>
+                                            <span className="text-muted-foreground">No link yet</span>
                                     )}
                                 </div>
                             </div>
-                            {(ide.status ?? "available") === "available" && (
-                                <div className="absolute inset-0 rounded-xl bg-gradient-to-br from-primary/0 to-primary/10 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
-                            )}
-                        </div>
-                    ))}
+                        );
+                    })}
                 </div>
 
-                {/* Request IDE */}
-                <div className="mt-12 text-center">
+                <div data-animate data-animate-order={ides.length + 3} className="mt-12 text-center">
                     <p className="text-muted-foreground">
                         Don&apos;t see your IDE?{" "}
                         <a

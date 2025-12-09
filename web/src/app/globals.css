@@ -51,7 +51,7 @@
 }
 
 :root {
-  --radius: 0.625rem;
+  --radius: 0.125rem;
   --background: #0a0a0f;
   --foreground: #ecfdf5;
   --card: #13131f;
@@ -149,6 +149,11 @@
     padding-bottom: 0.15em;
     margin-bottom: -0.15em;
   }
+      
+  .text-gradient-destructive {
+    padding-bottom: 0.15em;
+    margin-bottom: -0.15em;
+  }
 }
 
 @layer utilities {
@@ -156,6 +161,9 @@
     @apply bg-linear-to-r from-primary to-cyan-400 bg-clip-text text-transparent;
   }
 
+    .text-gradient-destructive {
+      @apply bg-linear-to-r from-destructive to-rose-400 bg-clip-text text-transparent;
+    }
   .gradient-border {
     position: relative;
     background: linear-gradient(#13131f, #13131f) padding-box,

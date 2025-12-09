@@ -11,28 +11,24 @@ permissions:
   contents: write
 
 jobs:
-  build-and-release:
-    runs-on: ${{ matrix.os }}
-
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - os: windows-latest
-            platform: windows
-          - os: macos-latest
-            platform: macos
-          - os: ubuntu-latest
-            platform: linux
+  build-windows:
+    runs-on: windows-latest
 
     steps:
       - name: Check out Git repository
         uses: actions/checkout@v4
 
       - name: Setup Bun
+        if: ${{ github.actor != 'nektos/act' }}
         uses: oven-sh/setup-bun@v1
         with:
           bun-version: latest
+
+      - name: Setup Bun (act fallback)
+        if: ${{ github.actor == 'nektos/act' }}
+        run: |
+          curl -fsSL https://bun.sh/install | bash
+          echo "$HOME/.bun/bin" >> "$GITHUB_PATH"
 
       - name: Install dependencies
         run: bun install
@@ -40,11 +36,7 @@ jobs:
       - name: Build Frontend & Main
         run: bun run build
 
-      # ============================================
-      # Windows Build with Code Signing
-      # ============================================
       - name: Build Electron App (Windows)
-        if: matrix.os == 'windows-latest'
         run: bun run dist --win
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -52,113 +44,83 @@ jobs:
           CSC_LINK: ${{ secrets.WIN_CSC_LINK }}
           CSC_KEY_PASSWORD: ${{ secrets.WIN_CSC_KEY_PASSWORD }}
 
-      # ============================================
-      # macOS Build with Code Signing & Notarization
-      # ============================================
-      - name: Prepare macOS Signing Certificate
-        if: matrix.os == 'macos-latest' && env.MACOS_CERTIFICATE != ''
-        env:
-          MACOS_CERTIFICATE: ${{ secrets.MACOS_CERTIFICATE }}
-          MACOS_CERTIFICATE_PWD: ${{ secrets.MACOS_CERTIFICATE_PWD }}
-          MACOS_KEYCHAIN_PASSWORD: ${{ secrets.MACOS_KEYCHAIN_PASSWORD }}
-        run: |
-          # Create a temporary keychain
-          KEYCHAIN_PATH=$RUNNER_TEMP/app-signing.keychain-db
-          security create-keychain -p "$MACOS_KEYCHAIN_PASSWORD" $KEYCHAIN_PATH
-          security set-keychain-settings -lut 21600 $KEYCHAIN_PATH
-          security unlock-keychain -p "$MACOS_KEYCHAIN_PASSWORD" $KEYCHAIN_PATH
-
-          # Import certificate to keychain
-          echo "$MACOS_CERTIFICATE" | base64 --decode > $RUNNER_TEMP/certificate.p12
-          security import $RUNNER_TEMP/certificate.p12 -P "$MACOS_CERTIFICATE_PWD" -A -t cert -f pkcs12 -k $KEYCHAIN_PATH
-          security list-keychain -d user -s $KEYCHAIN_PATH
-
-          # Allow codesign to access the keychain
-          security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k "$MACOS_KEYCHAIN_PASSWORD" $KEYCHAIN_PATH
-
-      - name: Build Electron App (macOS)
-        if: matrix.os == 'macos-latest'
-        run: bun run dist --mac
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          # macOS Code Signing (optional - builds work without these)
-          CSC_LINK: ${{ secrets.MACOS_CERTIFICATE }}
-          CSC_KEY_PASSWORD: ${{ secrets.MACOS_CERTIFICATE_PWD }}
-          # macOS Notarization (optional - requires Apple Developer account)
-          APPLE_ID: ${{ secrets.APPLE_ID }}
-          APPLE_APP_SPECIFIC_PASSWORD: ${{ secrets.APPLE_APP_SPECIFIC_PASSWORD }}
-          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
-
-      - name: Cleanup macOS Keychain
-        if: matrix.os == 'macos-latest' && always()
-        run: |
-          if [ -f "$RUNNER_TEMP/app-signing.keychain-db" ]; then
-            security delete-keychain $RUNNER_TEMP/app-signing.keychain-db || true
-          fi
-
-      # ============================================
-      # Linux Build
-      # ============================================
-      - name: Build Electron App (Linux)
-        if: matrix.os == 'ubuntu-latest'
-        run: bun run dist --linux
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      # ============================================
-      # List Build Output (Debug)
-      # ============================================
       - name: List release directory contents
-        run: |
-          echo "=== Release directory contents ==="
-          ls -la release/ || dir release/
-        shell: bash
+        run: dir release
+        shell: cmd
         continue-on-error: true
 
-      # ============================================
-      # Upload Artifacts
-      # ============================================
       - name: Upload Windows Artifacts
-        if: matrix.os == 'windows-latest'
         uses: actions/upload-artifact@v4
         with:
           name: windows-build
           path: |
             release/*.exe
-            release/*.msi
             release/*.zip
           if-no-files-found: warn
           retention-days: 5
 
-      - name: Upload macOS Artifacts
-        if: matrix.os == 'macos-latest'
-        uses: actions/upload-artifact@v4
-        with:
-          name: macos-build
-          path: |
-            release/*.dmg
-            release/*.zip
-          if-no-files-found: warn
-          retention-days: 5
+  # Uncomment to enable macOS builds
+  # build-macos:
+  #   runs-on: macos-latest
+  #   steps:
+  #     - name: Check out Git repository
+  #       uses: actions/checkout@v4
+  #     - name: Setup Bun
+  #       uses: oven-sh/setup-bun@v1
+  #       with:
+  #         bun-version: latest
+  #     - name: Install dependencies
+  #       run: bun install
+  #     - name: Build Frontend & Main
+  #       run: bun run build
+  #     - name: Build Electron App (macOS)
+  #       run: bun run dist --mac
+  #       env:
+  #         GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  #     - name: Upload macOS Artifacts
+  #       uses: actions/upload-artifact@v4
+  #       with:
+  #         name: macos-build
+  #         path: |
+  #           release/*.dmg
+  #           release/*.zip
+  #         if-no-files-found: warn
+  #         retention-days: 5
 
-      - name: Upload Linux Artifacts
-        if: matrix.os == 'ubuntu-latest'
-        uses: actions/upload-artifact@v4
-        with:
-          name: linux-build
-          path: |
-            release/*.AppImage
-            release/*.deb
-            release/*.rpm
-            release/*.tar.gz
-          if-no-files-found: warn
-          retention-days: 5
+  # Uncomment to enable Linux builds
+  # build-linux:
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: Check out Git repository
+  #       uses: actions/checkout@v4
+  #     - name: Setup Bun
+  #       uses: oven-sh/setup-bun@v1
+  #       with:
+  #         bun-version: latest
+  #     - name: Install dependencies
+  #       run: bun install
+  #     - name: Build Frontend & Main
+  #       run: bun run build
+  #     - name: Build Electron App (Linux)
+  #       run: bun run dist --linux
+  #       env:
+  #         GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  #     - name: Upload Linux Artifacts
+  #       uses: actions/upload-artifact@v4
+  #       with:
+  #         name: linux-build
+  #         path: |
+  #           release/*.AppImage
+  #         if-no-files-found: warn
+  #         retention-days: 5
 
   # ============================================
   # Publish Release with All Artifacts
   # ============================================
   publish-release:
-    needs: build-and-release
+    # Skip when running locally with act (github.actor defaults to nektos/act)
+    if: ${{ github.actor != 'nektos/act' }}
+    needs: [build-windows]  # Add build-macos, build-linux when enabled
     runs-on: ubuntu-latest
     
     steps:
@@ -196,16 +158,9 @@ jobs:
             |----------|----------|
             | Windows (Installer) | `.exe` file below |
             | Windows (Portable) | `.zip` file below |
-            | macOS (Intel) | `x64.dmg` file below |
-            | macOS (Apple Silicon) | `arm64.dmg` file below |
-            | Linux (AppImage) | `.AppImage` file below |
             
             ### Installation Instructions
             
             **Windows:** Download the `.exe` installer and run it. Windows may show a SmartScreen warning - click "More info" → "Run anyway".
-            
-            **macOS:** Download the `.dmg` file for your Mac (Intel or Apple Silicon). Open it and drag DevSynq to Applications. If you see a security warning, go to System Settings → Privacy & Security and click "Open Anyway".
-            
-            **Linux:** Download the `.AppImage` file, make it executable (`chmod +x`), and run it.
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

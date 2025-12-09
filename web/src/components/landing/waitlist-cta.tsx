@@ -6,10 +6,11 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Check, Loader2, Sparkles } from "lucide-react";
+import { Check, Loader2, ShieldCheck, Sparkles } from "lucide-react";
+import { useSequentialReveal } from "@/hooks/use-gsap-reveal";
 
 const schema = z.object({
-    email: z.string().email("Please enter a valid email address"),
+    email: z.email("Please enter a valid email address"),
 });
 
 type FormData = z.infer<typeof schema>;
@@ -18,11 +19,13 @@ interface WaitlistCtaProps {
     spotsClaimed?: number;
 }
 
-export function WaitlistCta({ spotsClaimed = 319 }: WaitlistCtaProps) {
+export function WaitlistCta({ spotsClaimed = 219 }: WaitlistCtaProps) {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [isSuccess, setIsSuccess] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [currentSpots, setCurrentSpots] = useState(spotsClaimed);
+    const totalSpots = 500;
+    const progress = Math.min((currentSpots / totalSpots) * 100, 100);
 
     const {
         register,
@@ -32,6 +35,7 @@ export function WaitlistCta({ spotsClaimed = 319 }: WaitlistCtaProps) {
     } = useForm<FormData>({
         resolver: zodResolver(schema),
     });
+    const sectionRef = useSequentialReveal({ y: 26, itemDuration: 0.5, gap: 0.08 });
 
     const onSubmit = async (data: FormData) => {
         setIsSubmitting(true);
@@ -61,109 +65,186 @@ export function WaitlistCta({ spotsClaimed = 319 }: WaitlistCtaProps) {
     };
 
     return (
-        <section className="py-32 px-6 bg-background" id="waitlist">
-            <div className="max-w-4xl mx-auto">
-                <div className="relative">
-                    {/* Background glow */}
-                    <div className="absolute inset-0 bg-linear-to-r from-primary/25 via-cyan-400/25 to-primary/25 rounded-3xl blur-3xl opacity-30" />
+        <section
+            ref={sectionRef}
+            className="relative isolate -mt-px py-24 sm:py-28 bg-linear-to-b from-[#04060c] via-[#05070d] to-[#020308]"
+            id="waitlist"
+        >
+            <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(34,211,238,0.08),transparent_40%),radial-gradient(circle_at_30%_20%,rgba(94,234,212,0.08),transparent_35%),radial-gradient(circle_at_70%_10%,rgba(59,130,246,0.08),transparent_30%)]" />
+            <div className="absolute inset-16 rounded-[32px] border border-white/5 bg-linear-to-b from-white/5 via-transparent to-transparent blur-3xl" />
+            <div
+                aria-hidden="true"
+                className="pointer-events-none absolute inset-0 scale-y-[-1]"
+            >
+                <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(34,197,235,0.14),transparent_40%),radial-gradient(circle_at_80%_0%,rgba(90,230,187,0.12),transparent_38%)]" />
+                {/* <div className="absolute inset-x-12 top-14 h-24 rounded-[32px] border border-white/5 bg-white/5 blur-3xl" /> */}
+            </div>
 
-                    {/* Card */}
-                    <div className="relative bg-card border border-border rounded-3xl p-8 md:p-16 shadow-xl shadow-primary/10">
-                        {/* Badge */}
-                        <div className="flex justify-center mb-8">
-                            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/25 text-primary text-sm">
-                                <Sparkles className="w-4 h-4" />
-                                First 500 get lifetime free access
-                            </div>
+            <div className="mx-auto max-w-6xl px-6">
+                <div className="relative grid items-center gap-10 rounded-3xl border border-border/70 bg-card/80 p-8 backdrop-blur-xl lg:grid-cols-[1.05fr_0.95fr] lg:p-12">
+                    <div className="absolute inset-0 rounded-3xl bg-linear-to-r from-primary/10 via-cyan-400/5 to-primary/10 opacity-60 blur-3xl" />
+
+                    <div className="relative space-y-8">
+                        <div data-animate data-animate-order="1" className="inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/10 px-3 py-1 text-sm text-primary">
+                            <Sparkles className="h-4 w-4" />
+                            First 500 get lifetime free access
                         </div>
 
-                        {/* Header */}
-                        <div className="text-center mb-10">
-                            <h2 className="text-4xl md:text-5xl font-black mb-4">
-                                Get <span className="text-gradient">Lifetime Free</span> Access
+                        <div data-animate data-animate-order="2" className="space-y-4">
+                            {/* <p className="text-sm uppercase tracking-[0.35em] text-primary/80">
+                                Waitlist
+                            </p> */}
+                            <h2 className="text-4xl font-black leading-tight sm:text-5xl">
+                                Claim your{" "}
+                                <span className="text-gradient">lifetime membership</span> before
+                                the seats are gone.
                             </h2>
                             <p className="text-lg text-muted-foreground">
-                                Join {currentSpots}+ developers who claimed their spot. Forever
-                                free.
+                                DevSynq syncs your AI coding experience across every IDE. Join the
+                                early adopters and lock in forever-free access plus priority
+                                support.
                             </p>
                         </div>
 
-                        {/* Form */}
-                        {isSuccess ? (
-                            <div className="text-center py-8">
-                                <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-[#00ff88]/20 flex items-center justify-center">
-                                    <Check className="w-8 h-8 text-[#00ff88]" />
+                        <div data-animate data-animate-order="3" className="grid gap-4 sm:grid-cols-2">
+                            <div className="rounded-2xl border border-border/60 bg-secondary/40 p-4">
+                                <p className="text-sm text-muted-foreground">Spots claimed</p>
+                                <div className="flex items-end gap-2">
+                                    <span className="text-3xl font-semibold text-gradient">
+                                        {currentSpots}/{totalSpots}
+                                    </span>
+                                    <span className="text-xs uppercase tracking-wide text-emerald-300">
+                                        filling fast
+                                    </span>
                                 </div>
-                                <h3 className="text-2xl font-bold mb-2">You're on the list!</h3>
-                                <p className="text-[#888]">
-                                    Check your email for confirmation. Welcome to DevSynq! 🎉
-                                </p>
+                                <div className="mt-3 h-2 rounded-full bg-border/60">
+                                    <div
+                                        className="h-2 rounded-full bg-linear-to-r from-primary to-cyan-400 transition-[width]"
+                                        style={{ width: `${progress}%` }}
+                                    />
+                                </div>
                             </div>
-                        ) : (
-                            <form
-                                onSubmit={handleSubmit(onSubmit)}
-                                className="max-w-md mx-auto"
-                            >
-                                <div className="flex flex-col sm:flex-row gap-3">
-                                    <div className="flex-1">
-                                        <Input
-                                            type="email"
-                                            placeholder="Enter your email"
-                                            className="h-14 bg-secondary border-border focus:border-primary text-lg px-5 rounded-xl"
-                                            {...register("email")}
-                                        />
-                                        {errors.email && (
-                                            <p className="text-destructive text-sm mt-2">
-                                                {errors.email.message}
-                                            </p>
-                                        )}
-                                    </div>
-                                    <Button
-                                        type="submit"
-                                        disabled={isSubmitting}
-                                        className="h-14 bg-linear-to-r from-primary to-cyan-500 hover:brightness-110 text-[#022c22] font-semibold px-8 rounded-xl text-lg shadow-lg shadow-primary/20 transition-all disabled:opacity-50"
-                                    >
-                                        {isSubmitting ? (
-                                            <>
-                                                <Loader2 className="w-5 h-5 mr-2 animate-spin" />
-                                                Joining...
-                                            </>
-                                        ) : (
-                                            "Claim Your Spot"
-                                        )}
-                                    </Button>
-                                </div>
-                                {error && (
-                                    <p className="text-destructive text-sm mt-3 text-center">
-                                        {error}
-                                    </p>
-                                )}
-                            </form>
-                        )}
 
-                        {/* Counter */}
-                        <div className="mt-8 text-center">
-                            <div className="inline-flex items-center gap-4 px-6 py-3 rounded-full bg-secondary border border-border/60">
-                                <span className="text-2xl font-bold text-gradient">
-                                    {currentSpots}/500
-                                </span>
-                                <span className="text-muted-foreground">spots claimed</span>
+                            <div className="rounded-2xl border border-border/60 bg-secondary/40 p-4">
+                                <p className="text-sm text-muted-foreground">Why join now?</p>
+                                <div className="mt-3 space-y-2 text-sm text-muted-foreground">
+                                    <div className="flex items-center gap-2">
+                                        <Check className="h-4 w-4 text-emerald-300" />
+                                        Lifetime pricing locked
+                                    </div>
+                                    <div className="flex items-center gap-2">
+                                        <Check className="h-4 w-4 text-emerald-300" />
+                                        VIP onboarding support
+                                    </div>
+                                    <div className="flex items-center gap-2">
+                                        <Check className="h-4 w-4 text-emerald-300" />
+                                        Early feature previews
+                                    </div>
+                                </div>
                             </div>
                         </div>
 
-                        {/* Benefits */}
-                        <div className="mt-10 grid sm:grid-cols-2 lg:grid-cols-4 gap-4 text-center">
-                            {[
-                                "Unlimited IDEs",
-                                "Cloud backup",
-                                "Priority support",
-                                "Lifetime updates",
-                            ].map((benefit) => (
-                                <div key={benefit} className="flex items-center justify-center gap-2 text-muted-foreground">
-                                    <Check className="w-4 h-4 text-emerald-300" />
-                                    <span>{benefit}</span>
+                        <div data-animate data-animate-order="4" className="flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
+                            <div className="flex items-center gap-2 rounded-full border border-border/80 px-3 py-1">
+                                <ShieldCheck className="h-4 w-4 text-emerald-300" />
+                                Secure & spam-free
+                            </div>
+                            <span className="text-border">•</span>
+                            <span>No credit card required</span>
+                            <span className="text-border">•</span>
+                            <span>Cancel anytime with one click</span>
+                        </div>
+                    </div>
+
+                    <div data-animate data-animate-order="5" className="relative">
+                        <div className="absolute inset-0 rounded-3xl bg-primary/10 blur-2xl" />
+                        <div className="relative rounded-2xl border border-border/80 bg-secondary/60 p-6 backdrop-blur">
+                            {isSuccess ? (
+                                <div className="text-center space-y-4 py-8">
+                                    <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-emerald-500/15">
+                                        <Check className="h-8 w-8 text-emerald-300" />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <h3 className="text-2xl font-semibold">You&apos;re on the list!</h3>
+                                        <p className="text-muted-foreground">
+                                            Check your inbox for confirmation and next steps. Welcome to
+                                            DevSynq. 🎉
+                                        </p>
+                                    </div>
+                                    <div className="rounded-xl border border-border/80 bg-card/70 px-4 py-3 text-sm text-muted-foreground">
+                                        Tip: Share your referral link after onboarding to unlock early
+                                        feature drops.
+                                    </div>
                                 </div>
-                            ))}
+                            ) : (
+                                    <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+                                        <div className="space-y-2 text-center">
+                                            <p className="text-sm uppercase tracking-[0.35em] text-primary/80">
+                                                Reserve your spot
+                                            </p>
+                                            <h3 className="text-2xl font-semibold">
+                                                Join {currentSpots}+ developers today
+                                            </h3>
+                                            <p className="text-sm text-muted-foreground">
+                                                Instant confirmation. No spam guaranteed.
+                                            </p>
+                                        </div>
+
+                                        <div className="space-y-3">
+                                            <div className="flex flex-col gap-2">
+                                                <Input
+                                                    type="email"
+                                                    placeholder="Your email (no spam guaranteed)"
+                                                    className="h-12 bg-card border-border focus:border-primary text-base px-4 rounded-xl"
+                                                    {...register("email")}
+                                                />
+                                                {errors.email && (
+                                                    <p className="text-destructive text-sm">
+                                                        {errors.email.message}
+                                                    </p>
+                                                )}
+                                            </div>
+                                            <Button
+                                                type="submit"
+                                                disabled={isSubmitting}
+                                                className="h-12 w-full bg-linear-to-r from-primary to-cyan-500 text-[#052e2b] font-semibold rounded-xl transition-all hover:-translate-y-px disabled:opacity-60"
+                                            >
+                                                {isSubmitting ? (
+                                                    <>
+                                                        <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                                                        Joining...
+                                                    </>
+                                                ) : (
+                                                    "Claim Your Spot"
+                                                )}
+                                            </Button>
+                                            {error && (
+                                                <p className="text-center text-destructive text-sm">
+                                                    {error}
+                                                </p>
+                                            )}
+                                        </div>
+
+                                        <div className="grid gap-3 rounded-xl border border-border/60 bg-card/70 p-4 text-sm text-muted-foreground sm:grid-cols-2">
+                                            <div className="flex items-center gap-2">
+                                                <Check className="h-4 w-4 text-emerald-300" />
+                                                Unlimited IDE sync
+                                            </div>
+                                            <div className="flex items-center gap-2">
+                                                <Check className="h-4 w-4 text-emerald-300" />
+                                                Cloud backups on autopilot
+                                            </div>
+                                            <div className="flex items-center gap-2">
+                                                <Check className="h-4 w-4 text-emerald-300" />
+                                                Priority support lane
+                                            </div>
+                                        <div className="flex items-center gap-2">
+                                            <Check className="h-4 w-4 text-emerald-300" />
+                                            Lifetime updates included
+                                        </div>
+                                    </div>
+                                </form>
+                            )}
                         </div>
                     </div>
                 </div>

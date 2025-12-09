@@ -1,7 +1,8 @@
 'use client';
 
 import Image from "next/image";
-import { Check, RefreshCw, Key, Command, Activity } from "lucide-react";
+import { Check, RefreshCw, Key, Command, Activity, Sparkles } from "lucide-react";
+import { useSequentialReveal } from "@/hooks/use-gsap-reveal";
 
 const features = [
     {
@@ -11,7 +12,7 @@ const features = [
         icon: RefreshCw,
         benefits: ["Sync to unlimited IDEs", "Per-IDE overrides available", "Automatic backup on sync"],
         screenshot: "/screenshots/MCP Configuration Sync.png",
-        gradient: "from-primary to-cyan-500",
+        gradient: "from-primary to-[#5ae6bb]",
     },
     {
         title: "Store API Keys Once",
@@ -29,7 +30,7 @@ const features = [
         icon: Command,
         benefits: ["Global keyboard shortcut", "Fuzzy search projects", "IDE preference per project"],
         screenshot: "/screenshots/Command Pallete IDE Manager.png",
-        gradient: "from-primary to-indigo-400",
+        gradient: "from-[#5ae6bb] to-cyan-400",
     },
     {
         title: "See What's Running",
@@ -43,24 +44,50 @@ const features = [
 ];
 
 export function Features() {
+    const sectionRef = useSequentialReveal({ y: 26, itemDuration: 0.5, gap: 0.1 });
     return (
-        <section className="py-32 px-6 bg-background" id="features">
-            <div className="max-w-7xl mx-auto">
+        <section
+            ref={sectionRef}
+            className="relative isolate -mt-px overflow-hidden bg-linear-to-b from-[#04060c] via-[#05070d] to-[#010206] py-28 px-6"
+            id="features"
+        >
+            <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_18%_18%,rgba(90,230,187,0.14),transparent_40%),radial-gradient(circle_at_80%_0%,rgba(34,197,235,0.12),transparent_38%)]" />
+            <div
+                aria-hidden="true"
+                className="pointer-events-none absolute inset-0 scale-y-[-1]"
+            >
+                <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(90,230,187,0.14),transparent_40%),radial-gradient(circle_at_80%_0%,rgba(34,197,235,0.12),transparent_38%)]" />
+            </div>
+
+            <div className="relative max-w-6xl mx-auto">
                 {/* Section header */}
-                <div className="text-center mb-20">
-                    <p className="text-primary font-semibold text-sm mb-4 uppercase tracking-wider">Features</p>
-                    <h2 className="text-4xl md:text-5xl font-black mb-6">
-                        Everything You Need to
-                        <span className="block text-gradient">Master Your AI IDEs</span>
+                <div className="text-center mb-18 space-y-4">
+                    <div data-animate data-animate-order="1" className="inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/10 px-3 py-1 text-sm text-primary">
+                        <Sparkles className="h-4 w-4" />
+                        Feature deep dive
+                    </div>
+                    <h2 data-animate data-animate-order="2" className="text-4xl md:text-5xl font-black leading-tight">
+                        Everything you need to
+                        <span className="block text-gradient">master your AI IDEs</span>
                     </h2>
-                    <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+                    <p data-animate data-animate-order="3" className="text-lg text-muted-foreground max-w-2xl mx-auto">
                         DevSynq is the control center for all your AI-powered development environments. Simple, fast,
                         and just works.
                     </p>
+                    <div data-animate data-animate-order="4" className="flex flex-wrap justify-center gap-3 text-sm text-muted-foreground">
+                        <div className="inline-flex items-center gap-2 rounded-full border border-emerald-500/25 bg-emerald-500/10 px-3 py-1 text-emerald-100">
+                            <Check className="h-4 w-4" />
+                            Sync, launch, observe
+                        </div>
+                        <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-foreground/80">
+                            <Sparkles className="h-4 w-4 text-primary" />
+                            Built to mirror the desktop app
+                        </div>
+                    </div>
                 </div>
 
                 {/* Features */}
-                <div className="space-y-32">
+                <div className="space-y-28">
                     {features.map((feature, index) => {
                         const Icon = feature.icon;
                         const isReversed = index % 2 === 1;
@@ -68,13 +95,15 @@ export function Features() {
                         return (
                             <div
                                 key={feature.title}
-                                className={`grid lg:grid-cols-2 gap-16 items-center ${isReversed ? "lg:flex-row-reverse" : ""
-                                    }`}
+                                data-animate
+                                data-animate-order={index + 2}
+                                className={`relative grid items-center gap-14 lg:grid-cols-2 ${isReversed ? "lg:flex-row-reverse" : ""}`}
                             >
+                                <div className="absolute inset-0 rounded-[32px] bg-card/50 blur-3xl" />
                                 {/* Text content */}
-                                <div className={isReversed ? "lg:order-2" : ""}>
+                                <div className={`relative ${isReversed ? "lg:order-2" : ""}`}>
                                     <div
-                                        className={`w-12 h-12 rounded-xl bg-linear-to-br ${feature.gradient} flex items-center justify-center mb-6`}
+                                        className={`w-12 h-12 rounded-xl bg-linear-to-br ${feature.gradient} flex items-center justify-center mb-6 shadow-[0_12px_35px_-20px_rgba(34,197,235,0.6)]`}
                                     >
                                         <Icon className="w-6 h-6 text-[#022c22]" />
                                     </div>
@@ -97,10 +126,17 @@ export function Features() {
                                 </div>
 
                                 {/* Image/Screenshot */}
-                                <div className={isReversed ? "lg:order-1" : ""}>
-                                    <div className="relative rounded-2xl overflow-hidden border border-border shadow-2xl shadow-primary/15 backdrop-blur">
+                                <div className={`relative ${isReversed ? "lg:order-1" : ""}`}>
+                                    <div className="relative overflow-hidden rounded-2xl border border-border/70 bg-card/70 shadow-[0_22px_90px_-55px_rgba(0,0,0,0.9)] transition-all duration-200 hover:-translate-y-1 hover:border-primary/40">
+                                        {/* Glow overlay */}
+                                        <div
+                                            className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-300 hover:opacity-100"
+                                            style={{
+                                                background: `radial-gradient(circle at 20% 15%, rgba(90,230,187,0.18), transparent 45%), radial-gradient(circle at 80% 0%, rgba(34,197,235,0.15), transparent 45%)`,
+                                            }}
+                                        />
                                         {/* Window chrome */}
-                                        <div className="bg-secondary px-4 py-3 flex items-center gap-2 border-b border-border/60">
+                                        <div className="bg-secondary/80 px-4 py-3 flex items-center gap-2 border-b border-border/60">
                                             <div className="flex gap-2">
                                                 <div className="w-3 h-3 rounded-full bg-red-400" />
                                                 <div className="w-3 h-3 rounded-full bg-amber-300" />
@@ -110,14 +146,18 @@ export function Features() {
                                                 {feature.title}
                                             </span>
                                         </div>
-                                        <div className="bg-card aspect-4/3 relative">
+                                        <div className="bg-card aspect-4/3 relative overflow-hidden">
                                             <Image
                                                 src={feature.screenshot}
                                                 alt={`${feature.title} screenshot`}
                                                 fill
-                                                className="object-cover"
+                                                className="object-cover transition-transform duration-500 select-none"
+                                                draggable={false}
                                             />
-                                            <div className="absolute inset-0 pointer-events-none bg-linear-to-b from-transparent via-transparent to-background/40" />
+                                            <div className="absolute inset-0 pointer-events-none bg-linear-to-b from-transparent via-transparent to-background/60" />
+                                            <div className="absolute right-4 bottom-4 rounded-full border border-white/15 bg-background/70 px-3 py-1 text-[11px] uppercase tracking-[0.16em] text-muted-foreground">
+                                                Actual UI
+                                            </div>
                                         </div>
                                     </div>
                                 </div>

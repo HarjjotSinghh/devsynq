@@ -104,9 +104,9 @@ export async function GET() {
         console.error('Error fetching waitlist stats:', error);
         // Return fallback data if DB is not available
         return NextResponse.json({
-            totalSignups: 319,
+            totalSignups: 219,
             spotsRemaining: 133,
-            spotsClaimed: 319,
+            spotsClaimed: 219,
         });
     }
 }

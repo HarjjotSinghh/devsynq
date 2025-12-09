@@ -1,3 +1,5 @@
+'use client';
+
 import React, { JSX } from 'react';
 import { IDEType } from '../../types';
 import {
@@ -155,7 +157,7 @@ const ideColors: Record<IDEType | 'default', string> = {
 
 const ideSvgs: Record<IDEType | 'default', JSX.Element> = {
     Cursor: (
-        <svg viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+        <svg viewBox="0 0 24 24" fill="#fff1bb" xmlns="http://www.w3.org/2000/svg">
             <path d="M11.503.131 1.891 5.678a.84.84 0 0 0-.42.726v11.188c0 .3.162.575.42.724l9.609 5.55a1 1 0 0 0 .998 0l9.61-5.55a.84.84 0 0 0 .42-.724V6.404a.84.84 0 0 0-.42-.726L12.497.131a1.01 1.01 0 0 0-.996 0M2.657 6.338h18.55c.263 0 .43.287.297.515L12.23 22.918c-.062.107-.229.064-.229-.06V12.335a.59.59 0 0 0-.295-.51l-9.11-5.257c-.109-.063-.064-.23.061-.23" />
         </svg>
     ),
@@ -180,7 +182,7 @@ const ideSvgs: Record<IDEType | 'default', JSX.Element> = {
         </svg>
     ),
     Trae: (
-        <svg viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+        <svg viewBox="0 0 24 24" fill="#32f08c" xmlns="http://www.w3.org/2000/svg">
             <path d="M24 20.541H3.428v-3.426H0V3.4h24V20.54zM3.428 17.115h17.144V6.827H3.428v10.288zm8.573-5.196l-2.425 2.424-2.424-2.424 2.424-2.424 2.425 2.424zm6.857-.001l-2.424 2.423-2.425-2.423 2.425-2.425 2.424 2.425z" />
         </svg>
     ),
