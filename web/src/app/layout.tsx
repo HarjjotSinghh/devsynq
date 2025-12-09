@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { JetBrains_Mono, Manrope } from "next/font/google";
 import "./globals.css";
 import { PostHogProvider } from "@/components/providers";
+import { Analytics } from "@vercel/analytics/next"
 
 const manrope = Manrope({
   variable: "--font-manrope",
@@ -91,6 +92,7 @@ export default function RootLayout({
           {children}
         </PostHogProvider>
       </body>
+      <Analytics />
     </html>
   );
 }
