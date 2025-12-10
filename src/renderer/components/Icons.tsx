@@ -39,6 +39,7 @@ import {
     Key,
     Edit2
 } from 'lucide-react';
+import logoImage from '../../../assets/branding/logo.png';
 
 type IconName =
     | 'logo'
@@ -134,6 +135,20 @@ export const Icon: React.FC<IconProps> = ({
     className,
     color,
 }) => {
+    if (name === 'logo') {
+        return (
+            <img
+                src={logoImage}
+                alt="DevSynq logo"
+                width={size}
+                height={size}
+                className={className}
+                draggable={false}
+                style={{ display: 'block' }}
+            />
+        );
+    }
+
     const LucideComponent = iconMap[name];
     if (!LucideComponent) return null;
     return <LucideComponent size={size} strokeWidth={strokeWidth} className={className} color={color} style={{ marginTop: '1px' }} />;

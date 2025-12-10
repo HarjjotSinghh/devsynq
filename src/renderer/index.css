@@ -289,6 +289,12 @@ textarea {
     align-items: center;
 }
 
+.title-bar-logo img {
+    width: 20px;
+    height: 20px;
+    object-fit: contain;
+    display: block;
+}
 .window-controls {
     display: flex;
     gap: 4px;
@@ -855,7 +861,16 @@ textarea {
 .loader-logo {
     width: 64px;
     height: 64px;
-    color: var(--accent-primary);
+    display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .loader-logo img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        display: block;
 }
 
 .loader-text {

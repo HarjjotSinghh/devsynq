@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Github, Menu, X } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { useSequentialReveal } from "@/hooks/use-gsap-reveal";
+import { Logo } from "@/components/logo";
 
 export function Header() {
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -52,11 +53,8 @@ export function Header() {
                 className={`w-full max-w-6xl h-16 px-6 flex items-center justify-between transition-colors duration-200 rounded-3xl ${surfaceClass}`}
             >
                 {/* Logo */}
-                <Link data-animate data-animate-order="2" href="/" className="flex items-center gap-2">
-                    <div className="w-8 h-8 rounded-xl bg-primary flex items-center justify-center shadow shadow-primary/10">
-                        <span className="text-primary-foreground font-black text-sm">D</span>
-                    </div>
-                    <span className="font-black text-xl tracking-tight text-foreground">DevSynq</span>
+                <Link data-animate data-animate-order="2" href="/" className="flex items-center">
+                    <Logo size={34} priority />
                 </Link>
 
                 {/* Desktop Navigation */}

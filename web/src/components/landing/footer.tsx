@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { Github, Twitter, Heart } from "lucide-react";
+import { Logo } from "@/components/logo";
 import { useSequentialReveal } from "@/hooks/use-gsap-reveal";
 
 const productLinks = [
@@ -35,10 +36,7 @@ export function Footer() {
                     {/* Logo & Description */}
                     <div data-animate data-animate-order="1" className="col-span-2 md:col-span-1">
                         <Link href="/" className="flex items-center gap-2 mb-4">
-                            <div className="w-8 h-8 rounded-xl bg-primary flex items-center justify-center shadow shadow-primary/10">
-                                <span className="text-primary-foreground font-black text-sm">D</span>
-                            </div>
-                            <span className="font-black text-xl tracking-tight text-foreground">DevSynq</span>
+                            <Logo size={32} priority textClassName="text-xl" />
                         </Link>
                         <p className="text-sm text-muted-foreground mb-4">
                             The control center for all your AI-powered development
