@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { Monitor, Sparkles } from "lucide-react";
-import { motion } from "framer-motion";
+import { motion, Variants } from "framer-motion";
 
 const screenshots = [
     {
@@ -84,17 +84,17 @@ export function Screenshots() {
                 viewport={{ once: true, margin: "-100px" }}
             >
                 <div className="text-center space-y-4">
-                    <motion.div variants={itemVariants} className="inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/10 px-3 py-1 text-sm text-primary">
+                    <motion.div variants={itemVariants as Variants} className="inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/10 px-3 py-1 text-sm text-primary">
                         <Sparkles className="h-4 w-4" />
                         Product view
                     </motion.div>
-                    <motion.h2 variants={itemVariants} className="text-3xl md:text-4xl font-black leading-tight">
+                    <motion.h2 variants={itemVariants as Variants} className="text-3xl md:text-4xl font-black leading-tight">
                         Looks and feels like the desktop app
                     </motion.h2>
-                    <motion.p variants={itemVariants} className="text-muted-foreground max-w-2xl mx-auto">
+                    <motion.p variants={itemVariants as Variants} className="text-muted-foreground max-w-2xl mx-auto">
                         A curated peek at the Electron experience—now mirrored on the web. Pixel-perfect screens that match what you ship.
                     </motion.p>
-                    <motion.div variants={itemVariants} className="flex flex-wrap justify-center gap-3 text-sm text-muted-foreground">
+                    <motion.div variants={itemVariants as Variants} className="flex flex-wrap justify-center gap-3 text-sm text-muted-foreground">
                         <div className="inline-flex items-center gap-2 rounded-full border border-primary/25 bg-primary/10 px-3 py-1 text-primary">
                             <Monitor className="h-4 w-4" />
                             Live product captures
@@ -110,7 +110,7 @@ export function Screenshots() {
                     {screenshots.map((shot) => (
                         <motion.div
                             key={shot.title}
-                            variants={itemVariants}
+                            variants={itemVariants as Variants}
                             className="group relative overflow-hidden rounded-2xl border border-border/70 bg-card/70 backdrop-blur shadow-[0_20px_80px_-48px_rgba(0,0,0,0.8)] transition-all duration-200 hover:-translate-y-1 hover:border-primary/40"
                         >
                             <div
