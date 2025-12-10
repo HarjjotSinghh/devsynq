@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { Monitor, Sparkles } from "lucide-react";
-import { useSequentialReveal } from "@/hooks/use-gsap-reveal";
+import { motion } from "framer-motion";
 
 const screenshots = [
     {
@@ -37,11 +37,32 @@ const screenshots = [
     },
 ];
 
+const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+        opacity: 1,
+        transition: {
+            staggerChildren: 0.1,
+            delayChildren: 0.2,
+        },
+    },
+};
+
+const itemVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: {
+        opacity: 1,
+        y: 0,
+        transition: {
+            duration: 0.5,
+            ease: "easeOut",
+        },
+    },
+};
+
 export function Screenshots() {
-    const sectionRef = useSequentialReveal({ y: 24, itemDuration: 0.5, gap: 0.08 });
     return (
         <section
-            ref={sectionRef}
             className="relative isolate -mt-px py-28 px-6 bg-background"
             id="screenshots"
         >
@@ -55,19 +76,25 @@ export function Screenshots() {
                 <div className="absolute inset-x-10 top-16 h-24 rounded-[32px] border border-white/5 bg-white/5 blur-3xl" />
             </div>
 
-            <div className="relative max-w-6xl mx-auto space-y-12">
+            <motion.div
+                className="relative max-w-6xl mx-auto space-y-12"
+                variants={containerVariants}
+                initial="hidden"
+                whileInView="visible"
+                viewport={{ once: true, margin: "-100px" }}
+            >
                 <div className="text-center space-y-4">
-                    <div data-animate data-animate-order="1" className="inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/10 px-3 py-1 text-sm text-primary">
+                    <motion.div variants={itemVariants} className="inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/10 px-3 py-1 text-sm text-primary">
                         <Sparkles className="h-4 w-4" />
                         Product view
-                    </div>
-                    <h2 data-animate data-animate-order="2" className="text-3xl md:text-4xl font-black leading-tight">
+                    </motion.div>
+                    <motion.h2 variants={itemVariants} className="text-3xl md:text-4xl font-black leading-tight">
                         Looks and feels like the desktop app
-                    </h2>
-                    <p data-animate data-animate-order="3" className="text-muted-foreground max-w-2xl mx-auto">
+                    </motion.h2>
+                    <motion.p variants={itemVariants} className="text-muted-foreground max-w-2xl mx-auto">
                         A curated peek at the Electron experience—now mirrored on the web. Pixel-perfect screens that match what you ship.
-                    </p>
-                    <div data-animate data-animate-order="4" className="flex flex-wrap justify-center gap-3 text-sm text-muted-foreground">
+                    </motion.p>
+                    <motion.div variants={itemVariants} className="flex flex-wrap justify-center gap-3 text-sm text-muted-foreground">
                         <div className="inline-flex items-center gap-2 rounded-full border border-primary/25 bg-primary/10 px-3 py-1 text-primary">
                             <Monitor className="h-4 w-4" />
                             Live product captures
@@ -76,15 +103,14 @@ export function Screenshots() {
                             <Sparkles className="h-4 w-4 text-primary" />
                             Hover to zoom & glow
                         </div>
-                    </div>
+                    </motion.div>
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {screenshots.map((shot, idx) => (
-                        <div
+                    {screenshots.map((shot) => (
+                        <motion.div
                             key={shot.title}
-                            data-animate
-                            data-animate-order={idx + 2}
+                            variants={itemVariants}
                             className="group relative overflow-hidden rounded-2xl border border-border/70 bg-card/70 backdrop-blur shadow-[0_20px_80px_-48px_rgba(0,0,0,0.8)] transition-all duration-200 hover:-translate-y-1 hover:border-primary/40"
                         >
                             <div
@@ -93,7 +119,7 @@ export function Screenshots() {
                                     background: `radial-gradient(circle at 20% 15%, rgba(93,233,182,0.1), transparent 40%), radial-gradient(circle at 80% 0%, rgba(93,233,182,0.1), transparent 40%)`,
                                 }}
                             />
-                            <div className="relative aspect-4/3 overflow-hidden">
+                            <div className="relative aspect-[4/3] overflow-hidden">
                                 <Image
                                     src={shot.path}
                                     alt={shot.title}
@@ -101,7 +127,6 @@ export function Screenshots() {
                                     className="object-cover transition-transform duration-500 group-hover:scale-105 select-none"
                                     draggable={false}
                                     sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
-                                    priority={idx === 0}
                                 />
                                 <div className="absolute inset-0 bg-linear-to-t from-background/85 via-background/25 to-transparent pointer-events-none" />
                                 <div className="absolute left-4 top-4 inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-1 text-xs font-medium text-foreground">
@@ -118,10 +143,10 @@ export function Screenshots() {
                                 </p>
                                 <p className="text-foreground font-medium">{shot.caption}</p>
                             </div>
-                        </div>
+                        </motion.div>
                     ))}
                 </div>
-            </div>
+            </motion.div>
         </section>
     );
 }

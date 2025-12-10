@@ -32,14 +32,14 @@ const currentRelease: Release = {
     version: '1.0.0',
     date: 'December 8, 2025',
     windows: {
-        exe: 'https://github.com/HarjjotSinghh/devsynq/releases/download/v1.0.0/DevSynq-Setup-1.0.0.exe',
-        zip: 'https://github.com/HarjjotSinghh/devsynq/releases/download/v1.0.0/DevSynq-1.0.0-win.zip',
+        exe: 'https://github.com/HarjjotSinghh/devsynq/releases',
+        zip: 'https://github.com/HarjjotSinghh/devsynq/releases',
         sha256: 'Coming soon',
         size: '~95 MB',
     },
     macos: {
-        dmg: 'https://github.com/HarjjotSinghh/devsynq/releases/download/v1.0.0/DevSynq-1.0.0.dmg',
-        zip: 'https://github.com/HarjjotSinghh/devsynq/releases/download/v1.0.0/DevSynq-1.0.0-mac.zip',
+        dmg: 'https://github.com/HarjjotSinghh/devsynq/releases',
+        zip: 'https://github.com/HarjjotSinghh/devsynq/releases',
         sha256: 'Coming soon',
         size: '~87 MB',
     },

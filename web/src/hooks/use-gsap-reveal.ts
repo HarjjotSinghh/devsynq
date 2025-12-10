@@ -20,6 +20,7 @@ type SequentialOptions = SectionRevealOptions & {
   itemY?: number;
   itemDuration?: number;
   gap?: number;
+  animateTrigger?: boolean;
 };
 
 let gsapInstance: GSAPType | null = null;
@@ -126,6 +127,7 @@ export function useSequentialReveal(options?: SequentialOptions) {
     itemY = 18,
     itemDuration = 0.45,
     gap = 0.08,
+    animateTrigger = true
   } = options ?? {};
 
   useEffect(() => {
@@ -162,12 +164,14 @@ export function useSequentialReveal(options?: SequentialOptions) {
           delay,
         });
 
-        tl.from(el, {
-          autoAlpha: 0,
-          y,
-          duration: Math.min(duration, 1),
-          ease,
-        });
+        if (animateTrigger) {
+          tl.from(el, {
+            autoAlpha: 0,
+            y,
+            duration: Math.min(duration, 1),
+            ease,
+          });
+        }
 
         if (targets.length) {
           tl.from(
@@ -179,7 +183,7 @@ export function useSequentialReveal(options?: SequentialOptions) {
               ease,
               stagger: gap,
             },
-            '-=40%'
+            animateTrigger ? '-=40%' : 0
           );
         }
       }, el);
@@ -189,8 +193,7 @@ export function useSequentialReveal(options?: SequentialOptions) {
       isMounted = false;
       ctx?.revert();
     };
-  }, [y, duration, delay, ease, staggerSelector, once, sequenceSelector, orderAttribute, itemY, itemDuration, gap]);
+  }, [y, duration, delay, ease, staggerSelector, once, sequenceSelector, orderAttribute, itemY, itemDuration, gap, animateTrigger]);
 
   return ref;
 }
-

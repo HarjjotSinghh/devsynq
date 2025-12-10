@@ -50,6 +50,7 @@
     "date-fns": "^4.1.0",
     "drizzle-orm": "^0.45.0",
     "embla-carousel-react": "^8.6.0",
+    "framer-motion": "^12.23.25",
     "gsap": "^3.14.1",
     "input-otp": "^1.4.2",
     "lucide-react": "^0.556.0",
