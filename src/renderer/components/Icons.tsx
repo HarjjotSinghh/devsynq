@@ -39,7 +39,7 @@ import {
     Key,
     Edit2
 } from 'lucide-react';
-import logoImage from '../../../assets/branding/logo.png';
+import logoImage from '../../../src/logo.png';
 
 type IconName =
     | 'logo'
