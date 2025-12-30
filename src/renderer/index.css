@@ -295,6 +295,7 @@ textarea {
     object-fit: contain;
     display: block;
 }
+
 .window-controls {
     display: flex;
     gap: 4px;
@@ -862,15 +863,15 @@ textarea {
     width: 64px;
     height: 64px;
     display: flex;
-        align-items: center;
-        justify-content: center;
-    }
-    
-    .loader-logo img {
-        width: 100%;
-        height: 100%;
-        object-fit: contain;
-        display: block;
+    align-items: center;
+    justify-content: center;
+}
+
+.loader-logo img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    display: block;
 }
 
 .loader-text {
@@ -947,6 +948,7 @@ textarea {
         transform: translateY(-10px);
     }
 }
+
 /* Footer */
 .footer {
     padding: var(--spacing-md) var(--spacing-2xl);
@@ -973,6 +975,7 @@ textarea {
     color: var(--accent-hover);
     text-decoration: underline;
 }
+
 /* Toast */
 .toast {
     position: fixed;
@@ -1000,4 +1003,192 @@ textarea {
 .toast.show {
     opacity: 1;
     transform: translateY(0);
+}
+
+/* ========================================
+   Enhancement: Drag & Drop Overlay
+   ======================================== */
+.app-container.dragging-over {
+    position: relative;
+}
+
+.drag-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.85);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10000;
+    animation: fadeIn 0.2s ease;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+.drag-overlay-content {
+    text-align: center;
+    color: var(--accent-primary);
+    padding: var(--spacing-2xl);
+    border: 2px dashed var(--accent-primary);
+    border-radius: var(--radius-lg);
+    background: rgba(93, 233, 182, 0.05);
+}
+
+.drag-overlay-content h3 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-top: var(--spacing-md);
+    color: var(--text-primary);
+}
+
+.drag-overlay-content p {
+    color: var(--text-secondary);
+    margin-top: var(--spacing-sm);
+}
+
+/* ========================================
+   Enhancement: Section Header Actions
+   ======================================== */
+.section-header-actions {
+    display: flex;
+    gap: var(--spacing-sm);
+    align-items: center;
+}
+
+/* ========================================
+   Enhancement: Group Filter Tabs
+   ======================================== */
+.group-filter-tabs {
+    display: flex;
+    gap: var(--spacing-xs);
+    flex-wrap: wrap;
+    margin-bottom: var(--spacing-md);
+    padding: var(--spacing-sm);
+    background: var(--bg-secondary);
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border-color);
+}
+
+.group-filter-tab {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 14px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: var(--text-secondary);
+    background: transparent;
+    border: 1px solid transparent;
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.group-filter-tab:hover {
+    background: var(--bg-tertiary);
+    color: var(--text-primary);
+}
+
+.group-filter-tab.active {
+    background: var(--bg-tertiary);
+    color: var(--accent-primary);
+    border-color: var(--accent-primary);
+}
+
+.group-color-indicator {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.group-filter-tab .group-icon {
+    font-size: 0.9rem;
+}
+
+/* ========================================
+   Enhancement: Project Metadata Row
+   ======================================== */
+.project-metadata-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 6px;
+}
+
+.metadata-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 2px 8px;
+    font-size: 0.7rem;
+    font-weight: 500;
+    border-radius: var(--radius-full);
+    background: var(--bg-tertiary);
+    color: var(--text-secondary);
+}
+
+.metadata-badge.git {
+    background: rgba(93, 233, 182, 0.1);
+    color: var(--accent-primary);
+}
+
+.metadata-badge.pkg {
+    background: rgba(245, 158, 11, 0.1);
+    color: var(--warning);
+}
+
+.metadata-badge.group {
+    font-weight: 600;
+}
+
+/* ========================================
+   Enhancement: Project Tags
+   ======================================== */
+.project-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    margin-top: 6px;
+}
+
+.project-tag {
+    display: inline-block;
+    padding: 2px 6px;
+    font-size: 0.65rem;
+    font-weight: 500;
+    color: var(--text-muted);
+    background: var(--bg-primary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+}
+
+.project-tag.more {
+    color: var(--accent-primary);
+    background: rgba(93, 233, 182, 0.05);
+    border-color: var(--accent-dim);
+}
+
+/* ========================================
+   Enhancement: Project Group Indicator
+   ======================================== */
+.project-card {
+    position: relative;
+}
+
+.project-group-indicator {
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 3px;
+    border-radius: var(--radius-md) 0 0 var(--radius-md);
 }

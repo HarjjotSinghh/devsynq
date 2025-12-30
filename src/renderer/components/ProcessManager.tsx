@@ -2,13 +2,22 @@ import React, { useEffect, useState, useCallback } from 'react';
 import { RunningIDE, ProcessStats } from '../../types';
 import { ResourceUsage } from '../types.d';
 import { Icon, IdeIcon } from './Icons';
+import { SparklineGraph } from './SparklineGraph';
+
+// Extended IDE type with history
+interface RunningIDEWithHistory extends RunningIDE {
+    history?: {
+        cpu: number[];
+        memory: number[];
+    };
+}
 
 interface ProcessManagerProps {
     onClose?: () => void;
 }
 
 function ProcessManager({ onClose }: ProcessManagerProps) {
-    const [runningIDEs, setRunningIDEs] = useState<RunningIDE[]>([]);
+    const [runningIDEs, setRunningIDEs] = useState<RunningIDEWithHistory[]>([]);
     const [stats, setStats] = useState<ProcessStats | null>(null);
     const [resourceUsage, setResourceUsage] = useState<ResourceUsage | null>(null);
     const [isLoading, setIsLoading] = useState(true);
@@ -19,7 +28,9 @@ function ProcessManager({ onClose }: ProcessManagerProps) {
     const loadData = useCallback(async () => {
         try {
             const [ides, processStats, resources] = await Promise.all([
-                window.electronAPI.getRunningIDEs(),
+                window.electronAPI.getRunningIDEsWithHistory
+                    ? window.electronAPI.getRunningIDEsWithHistory()
+                    : window.electronAPI.getRunningIDEs(),
                 window.electronAPI.getProcessStats(),
                 window.electronAPI.getResourceUsage(),
             ]);
@@ -211,6 +222,33 @@ function ProcessManager({ onClose }: ProcessManagerProps) {
                                         PID: {ide.pid}
                                     </span>
                                 </div>
+                                {/* Sparkline Graphs */}
+                                {ide.history && (ide.history.cpu.length > 1 || ide.history.memory.length > 1) && (
+                                    <div className="pm-sparklines">
+                                        <div className="pm-sparkline-item">
+                                            <span className="pm-sparkline-label">CPU</span>
+                                            <SparklineGraph
+                                                data={ide.history.cpu}
+                                                width={80}
+                                                height={20}
+                                                color="var(--accent-primary)"
+                                                fillColor="rgba(93, 233, 182, 0.15)"
+                                            />
+                                        </div>
+                                        <div className="pm-sparkline-item">
+                                            <span className="pm-sparkline-label">Mem</span>
+                                            <SparklineGraph
+                                                data={ide.history.memory}
+                                                width={80}
+                                                height={20}
+                                                color="#06b6d4"
+                                                fillColor="rgba(6, 182, 212, 0.15)"
+                                                max={ide.history.memory.reduce((a, b) => Math.max(a, b), 0) * 1.2 || 100}
+                                                min={0}
+                                            />
+                                        </div>
+                                    </div>
+                                )}
                             </div>
                             <div className="pm-process-actions">
                                 <button

@@ -42,6 +42,10 @@ import {
   killIDE,
   killAllIDEs,
   getResourceUsage,
+  addResourceSample,
+  getResourceHistory,
+  getSystemResourceHistory,
+  addSystemResourceSample,
 } from "./lib/process-manager";
 
 // Import API keys sync functions
@@ -679,6 +683,58 @@ ipcMain.handle(
       // Don't block IDE launch if sync fails
     }
 
+    // Execute Pre-Launch Scripts if projectPath is provided
+    if (projectPath) {
+      const projects = loadProjects();
+      const project = projects.find((p) => p.path === projectPath);
+
+      if (project && project.preLaunchScripts && project.preLaunchScripts.length > 0) {
+        const { exec, spawn } = require("child_process");
+        const enabledScripts = project.preLaunchScripts.filter((s: any) => s.enabled);
+
+        for (const script of enabledScripts) {
+          const cwd = script.cwd || project.path;
+          const command = script.args
+            ? `${script.command} ${script.args.join(" ")}`
+            : script.command;
+
+          console.log(`Running pre-launch script: ${script.name} - ${command}`);
+
+          if (script.runInBackground) {
+            // Run in background, don't wait
+            const child = spawn(script.command, script.args || [], {
+              cwd,
+              detached: true,
+              stdio: "ignore",
+              shell: true,
+            });
+            child.unref();
+            console.log(`Started background script: ${script.name}`);
+          } else if (script.waitForCompletion) {
+            // Wait for the script to complete
+            await new Promise<void>((resolve, reject) => {
+              exec(command, { cwd }, (error: any, stdout: any, stderr: any) => {
+                if (error) {
+                  console.error(`Script ${script.name} failed:`, error);
+                  // Don't block IDE launch on script failure
+                }
+                if (stdout) console.log(`Script ${script.name} output:`, stdout);
+                if (stderr) console.error(`Script ${script.name} stderr:`, stderr);
+                resolve();
+              });
+            });
+          } else {
+            // Fire and forget
+            exec(command, { cwd }, (error: any) => {
+              if (error) {
+                console.error(`Script ${script.name} failed:`, error);
+              }
+            });
+          }
+        }
+      }
+    }
+
     // Update project lastOpened if projectPath is provided
     if (projectPath) {
       const projects = loadProjects();
@@ -686,6 +742,33 @@ ipcMain.handle(
       if (project) {
         project.lastOpened = Date.now();
         saveProjects(projects);
+      }
+    }
+
+    // Inject project-specific MCPs before launching
+    if (projectPath) {
+      try {
+        const { injectProjectMCPs } = await import("./lib/mcp-sync");
+        // Map IDE name to MCP config IDE ID
+        const ideIdMap: Record<string, string> = {
+          Cursor: "cursor",
+          Windsurf: "windsurf",
+          "VS Code": "vscode",
+          Antigravity: "antigravity",
+          Kiro: "kiro",
+          Qoder: "qoder",
+          Trae: "trae",
+        };
+        const ideId = ideIdMap[ideName];
+        if (ideId) {
+          const injected = injectProjectMCPs(projectPath, ideId);
+          if (injected.length > 0) {
+            console.log(`Injected ${injected.length} project MCPs for ${ideName}`);
+          }
+        }
+      } catch (error) {
+        console.error("Failed to inject project MCPs:", error);
+        // Don't block IDE launch
       }
     }
 
@@ -947,9 +1030,214 @@ ipcMain.handle("kill-all-ides", async () => {
   return await killAllIDEs();
 });
 
+// Get resource history for an IDE
+ipcMain.handle("get-resource-history", (_event: unknown, ideName: string) => {
+  return getResourceHistory(ideName);
+});
+
+// Get system resource history
+ipcMain.handle("get-system-resource-history", () => {
+  return getSystemResourceHistory();
+});
+
+// Get running IDEs with resource history
+ipcMain.handle("get-running-ides-with-history", async () => {
+  const ides = await getRunningIDEs();
+
+  // Add resource samples for each running IDE
+  for (const ide of ides) {
+    addResourceSample(
+      ide.name,
+      ide.cpuUsage || 0,
+      ide.memoryUsage || 0
+    );
+  }
+
+  // Calculate system CPU usage (rough estimate)
+  const totalMem = require('os').totalmem() / 1024 / 1024;
+  const freeMem = require('os').freemem() / 1024 / 1024;
+  const memUsage = ((totalMem - freeMem) / totalMem) * 100;
+  const cpuUsage = ides.reduce((sum, ide) => sum + (ide.cpuUsage || 0), 0);
+  addSystemResourceSample(cpuUsage, memUsage);
+
+  // Return IDEs with their history
+  return ides.map(ide => ({
+    ...ide,
+    history: getResourceHistory(ide.name),
+  }));
+});
+
 // Get resource usage
 ipcMain.handle("get-resource-usage", async () => {
   return await getResourceUsage();
+});
+
+// ============================================================================
+// MCP Health Monitoring IPC Handlers
+// ============================================================================
+
+import {
+  getMCPHealthStatus,
+  getMCPLogs,
+  killMCPServer,
+  restartMCPServer,
+} from "./lib/mcp-health";
+
+// Get MCP health status
+ipcMain.handle("get-mcp-health-status", async () => {
+  return await getMCPHealthStatus();
+});
+
+// Get MCP server logs
+ipcMain.handle("get-mcp-logs", (_event: unknown, serverName: string) => {
+  return getMCPLogs(serverName);
+});
+
+// Kill MCP server
+ipcMain.handle("kill-mcp-server", async (_event: unknown, pid: number) => {
+  return await killMCPServer(pid);
+});
+
+// Restart MCP server
+ipcMain.handle("restart-mcp-server", async (_event: unknown, serverName: string, command: string) => {
+  return await restartMCPServer(serverName, command);
+});
+
+// ============================================================================
+// Rules Library IPC Handlers
+// ============================================================================
+
+import {
+  getTemplates,
+  getBuiltInTemplates,
+  saveTemplate,
+  updateTemplate,
+  deleteTemplate,
+  applyTemplate,
+  extractRulesFromProject,
+  getProjectRulesInfo,
+} from "./lib/rules-library";
+
+// Get all user templates
+ipcMain.handle("get-rules-templates", () => {
+  return getTemplates();
+});
+
+// Get built-in templates
+ipcMain.handle("get-built-in-templates", () => {
+  return getBuiltInTemplates();
+});
+
+// Save a new template
+ipcMain.handle("save-rules-template", (_event: unknown, template: any) => {
+  return saveTemplate(template);
+});
+
+// Update a template
+ipcMain.handle("update-rules-template", (_event: unknown, id: string, updates: any) => {
+  return updateTemplate(id, updates);
+});
+
+// Delete a template
+ipcMain.handle("delete-rules-template", (_event: unknown, id: string) => {
+  return deleteTemplate(id);
+});
+
+// Apply a template to a project
+ipcMain.handle("apply-rules-template", (_event: unknown, templateId: string, projectPath: string) => {
+  return applyTemplate(templateId, projectPath);
+});
+
+// Extract rules from a project
+ipcMain.handle("extract-rules-from-project", (_event: unknown, projectPath: string) => {
+  return extractRulesFromProject(projectPath);
+});
+
+// Get project rules info
+ipcMain.handle("get-project-rules-info", (_event: unknown, projectPath: string) => {
+  return getProjectRulesInfo(projectPath);
+});
+
+// ============================================================================
+// Rules Sync IPC Handlers (Multi-IDE Syncing)
+// ============================================================================
+
+import {
+  loadRulesSyncSettings,
+  saveRulesSyncSettings,
+  syncRulesInProject,
+  getProjectRulesSyncStatus,
+  getProjectRulesFiles,
+  RULES_FILES,
+} from "./lib/rules-sync";
+
+// Get rules sync settings
+ipcMain.handle("get-rules-sync-settings", () => {
+  return loadRulesSyncSettings();
+});
+
+// Save rules sync settings
+ipcMain.handle("save-rules-sync-settings", (_event: unknown, settings: any) => {
+  saveRulesSyncSettings(settings);
+  return { success: true };
+});
+
+// Sync rules in a project
+ipcMain.handle("sync-rules-in-project", (_event: unknown, projectPath: string) => {
+  return syncRulesInProject(projectPath);
+});
+
+// Get project rules sync status
+ipcMain.handle("get-project-rules-sync-status", (_event: unknown, projectPath: string) => {
+  return getProjectRulesSyncStatus(projectPath);
+});
+
+// Get available rules files in a project
+ipcMain.handle("get-project-rules-files", (_event: unknown, projectPath: string) => {
+  return getProjectRulesFiles(projectPath);
+});
+
+// Get all supported rules file types
+ipcMain.handle("get-supported-rules-files", () => {
+  return RULES_FILES;
+});
+
+// ============================================================================
+// Extension Sync IPC Handlers
+// ============================================================================
+
+import {
+  loadExtensionSyncSettings,
+  saveExtensionSyncSettings,
+  getIDEExtensions,
+  compareExtensions,
+  getAvailableIDEsForExtensionSync,
+} from "./lib/extension-sync";
+
+// Get extension sync settings
+ipcMain.handle("get-extension-sync-settings", () => {
+  return loadExtensionSyncSettings();
+});
+
+// Save extension sync settings
+ipcMain.handle("save-extension-sync-settings", (_event: unknown, settings: any) => {
+  saveExtensionSyncSettings(settings);
+  return { success: true };
+});
+
+// Get extensions for an IDE
+ipcMain.handle("get-ide-extensions", (_event: unknown, ideId: string) => {
+  return getIDEExtensions(ideId);
+});
+
+// Compare extensions between IDEs
+ipcMain.handle("compare-extensions", (_event: unknown, masterIDE: string, targetIDE: string) => {
+  return compareExtensions(masterIDE, targetIDE);
+});
+
+// Get available IDEs for extension sync
+ipcMain.handle("get-available-ides-for-extension-sync", () => {
+  return getAvailableIDEsForExtensionSync();
 });
 
 // ============================================================================
@@ -1118,8 +1406,450 @@ ipcMain.handle("get-command-palette-data", async () => {
 });
 
 // ============================================================================
+// MCP Marketplace IPC Handlers
+// ============================================================================
+
+import {
+  getAvailableServers,
+  getCategoriesWithCounts,
+  installServer,
+  uninstallServer,
+} from "./lib/mcp-marketplace";
+
+// Get all available MCP servers
+ipcMain.handle("get-mcp-marketplace-servers", () => {
+  return getAvailableServers();
+});
+
+// Get MCP categories with counts
+ipcMain.handle("get-mcp-categories", () => {
+  return getCategoriesWithCounts();
+});
+
+// Install an MCP server
+ipcMain.handle("install-mcp-server", (_event: unknown, server: any) => {
+  return installServer(server);
+});
+
+// Uninstall an MCP server
+ipcMain.handle("uninstall-mcp-server", (_event: unknown, serverName: string) => {
+  return uninstallServer(serverName);
+});
+
+// Open external URL
+ipcMain.handle("open-external", async (_event: unknown, url: string) => {
+  await shell.openExternal(url);
+});
+
+// ============================================================================
+// Project Metadata IPC Handlers
+// ============================================================================
+
+// Get project metadata (git status, node version, etc.)
+ipcMain.handle("get-project-metadata", async (_event: unknown, projectPath: string) => {
+  try {
+    const metadata: any = { lastUpdated: Date.now() };
+
+    // Check for git
+    const gitDir = path.join(projectPath, ".git");
+    if (fs.existsSync(gitDir)) {
+      try {
+        // Get current branch
+        const headFile = path.join(gitDir, "HEAD");
+        if (fs.existsSync(headFile)) {
+          const headContent = fs.readFileSync(headFile, "utf-8").trim();
+          if (headContent.startsWith("ref: refs/heads/")) {
+            metadata.gitBranch = headContent.replace("ref: refs/heads/", "");
+          }
+        }
+
+        // Get last commit (simplified - just check if there are commits)
+        const logsDir = path.join(gitDir, "logs", "HEAD");
+        if (fs.existsSync(logsDir)) {
+          const logs = fs.readFileSync(logsDir, "utf-8").trim().split("\n");
+          if (logs.length > 0) {
+            const lastLog = logs[logs.length - 1];
+            const parts = lastLog.split(" ");
+            if (parts.length > 3) {
+              metadata.gitLastCommit = parts[1]?.substring(0, 7);
+            }
+          }
+        }
+      } catch (e) {
+        // Ignore git errors
+      }
+    }
+
+    // Check for package.json
+    const packageJsonPath = path.join(projectPath, "package.json");
+    if (fs.existsSync(packageJsonPath)) {
+      // Detect package manager
+      if (fs.existsSync(path.join(projectPath, "bun.lock"))) {
+        metadata.packageManager = "bun";
+      } else if (fs.existsSync(path.join(projectPath, "pnpm-lock.yaml"))) {
+        metadata.packageManager = "pnpm";
+      } else if (fs.existsSync(path.join(projectPath, "yarn.lock"))) {
+        metadata.packageManager = "yarn";
+      } else if (fs.existsSync(path.join(projectPath, "package-lock.json"))) {
+        metadata.packageManager = "npm";
+      }
+    }
+
+    return metadata;
+  } catch (error) {
+    console.error("Failed to get project metadata:", error);
+    return null;
+  }
+});
+
+// Refresh all projects metadata
+ipcMain.handle("refresh-all-project-metadata", async () => {
+  // This would update cached metadata for all projects
+  // For now, just return success
+  return { success: true };
+});
+
+// ============================================================================
+// Project Groups IPC Handlers
+// ============================================================================
+
+const projectGroupsFile = path.join(userDataPath, "project-groups.json");
+
+function loadProjectGroups(): any[] {
+  try {
+    if (fs.existsSync(projectGroupsFile)) {
+      return JSON.parse(fs.readFileSync(projectGroupsFile, "utf-8"));
+    }
+  } catch (e) {
+    console.error("Failed to load project groups:", e);
+  }
+  return [];
+}
+
+function saveProjectGroups(groups: any[]): void {
+  fs.writeFileSync(projectGroupsFile, JSON.stringify(groups, null, 2));
+}
+
+// Get all project groups
+ipcMain.handle("get-project-groups", () => {
+  return loadProjectGroups();
+});
+
+// Create a new project group
+ipcMain.handle("create-project-group", (_event: unknown, group: any) => {
+  const groups = loadProjectGroups();
+  const newGroup = {
+    ...group,
+    id: Date.now().toString() + Math.random().toString(36).substr(2, 9),
+  };
+  groups.push(newGroup);
+  saveProjectGroups(groups);
+  return newGroup;
+});
+
+// Update a project group
+ipcMain.handle("update-project-group", (_event: unknown, group: any) => {
+  const groups = loadProjectGroups();
+  const index = groups.findIndex((g: any) => g.id === group.id);
+  if (index !== -1) {
+    groups[index] = group;
+    saveProjectGroups(groups);
+  }
+  return group;
+});
+
+// Delete a project group
+ipcMain.handle("delete-project-group", (_event: unknown, groupId: string) => {
+  const groups = loadProjectGroups();
+  const filtered = groups.filter((g: any) => g.id !== groupId);
+  saveProjectGroups(filtered);
+
+  // Also remove group from any projects
+  const projects = loadProjects();
+  let updated = false;
+  for (const project of projects) {
+    if ((project as any).group === groupId) {
+      (project as any).group = null;
+      updated = true;
+    }
+  }
+  if (updated) {
+    saveProjects(projects);
+  }
+
+  return { success: true };
+});
+
+// Assign project to group
+ipcMain.handle("assign-project-to-group", (_event: unknown, projectId: string, groupId: string | null) => {
+  const projects = loadProjects();
+  const project = projects.find((p) => p.id === projectId);
+  if (project) {
+    (project as any).group = groupId;
+    saveProjects(projects);
+  }
+  return project;
+});
+
+// Add tags to project
+ipcMain.handle("add-project-tags", (_event: unknown, projectId: string, tags: string[]) => {
+  const projects = loadProjects();
+  const project = projects.find((p) => p.id === projectId);
+  if (project) {
+    const existingTags = (project as any).tags || [];
+    (project as any).tags = [...new Set([...existingTags, ...tags])];
+    saveProjects(projects);
+  }
+  return project;
+});
+
+// Remove tag from project
+ipcMain.handle("remove-project-tag", (_event: unknown, projectId: string, tag: string) => {
+  const projects = loadProjects();
+  const project = projects.find((p) => p.id === projectId);
+  if (project && (project as any).tags) {
+    (project as any).tags = (project as any).tags.filter((t: string) => t !== tag);
+    saveProjects(projects);
+  }
+  return project;
+});
+
+// ============================================================================
+// Pre-Launch Scripts IPC Handlers
+// ============================================================================
+
+// Get pre-launch scripts for a project
+ipcMain.handle("get-pre-launch-scripts", (_event: unknown, projectId: string) => {
+  const projects = loadProjects();
+  const project = projects.find((p) => p.id === projectId);
+  return project?.preLaunchScripts || [];
+});
+
+// Add a pre-launch script to a project
+ipcMain.handle("add-pre-launch-script", (_event: unknown, projectId: string, script: any) => {
+  const projects = loadProjects();
+  const project = projects.find((p) => p.id === projectId);
+  if (project) {
+    if (!project.preLaunchScripts) {
+      project.preLaunchScripts = [];
+    }
+    const newScript = {
+      ...script,
+      id: Date.now().toString() + Math.random().toString(36).substr(2, 9),
+    };
+    project.preLaunchScripts.push(newScript);
+    saveProjects(projects);
+    return newScript;
+  }
+  return null;
+});
+
+// Update a pre-launch script
+ipcMain.handle("update-pre-launch-script", (_event: unknown, projectId: string, script: any) => {
+  const projects = loadProjects();
+  const project = projects.find((p) => p.id === projectId);
+  if (project && project.preLaunchScripts) {
+    const index = project.preLaunchScripts.findIndex((s: any) => s.id === script.id);
+    if (index !== -1) {
+      project.preLaunchScripts[index] = script;
+      saveProjects(projects);
+      return script;
+    }
+  }
+  return null;
+});
+
+// Delete a pre-launch script
+ipcMain.handle("delete-pre-launch-script", (_event: unknown, projectId: string, scriptId: string) => {
+  const projects = loadProjects();
+  const project = projects.find((p) => p.id === projectId);
+  if (project && project.preLaunchScripts) {
+    project.preLaunchScripts = project.preLaunchScripts.filter((s: any) => s.id !== scriptId);
+    saveProjects(projects);
+    return { success: true };
+  }
+  return { success: false };
+});
+
+// Toggle a pre-launch script enabled/disabled
+ipcMain.handle("toggle-pre-launch-script", (_event: unknown, projectId: string, scriptId: string, enabled: boolean) => {
+  const projects = loadProjects();
+  const project = projects.find((p) => p.id === projectId);
+  if (project && project.preLaunchScripts) {
+    const script = project.preLaunchScripts.find((s: any) => s.id === scriptId);
+    if (script) {
+      script.enabled = enabled;
+      saveProjects(projects);
+      return script;
+    }
+  }
+  return null;
+});
+
+// Run a specific pre-launch script manually
+ipcMain.handle("run-pre-launch-script", async (_event: unknown, projectId: string, scriptId: string) => {
+  const projects = loadProjects();
+  const project = projects.find((p) => p.id === projectId);
+  if (project && project.preLaunchScripts) {
+    const script = project.preLaunchScripts.find((s: any) => s.id === scriptId);
+    if (script) {
+      const { exec } = require("child_process");
+      const cwd = script.cwd || project.path;
+      const command = script.args
+        ? `${script.command} ${script.args.join(" ")}`
+        : script.command;
+
+      return new Promise((resolve) => {
+        exec(command, { cwd }, (error: any, stdout: any, stderr: any) => {
+          resolve({
+            success: !error,
+            output: stdout || "",
+            error: error?.message || stderr || "",
+          });
+        });
+      });
+    }
+  }
+  return { success: false, error: "Script not found" };
+});
+
+// ============================================================================
+// Cloud Sync IPC Handlers
+// ============================================================================
+
+import { cloudSyncService, SyncDataType } from "./lib/cloud-sync-service";
+
+// Check if logged in to cloud sync
+ipcMain.handle("cloud-sync-is-logged-in", () => {
+  return cloudSyncService.isLoggedIn();
+});
+
+// Get cloud sync config
+ipcMain.handle("cloud-sync-get-config", () => {
+  return cloudSyncService.getConfig();
+});
+
+// Register for cloud sync
+ipcMain.handle("cloud-sync-register", async (
+  _event: unknown,
+  email: string,
+  encryptionPassword: string,
+  displayName?: string,
+  serverUrl?: string
+) => {
+  return await cloudSyncService.register(email, encryptionPassword, displayName, serverUrl);
+});
+
+// Login to cloud sync
+ipcMain.handle("cloud-sync-login", async (
+  _event: unknown,
+  accessKey: string,
+  encryptionPassword: string,
+  serverUrl?: string
+) => {
+  return await cloudSyncService.login(accessKey, encryptionPassword, serverUrl);
+});
+
+// Logout from cloud sync
+ipcMain.handle("cloud-sync-logout", () => {
+  cloudSyncService.logout();
+  return { success: true };
+});
+
+// Set encryption password
+ipcMain.handle("cloud-sync-set-password", (_event: unknown, password: string) => {
+  cloudSyncService.setEncryptionPassword(password);
+  return { success: true };
+});
+
+// Push data to cloud sync
+ipcMain.handle("cloud-sync-push", async (
+  _event: unknown,
+  dataType: SyncDataType,
+  data: unknown
+) => {
+  return await cloudSyncService.push(dataType, data);
+});
+
+// Pull data from cloud sync
+ipcMain.handle("cloud-sync-pull", async (_event: unknown, dataType: SyncDataType) => {
+  return await cloudSyncService.pull(dataType);
+});
+
+// List all backups
+ipcMain.handle("cloud-sync-list-backups", async () => {
+  return await cloudSyncService.listBackups();
+});
+
+// Delete a backup
+ipcMain.handle("cloud-sync-delete-backup", async (_event: unknown, dataType?: SyncDataType) => {
+  return await cloudSyncService.deleteBackup(dataType);
+});
+
+// Get account info
+ipcMain.handle("cloud-sync-get-account", async () => {
+  return await cloudSyncService.getAccountInfo();
+});
+
+// Update cloud sync settings
+ipcMain.handle("cloud-sync-update-settings", (_event: unknown, settings: { autoSync?: boolean; syncInterval?: number }) => {
+  cloudSyncService.updateSettings(settings);
+  return { success: true };
+});
+
+// Sync all data (full backup)
+ipcMain.handle("cloud-sync-full-backup", async () => {
+  const projects = loadProjects();
+  const settings = loadSettings();
+  const groups = loadProjectGroups();
+
+  const fullBackup = {
+    projects,
+    settings,
+    groups,
+    exportedAt: Date.now(),
+    version: "1.0",
+  };
+
+  return await cloudSyncService.push("full_backup", fullBackup);
+});
+
+// Restore from full backup
+ipcMain.handle("cloud-sync-restore-backup", async () => {
+  const result = await cloudSyncService.pull<any>("full_backup");
+
+  if (result.success && result.data) {
+    const { projects, settings: restoredSettings, groups } = result.data;
+
+    if (projects && Array.isArray(projects)) {
+      saveProjects(projects);
+    }
+
+    if (restoredSettings) {
+      saveSettings({ ...defaultSettings, ...restoredSettings });
+    }
+
+    if (groups && Array.isArray(groups)) {
+      saveProjectGroups(groups);
+    }
+
+    return {
+      success: true,
+      message: "Backup restored successfully",
+      data: {
+        projectsCount: projects?.length || 0,
+        groupsCount: groups?.length || 0,
+      }
+    };
+  }
+
+  return result;
+});
+
+// ============================================================================
 // App Initialization
 // ============================================================================
+
 
 app.whenReady().then(() => {
   createWindow();

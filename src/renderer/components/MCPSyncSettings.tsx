@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { MCPSyncStatus, SyncSettings, SyncResult } from '../../types';
 import './MCPSyncSettings.css';
 import { Icon, IdeIcon } from './Icons';
+import MCPMarketplace from './MCPMarketplace';
 
 interface Props {
     onToast: (message: React.ReactNode) => void;
@@ -13,7 +14,7 @@ export const MCPSyncSettings: React.FC<Props> = ({ onToast }) => {
     const [syncing, setSyncing] = useState(false);
     const [lastResult, setLastResult] = useState<SyncResult | null>(null);
     const [loading, setLoading] = useState(true);
-    const [activeTab, setActiveTab] = useState<'sync' | 'log'>('sync');
+    const [activeTab, setActiveTab] = useState<'sync' | 'log' | 'explore'>('sync');
     const [syncLog, setSyncLog] = useState<any[]>([]);
 
     // Load initial data
@@ -243,6 +244,12 @@ export const MCPSyncSettings: React.FC<Props> = ({ onToast }) => {
                     IDE Sync
                 </button>
                 <button
+                    className={`mcp-tab ${activeTab === 'explore' ? 'active' : ''}`}
+                    onClick={() => setActiveTab('explore')}
+                >
+                    <Icon name="box" size={14} /> Explore
+                </button>
+                <button
                     className={`mcp-tab ${activeTab === 'log' ? 'active' : ''}`}
                     onClick={() => setActiveTab('log')}
                 >
@@ -398,6 +405,9 @@ export const MCPSyncSettings: React.FC<Props> = ({ onToast }) => {
                         </div>
                     )}
                 </>
+            ) : activeTab === 'explore' ? (
+                /* Explore/Marketplace Tab */
+                <MCPMarketplace onToast={onToast} />
             ) : (
                 /* Sync Log Tab */
                 <div className="mcp-section mcp-log">

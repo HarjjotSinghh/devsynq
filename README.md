@@ -32,7 +32,7 @@ A sleek, modern Electron application to launch your favorite AI-powered developm
 
 ## Prerequisites
 
-- [Bun](https://bun.sh) (v1.0.0 or higher)
+- [Bun](https://bun.sh) (v0.0.1 or higher)
 - [Node.js](https://nodejs.org) (v18 or higher)
 
 ## Getting Started

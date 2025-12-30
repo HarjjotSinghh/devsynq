@@ -1,8 +1,11 @@
-import React, { useEffect, useState } from 'react';
-import { IDE, IDEType, Project, Settings } from '../types';
+import React, { useEffect, useState, useCallback } from 'react';
+import { IDE, IDEType, Project, Settings, ProjectGroup, ProjectMetadata } from '../types';
 import { Icon, IdeIcon } from './components/Icons';
 import SettingsPage from './components/SettingsPage';
 import Modal from './components/Modal';
+import ProjectGroupManager from './components/ProjectGroupManager';
+import { MCPHealthDashboard } from './components/MCPHealthDashboard';
+import { RulesLibrary } from './components/RulesLibrary';
 
 const SETTINGS_DEFAULTS: Settings = {
     defaultIDE: IDEType.Cursor,
@@ -34,6 +37,18 @@ const App: React.FC = () => {
     const [isProjectScanModalOpen, setIsProjectScanModalOpen] = useState(false);
 
     const [isLoadingInitial, setIsLoadingInitial] = useState(true);
+
+    // Project Metadata & Groups State
+    const [projectMetadata, setProjectMetadata] = useState<Record<string, ProjectMetadata>>({});
+    const [projectGroups, setProjectGroups] = useState<ProjectGroup[]>([]);
+    const [selectedGroupFilter, setSelectedGroupFilter] = useState<string | null>(null);
+    const [isGroupManagerOpen, setIsGroupManagerOpen] = useState(false);
+    const [isDraggingOver, setIsDraggingOver] = useState(false);
+
+    // New Feature States
+    const [isMCPHealthOpen, setIsMCPHealthOpen] = useState(false);
+    const [isRulesLibraryOpen, setIsRulesLibraryOpen] = useState(false);
+    const [selectedProjectForRules, setSelectedProjectForRules] = useState<string | undefined>(undefined);
 
     // --- Initialization ---
     useEffect(() => {
@@ -68,6 +83,8 @@ const App: React.FC = () => {
             await loadMCPStatus();
             // Load profile sync status
             await loadProfileStatus();
+            // Load project groups
+            await loadProjectGroups();
 
             // Listen for settings shortcut from main process
             window.electronAPI.onShowSettings(() => {
@@ -181,8 +198,91 @@ const App: React.FC = () => {
         try {
             const loadedProjects = await window.electronAPI.getProjects();
             setProjects(loadedProjects);
+            // Load metadata for each project
+            loadProjectMetadata(loadedProjects);
         } catch (error) {
             console.error('Failed to load projects:', error);
+        }
+    };
+
+    // Load project metadata (git branch, package manager, etc.)
+    const loadProjectMetadata = async (projectList: Project[]) => {
+        const metadata: Record<string, ProjectMetadata> = {};
+        for (const project of projectList) {
+            try {
+                const meta = await window.electronAPI.getProjectMetadata(project.path);
+                if (meta) {
+                    metadata[project.id] = meta;
+                }
+            } catch (error) {
+                // Silently ignore metadata loading errors
+            }
+        }
+        setProjectMetadata(metadata);
+    };
+
+    // Load project groups
+    const loadProjectGroups = async () => {
+        try {
+            const groups = await window.electronAPI.getProjectGroups();
+            setProjectGroups(groups);
+        } catch (error) {
+            console.error('Failed to load project groups:', error);
+        }
+    };
+
+    // Drag and drop handlers for project import
+    const handleDragOver = useCallback((e: React.DragEvent) => {
+        e.preventDefault();
+        e.stopPropagation();
+        if (e.dataTransfer.types.includes('Files')) {
+            setIsDraggingOver(true);
+        }
+    }, []);
+
+    const handleDragLeave = useCallback((e: React.DragEvent) => {
+        e.preventDefault();
+        e.stopPropagation();
+        setIsDraggingOver(false);
+    }, []);
+
+    const handleDrop = useCallback(async (e: React.DragEvent) => {
+        e.preventDefault();
+        e.stopPropagation();
+        setIsDraggingOver(false);
+
+        const files = e.dataTransfer.files;
+        if (files.length === 0) return;
+
+        // Get paths from dropped files/folders
+        const paths: string[] = [];
+        for (let i = 0; i < files.length; i++) {
+            const file = files[i] as (File & { path?: string });
+            if (file && file.path) {
+                paths.push(file.path);
+            }
+        }
+
+        if (paths.length > 0) {
+            try {
+                await window.electronAPI.addMultipleProjects(paths);
+                await loadProjects();
+                showToast(<><Icon name="checkCircle" size={16} /> Added {paths.length} project(s)!</>);
+            } catch (error) {
+                console.error('Failed to add dropped projects:', error);
+                showToast('Failed to add dropped projects');
+            }
+        }
+    }, []);
+
+    // Helper to get package manager icon
+    const getPackageManagerIcon = (pm?: string): string => {
+        switch (pm) {
+            case 'npm': return '📦';
+            case 'yarn': return '🧶';
+            case 'pnpm': return '⚡';
+            case 'bun': return '🍞';
+            default: return '';
         }
     };
 
@@ -388,11 +488,19 @@ const App: React.FC = () => {
 
     // --- Filtering & Sorting ---
     const filteredProjects = projects.filter(project => {
+        // Filter by group
+        if (selectedGroupFilter !== null) {
+            if ((project.group || null) !== selectedGroupFilter) {
+                return false;
+            }
+        }
+        // Filter by search term
         const term = projectSearchTerm.trim().toLowerCase();
         if (!term) return true;
         return (
             project.name.toLowerCase().includes(term) ||
-            project.path.toLowerCase().includes(term)
+            project.path.toLowerCase().includes(term) ||
+            (project.tags || []).some(tag => tag.toLowerCase().includes(term))
         );
     }).sort((a, b) => a.name.localeCompare(b.name));
 
@@ -438,7 +546,22 @@ const App: React.FC = () => {
     }
 
     return (
-        <div className="app-container fade-in">
+        <div
+            className={`app-container fade-in ${isDraggingOver ? 'dragging-over' : ''}`}
+            onDragOver={handleDragOver}
+            onDragLeave={handleDragLeave}
+            onDrop={handleDrop}
+        >
+            {/* Drag Drop Overlay */}
+            {isDraggingOver && (
+                <div className="drag-overlay">
+                    <div className="drag-overlay-content">
+                        <Icon name="folder" size={48} />
+                        <h3>Drop folders to add projects</h3>
+                        <p>Release to import project directories</p>
+                    </div>
+                </div>
+            )}
             {/* Title Bar */}
             <div className="title-bar">
                 <div className="title-bar-title">
@@ -542,6 +665,15 @@ const App: React.FC = () => {
                                 <Icon name="settings" size={16} />
                                 Configure
                             </button>
+                            <button
+                                className="mcp-sync-btn secondary"
+                                onClick={() => setIsMCPHealthOpen(true)}
+                                title="Server Health Dashboard"
+                                style={{ marginLeft: 8 }}
+                            >
+                                <Icon name="activity" size={16} />
+                                Health
+                            </button>
                         </div>
                     </div>
                 </section>
@@ -594,6 +726,31 @@ const App: React.FC = () => {
                             >
                                 <Icon name="settings" size={16} />
                                 Configure
+                            </button>
+                        </div>
+                    </div>
+                </section>
+
+                {/* AI Rules Library CTA Section */}
+                <section className="mcp-sync-cta" style={{ background: 'linear-gradient(135deg, rgba(161, 161, 170, 0.1) 0%, rgba(161, 161, 170, 0.05) 100%)', borderColor: 'rgba(161, 161, 170, 0.2)' }}>
+                    <div className="mcp-cta-content">
+                        <div className="mcp-cta-info">
+                            <div className="mcp-cta-icon" style={{ color: '#d4d4d8' }}>
+                                <Icon name="bookOpen" />
+                            </div>
+                            <div className="mcp-cta-text">
+                                <h3>AI Rules Library</h3>
+                                <p>Manage and sync rule templates for your AI IDEs</p>
+                            </div>
+                        </div>
+                        <div className="mcp-cta-actions">
+                            <button
+                                className="mcp-sync-btn primary"
+                                onClick={() => setIsRulesLibraryOpen(true)}
+                                style={{ backgroundColor: '#52525b' }}
+                            >
+                                <Icon name="bookOpen" size={16} />
+                                Manage Rules
                             </button>
                         </div>
                     </div>
@@ -652,15 +809,53 @@ const App: React.FC = () => {
                 <section className="projects-section">
                     <div className="section-header">
                         <h2 className="section-title">Projects</h2>
-                        <button id="add-project-btn" className="add-project-btn" onClick={handleAddProject}>
-                            <Icon name="add" />
-                            <span>Add Project</span>
-                        </button>
-                        <button className="add-project-btn secondary" onClick={handleAddMasterDirectory} style={{ marginLeft: '10px' }}>
-                            <Icon name="folder" />
-                            <span>Add Master Dir</span>
-                        </button>
+                        <div className="section-header-actions">
+                            <button id="add-project-btn" className="add-project-btn" onClick={handleAddProject}>
+                                <Icon name="add" />
+                                <span>Add Project</span>
+                            </button>
+                            <button className="add-project-btn secondary" onClick={handleAddMasterDirectory}>
+                                <Icon name="folder" />
+                                <span>Add Master Dir</span>
+                            </button>
+                            <button
+                                className="add-project-btn secondary"
+                                onClick={() => setIsGroupManagerOpen(true)}
+                                title="Manage project groups"
+                            >
+                                <Icon name="settings" />
+                                <span>Groups</span>
+                            </button>
+                        </div>
                     </div>
+
+                    {/* Group Filter Tabs */}
+                    {projectGroups.length > 0 && (
+                        <div className="group-filter-tabs">
+                            <button
+                                className={`group-filter-tab ${selectedGroupFilter === null ? 'active' : ''}`}
+                                onClick={() => setSelectedGroupFilter(null)}
+                            >
+                                All Projects
+                            </button>
+                            {projectGroups.map(group => (
+                                <button
+                                    key={group.id}
+                                    className={`group-filter-tab ${selectedGroupFilter === group.id ? 'active' : ''}`}
+                                    onClick={() => setSelectedGroupFilter(group.id)}
+                                    style={{ '--group-color': group.color } as React.CSSProperties}
+                                >
+                                    <span
+                                        className="group-color-indicator"
+                                        style={{ backgroundColor: group.color }}
+                                    />
+                                    {group.icon && <span className="group-icon">{group.icon}</span>}
+                                    {group.name}
+                                </button>
+                            ))}
+                        </div>
+                    )}
+
                     <div className="project-toolbar">
                         <div className="search-input">
                             <span aria-hidden="true" className="search-icon">
@@ -669,7 +864,7 @@ const App: React.FC = () => {
                             <input
                                 id="project-search"
                                 type="text"
-                                placeholder="Search projects by name or path (Cmd/Ctrl + P)"
+                                placeholder="Search projects by name, path, or tag (Cmd/Ctrl + P)"
                                 value={projectSearchTerm}
                                 onChange={(e) => setProjectSearchTerm(e.target.value)}
                             />
@@ -755,59 +950,101 @@ const App: React.FC = () => {
                                     {projects.length === 0 ? 'No projects added yet. Click "Add Project" to get started.' : 'No projects found.'}
                                 </div>
                             ) : (
-                                filteredProjects.map(project => (
-                                    <div
-                                        key={project.id}
-                                        className="project-card"
-                                        onClick={() => handleLaunchProject(project)}
-                                    >
-                                        <div className="project-info">
-                                            <div className="project-icon">{getProjectIcon(project.preferredIDE)}</div>
-                                            <div className="project-details">
-                                                <div className="project-name">{project.name}</div>
-                                                <div className="project-path" title={project.path}>{project.path}</div>
-                                                <div className="project-ide" style={{ fontSize: '11px', color: 'var(--accent-primary)', marginTop: '2px' }} onClick={(e) => e.stopPropagation()}>
-                                                    <select
-                                                        value={project.preferredIDE}
-                                                        onChange={(e) => handleUpdateProjectIDE(e, project.id)}
-                                                        className="project-ide-select"
-                                                        title="Change preferred IDE"
-                                                    >
-                                                        {ides.filter(i => i.installed).map(ide => (
-                                                            <option key={ide.name} value={ide.name}>
-                                                                {ide.name}
-                                                            </option>
-                                                        ))}
-                                                        {!ides.some(i => i.installed && i.name === project.preferredIDE) && (
-                                                            <option value={project.preferredIDE} disabled>
-                                                                {project.preferredIDE}
-                                                            </option>
+                                filteredProjects.map(project => {
+                                    const meta = projectMetadata[project.id];
+                                    const group = projectGroups.find(g => g.id === project.group);
+                                    return (
+                                        <div
+                                            key={project.id}
+                                            className="project-card"
+                                            onClick={() => handleLaunchProject(project)}
+                                            style={group ? { '--project-group-color': group.color } as React.CSSProperties : undefined}
+                                        >
+                                            {group && <div className="project-group-indicator" style={{ backgroundColor: group.color }} />}
+                                            <div className="project-info">
+                                                <div className="project-icon">{getProjectIcon(project.preferredIDE)}</div>
+                                                <div className="project-details">
+                                                    <div className="project-name">{project.name}</div>
+                                                    <div className="project-path" title={project.path}>{project.path}</div>
+
+                                                    {/* Metadata Row */}
+                                                    <div className="project-metadata-row">
+                                                        {meta?.gitBranch && (
+                                                            <span className="metadata-badge git" title={`Branch: ${meta.gitBranch}`}>
+                                                                <Icon name="sync" size={10} />
+                                                                {meta.gitBranch}
+                                                            </span>
                                                         )}
-                                                    </select>
+                                                        {meta?.packageManager && (
+                                                            <span className="metadata-badge pkg" title={`Package Manager: ${meta.packageManager}`}>
+                                                                {getPackageManagerIcon(meta.packageManager)} {meta.packageManager}
+                                                            </span>
+                                                        )}
+                                                        {group && (
+                                                            <span
+                                                                className="metadata-badge group"
+                                                                style={{ backgroundColor: `${group.color}20`, color: group.color }}
+                                                            >
+                                                                {group.icon} {group.name}
+                                                            </span>
+                                                        )}
+                                                    </div>
+
+                                                    {/* Tags */}
+                                                    {project.tags && project.tags.length > 0 && (
+                                                        <div className="project-tags">
+                                                            {project.tags.slice(0, 3).map(tag => (
+                                                                <span key={tag} className="project-tag">{tag}</span>
+                                                            ))}
+                                                            {project.tags.length > 3 && (
+                                                                <span className="project-tag more">+{project.tags.length - 3}</span>
+                                                            )}
+                                                        </div>
+                                                    )}
+
+                                                    <div className="project-ide" onClick={(e) => e.stopPropagation()}>
+                                                        <select
+                                                            value={project.preferredIDE}
+                                                            onChange={(e) => handleUpdateProjectIDE(e, project.id)}
+                                                            className="project-ide-select"
+                                                            title="Change preferred IDE"
+                                                        >
+                                                            {ides.filter(i => i.installed).map(ide => (
+                                                                <option key={ide.name} value={ide.name}>
+                                                                    {ide.name}
+                                                                </option>
+                                                            ))}
+                                                            {!ides.some(i => i.installed && i.name === project.preferredIDE) && (
+                                                                <option value={project.preferredIDE} disabled>
+                                                                    {project.preferredIDE}
+                                                                </option>
+                                                            )}
+                                                        </select>
+                                                    </div>
                                                 </div>
                                             </div>
+                                            <div className="project-actions">
+                                                <button
+                                                    className="project-action-btn launch"
+                                                    title={`Open in ${project.preferredIDE}`}
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        handleLaunchProject(project);
+                                                    }}
+                                                >
+                                                    <Icon name="launch" size={16} />
+                                                </button>
+                                                <button
+                                                    className="project-action-btn delete"
+                                                    title="Remove Project"
+                                                    onClick={(e) => handleDeleteProject(e, project.id, project.name)}
+                                                >
+                                                    <Icon name="delete" size={16} />
+                                                </button>
+                                            </div>
                                         </div>
-                                        <div className="project-actions">
-                                            <button
-                                                className="project-action-btn launch"
-                                                title={`Open in ${project.preferredIDE}`}
-                                                onClick={(e) => {
-                                                    e.stopPropagation();
-                                                    handleLaunchProject(project);
-                                                }}
-                                            >
-                                                <Icon name="launch" size={16} />
-                                            </button>
-                                            <button
-                                                className="project-action-btn delete"
-                                                title="Remove Project"
-                                                onClick={(e) => handleDeleteProject(e, project.id, project.name)}
-                                            >
-                                                <Icon name="delete" size={16} />
-                                            </button>
-                                        </div>
-                                    </div>
-                                ))
+                                    );
+                                })
                             )}
                         </div>
                     </div>
@@ -856,9 +1093,39 @@ const App: React.FC = () => {
                 </div>
             </Modal>
 
+            {/* Project Group Manager Modal */}
+            <ProjectGroupManager
+                isOpen={isGroupManagerOpen}
+                onClose={() => setIsGroupManagerOpen(false)}
+                projects={projects}
+                onProjectsUpdated={async () => {
+                    await loadProjects();
+                    await loadProjectGroups();
+                }}
+                onToast={showToast}
+            />
+
+            {/* MCP Health Dashboard Modal */}
+            <MCPHealthDashboard
+                isOpen={isMCPHealthOpen}
+                onClose={() => setIsMCPHealthOpen(false)}
+                onToast={showToast}
+            />
+
+            {/* Rules Library Modal */}
+            <RulesLibrary
+                isOpen={isRulesLibraryOpen}
+                onClose={() => {
+                    setIsRulesLibraryOpen(false);
+                    setSelectedProjectForRules(undefined);
+                }}
+                onToast={showToast}
+                projectPath={selectedProjectForRules}
+            />
+
             {/* Footer */}
             <footer className="footer">
-                <p>DevSynq v1.0.0 · Built with Electron + React + TypeScript</p>
+                <p>DevSynq v0.0.1 · Built with Electron + React + TypeScript</p>
             </footer>
 
             {/* Toast */}

@@ -7,6 +7,90 @@ import { RunningIDE, ProcessStats, IDEType } from '../types';
 const { exec, spawn } = require('child_process');
 const os = require('os');
 
+// ============================================================================
+// Resource History Tracking
+// ============================================================================
+
+// Store history for the last 60 data points (10 minutes at 10s intervals)
+const HISTORY_MAX_POINTS = 60;
+
+interface ResourceHistoryEntry {
+  timestamp: number;
+  cpu: number;
+  memory: number;
+}
+
+// History per IDE name
+const resourceHistory: Map<string, ResourceHistoryEntry[]> = new Map();
+
+// System resource history
+const systemResourceHistory: ResourceHistoryEntry[] = [];
+
+/**
+ * Add a resource sample for an IDE
+ */
+export function addResourceSample(ideName: string, cpu: number, memory: number): void {
+  let history = resourceHistory.get(ideName);
+  if (!history) {
+    history = [];
+    resourceHistory.set(ideName, history);
+  }
+
+  history.push({
+    timestamp: Date.now(),
+    cpu: cpu || 0,
+    memory: memory || 0,
+  });
+
+  // Keep only last HISTORY_MAX_POINTS
+  if (history.length > HISTORY_MAX_POINTS) {
+    history.shift();
+  }
+}
+
+/**
+ * Add a system resource sample
+ */
+export function addSystemResourceSample(cpu: number, memory: number): void {
+  systemResourceHistory.push({
+    timestamp: Date.now(),
+    cpu: cpu || 0,
+    memory: memory || 0,
+  });
+
+  if (systemResourceHistory.length > HISTORY_MAX_POINTS) {
+    systemResourceHistory.shift();
+  }
+}
+
+/**
+ * Get resource history for an IDE
+ */
+export function getResourceHistory(ideName: string): { cpu: number[]; memory: number[] } {
+  const history = resourceHistory.get(ideName) || [];
+  return {
+    cpu: history.map(h => h.cpu),
+    memory: history.map(h => h.memory),
+  };
+}
+
+/**
+ * Get system resource history
+ */
+export function getSystemResourceHistory(): { cpu: number[]; memory: number[] } {
+  return {
+    cpu: systemResourceHistory.map(h => h.cpu),
+    memory: systemResourceHistory.map(h => h.memory),
+  };
+}
+
+/**
+ * Clear history for an IDE (when it stops running)
+ */
+export function clearResourceHistory(ideName: string): void {
+  resourceHistory.delete(ideName);
+}
+
 // IDE process patterns for detection
 interface IDEProcessPattern {
   name: IDEType;

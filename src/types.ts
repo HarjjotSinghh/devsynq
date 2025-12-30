@@ -32,6 +32,44 @@ export interface Project {
   path: string;
   preferredIDE: IDEType;
   lastOpened?: number;
+  // Enhancement: Project Grouping
+  tags?: string[];
+  group?: string;
+  color?: string;
+  // Enhancement: Pre-Launch Scripts
+  preLaunchScripts?: PreLaunchScript[];
+  postCloseCleanup?: boolean;
+  // Enhancement: Project Metadata (cached from git)
+  metadata?: ProjectMetadata;
+  // Enhancement: Project-Specific MCPs
+  mcpServers?: string[]; // Array of MCP server IDs
+}
+
+export interface PreLaunchScript {
+  id: string;
+  name: string;
+  command: string;
+  args?: string[];
+  cwd?: string; // defaults to project path
+  runInBackground?: boolean;
+  waitForCompletion?: boolean;
+  enabled: boolean;
+}
+
+export interface ProjectMetadata {
+  gitBranch?: string;
+  gitLastCommit?: string;
+  gitUncommittedChanges?: number;
+  nodeVersion?: string;
+  packageManager?: "npm" | "yarn" | "pnpm" | "bun";
+  lastUpdated?: number;
+}
+
+export interface ProjectGroup {
+  id: string;
+  name: string;
+  color: string;
+  icon?: string;
 }
 
 export interface Settings {
@@ -169,3 +207,48 @@ export interface CommandPaletteState {
   selectedIndex: number;
   items: CommandItem[];
 }
+
+// ============================================================================
+// MCP Marketplace Types
+// ============================================================================
+
+export interface MCPMarketplaceServer {
+  id: number;
+  name: string;
+  description: string;
+  url: string;
+  sponsor?: boolean;
+  category?: string;
+  installMethod?: "npx" | "pip" | "manual";
+  command?: string;
+  isInstalled?: boolean;
+}
+
+export interface MCPMarketplaceCategory {
+  id: string;
+  name: string;
+  icon: string;
+  count: number;
+}
+
+// ============================================================================
+// Cloud Sync Types (Pro Feature)
+// ============================================================================
+
+export interface CloudSyncUser {
+  id: string;
+  email: string;
+  encryptionKey?: string;
+  createdAt: number;
+  lastSyncAt?: number;
+}
+
+export interface CloudSyncBackup {
+  id: string;
+  userId: string;
+  timestamp: number;
+  version: string;
+  checksum: string;
+  encryptedData?: string;
+}
+

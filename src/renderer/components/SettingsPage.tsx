@@ -75,7 +75,7 @@ function SettingsPage({
                     <h1>Settings</h1>
                 </div>
                 <div className="settings-header-right">
-                    <span className="settings-version">DevSynq v1.0.0</span>
+                    <span className="settings-version">DevSynq v0.0.1</span>
                 </div>
             </header>
 

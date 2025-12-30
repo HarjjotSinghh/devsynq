@@ -444,3 +444,150 @@ export function getDevSynqDir(): string {
     ensureDir(DEVSYNQ_DIR);
     return DEVSYNQ_DIR;
 }
+
+// ============================================================================
+// Project-Specific MCP Management
+// ============================================================================
+
+// Store for tracking injected project MCPs per IDE session
+const injectedProjectMCPs: Map<string, string[]> = new Map();
+
+/**
+ * Load project-specific MCP configuration
+ */
+export function getProjectMCPConfig(projectPath: string): MCPConfig | null {
+    const projectMCPPath = path.join(projectPath, '.devsynq', 'mcp-config.json');
+    if (fileExists(projectMCPPath)) {
+        return readJSON<MCPConfig>(projectMCPPath, { mcpServers: {} });
+    }
+    return null;
+}
+
+/**
+ * Save project-specific MCP configuration
+ */
+export function saveProjectMCPConfig(projectPath: string, config: MCPConfig): void {
+    const projectMCPPath = path.join(projectPath, '.devsynq', 'mcp-config.json');
+    writeJSON(projectMCPPath, config);
+}
+
+/**
+ * Get project MCP servers
+ */
+export function getProjectMCPServers(projectPath: string): MCPConfig['mcpServers'] {
+    const config = getProjectMCPConfig(projectPath);
+    return config?.mcpServers || {};
+}
+
+/**
+ * Add an MCP server to a project
+ */
+export function addProjectMCPServer(
+    projectPath: string,
+    serverName: string,
+    serverConfig: any
+): void {
+    const config = getProjectMCPConfig(projectPath) || { mcpServers: {} };
+    config.mcpServers[serverName] = serverConfig;
+    saveProjectMCPConfig(projectPath, config);
+}
+
+/**
+ * Remove an MCP server from a project
+ */
+export function removeProjectMCPServer(projectPath: string, serverName: string): void {
+    const config = getProjectMCPConfig(projectPath);
+    if (config && config.mcpServers[serverName]) {
+        delete config.mcpServers[serverName];
+        saveProjectMCPConfig(projectPath, config);
+    }
+}
+
+/**
+ * Inject project-specific MCPs into an IDE's configuration
+ * Returns the list of server names that were injected
+ */
+export function injectProjectMCPs(projectPath: string, ideId: string): string[] {
+    const projectConfig = getProjectMCPConfig(projectPath);
+    if (!projectConfig || Object.keys(projectConfig.mcpServers).length === 0) {
+        return [];
+    }
+
+    const idePath = IDE_MCP_PATHS[ideId];
+    if (!idePath) {
+        return [];
+    }
+
+    try {
+        // Read current IDE config
+        const currentConfig = readJSON<MCPConfig>(idePath, { mcpServers: {} });
+        const injectedServers: string[] = [];
+
+        // Merge project MCPs into IDE config
+        for (const [serverName, serverConfig] of Object.entries(projectConfig.mcpServers)) {
+            // Prefix with project identifier to avoid conflicts
+            const prefixedName = `[project] ${serverName}`;
+            currentConfig.mcpServers[prefixedName] = serverConfig;
+            injectedServers.push(prefixedName);
+        }
+
+        // Write merged config
+        writeJSON(idePath, currentConfig);
+
+        // Track what was injected
+        const key = `${ideId}:${projectPath}`;
+        injectedProjectMCPs.set(key, injectedServers);
+
+        console.log(`Injected ${injectedServers.length} project MCPs for ${ideId}`);
+        return injectedServers;
+    } catch (error) {
+        console.error('Error injecting project MCPs:', error);
+        return [];
+    }
+}
+
+/**
+ * Remove project-specific MCPs from an IDE's configuration
+ */
+export function removeProjectMCPs(projectPath: string, ideId: string): void {
+    const key = `${ideId}:${projectPath}`;
+    const injectedServers = injectedProjectMCPs.get(key);
+
+    if (!injectedServers || injectedServers.length === 0) {
+        return;
+    }
+
+    const idePath = IDE_MCP_PATHS[ideId];
+    if (!idePath) {
+        return;
+    }
+
+    try {
+        // Read current IDE config
+        const currentConfig = readJSON<MCPConfig>(idePath, { mcpServers: {} });
+
+        // Remove injected project MCPs
+        for (const serverName of injectedServers) {
+            delete currentConfig.mcpServers[serverName];
+        }
+
+        // Write cleaned config
+        writeJSON(idePath, currentConfig);
+
+        // Clear tracking
+        injectedProjectMCPs.delete(key);
+
+        console.log(`Removed ${injectedServers.length} project MCPs from ${ideId}`);
+    } catch (error) {
+        console.error('Error removing project MCPs:', error);
+    }
+}
+
+/**
+ * Check if project has MCP configuration
+ */
+export function hasProjectMCPs(projectPath: string): boolean {
+    const config = getProjectMCPConfig(projectPath);
+    return config !== null && Object.keys(config.mcpServers).length > 0;
+}
+

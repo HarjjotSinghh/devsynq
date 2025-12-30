@@ -37,7 +37,13 @@ import {
     Slash,
     Lightbulb,
     Key,
-    Edit2
+    Edit2,
+    Package,
+    Info,
+    GitBranch,
+    Tag,
+    Activity,
+    BookOpen
 } from 'lucide-react';
 import logoImage from '../../../src/logo.png';
 
@@ -78,7 +84,13 @@ type IconName =
     | 'key'
     | 'edit'
     | 'folder'
-    | 'profile';
+    | 'profile'
+    | 'box'
+    | 'info'
+    | 'gitBranch'
+    | 'tag'
+    | 'activity'
+    | 'bookOpen';
 
 interface IconProps {
     name: IconName;
@@ -126,6 +138,12 @@ const iconMap: Record<IconName, LucideIcon> = {
     edit: Edit2,
     folder: Folder,
     profile: FileText,
+    box: Package,
+    info: Info,
+    gitBranch: GitBranch,
+    tag: Tag,
+    activity: Activity,
+    bookOpen: BookOpen,
 };
 
 export const Icon: React.FC<IconProps> = ({

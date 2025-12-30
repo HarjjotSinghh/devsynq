@@ -1,0 +1,391 @@
+/**
+ * Rules Library CSS
+ */
+
+.rules-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.75);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    backdrop-filter: blur(4px);
+}
+
+.rules-modal {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    width: 90%;
+    max-width: 900px;
+    max-height: 85vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    box-shadow: var(--shadow-lg);
+}
+
+.rules-header {
+    padding: var(--spacing-lg) var(--spacing-xl);
+    border-bottom: 1px solid var(--border-color);
+    position: relative;
+}
+
+.rules-header h2 {
+    margin: 0;
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.rules-subtitle {
+    margin: 4px 0 0 0;
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+}
+
+.rules-header .close-btn {
+    position: absolute;
+    top: var(--spacing-md);
+    right: var(--spacing-md);
+    width: 32px;
+    height: 32px;
+    border: none;
+    background: transparent;
+    color: var(--text-secondary);
+    font-size: 1.5rem;
+    cursor: pointer;
+    border-radius: var(--radius-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+}
+
+.rules-header .close-btn:hover {
+    background: var(--bg-tertiary);
+    color: var(--text-primary);
+}
+
+/* Tabs */
+.rules-tabs {
+    display: flex;
+    gap: var(--spacing-sm);
+    padding: var(--spacing-md) var(--spacing-xl);
+    border-bottom: 1px solid var(--border-color);
+    background: var(--bg-tertiary);
+}
+
+.rules-tabs .tab {
+    padding: 8px 16px;
+    border: 1px solid var(--border-color);
+    background: var(--bg-secondary);
+    color: var(--text-secondary);
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    font-size: 0.85rem;
+    transition: all 0.2s;
+}
+
+.rules-tabs .tab:hover {
+    border-color: var(--accent-dim);
+}
+
+.rules-tabs .tab.active {
+    background: var(--accent-dim);
+    color: var(--text-primary);
+    border-color: var(--accent-primary);
+}
+
+.extract-btn {
+    margin-left: auto;
+    padding: 8px 16px;
+    background: var(--bg-secondary);
+    color: var(--accent-primary);
+    border: 1px solid var(--accent-dim);
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    font-size: 0.85rem;
+    transition: all 0.2s;
+}
+
+.extract-btn:hover {
+    background: var(--accent-dim);
+}
+
+/* Content */
+.rules-content {
+    flex: 1;
+    overflow-y: auto;
+    padding: var(--spacing-lg);
+    position: relative;
+}
+
+/* Templates Grid */
+.templates-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: var(--spacing-md);
+}
+
+.template-card {
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    padding: var(--spacing-md);
+    position: relative;
+}
+
+.template-card.builtin {
+    border-color: var(--accent-dim);
+}
+
+.template-badge {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    font-size: 0.65rem;
+    background: var(--accent-dim);
+    color: var(--accent-primary);
+    padding: 2px 6px;
+    border-radius: var(--radius-sm);
+}
+
+.template-card h3 {
+    margin: 0 0 4px 0;
+    font-size: 0.95rem;
+    color: var(--text-primary);
+}
+
+.template-card p {
+    margin: 0 0 8px 0;
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+}
+
+.template-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    margin-bottom: 12px;
+}
+
+.template-tags .tag {
+    font-size: 0.7rem;
+    background: var(--bg-primary);
+    color: var(--text-muted);
+    padding: 2px 6px;
+    border-radius: var(--radius-sm);
+}
+
+.template-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+}
+
+.template-actions .action-btn {
+    flex: 1;
+    min-width: 60px;
+    padding: 6px 8px;
+    font-size: 0.75rem;
+    border: 1px solid var(--border-color);
+    background: var(--bg-secondary);
+    color: var(--text-secondary);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.template-actions .action-btn:hover {
+    border-color: var(--accent-dim);
+}
+
+.template-actions .action-btn.apply {
+    background: var(--accent-dim);
+    color: var(--accent-primary);
+    border-color: var(--accent-dim);
+}
+
+.template-actions .action-btn.apply:hover {
+    background: var(--accent-primary);
+    color: var(--bg-primary);
+}
+
+.template-actions .action-btn.delete:hover {
+    border-color: var(--error);
+    color: var(--error);
+}
+
+/* Create Form */
+.create-form {
+    display: grid;
+    gap: var(--spacing-md);
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.form-group.full {
+    grid-column: 1 / -1;
+}
+
+.form-group label {
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: var(--text-secondary);
+}
+
+.form-group input,
+.form-group textarea {
+    padding: 10px 12px;
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    color: var(--text-primary);
+    font-size: 0.9rem;
+}
+
+.form-group input:focus,
+.form-group textarea:focus {
+    outline: none;
+    border-color: var(--accent-dim);
+}
+
+.form-group textarea {
+    font-family: monospace;
+    resize: vertical;
+    min-height: 200px;
+}
+
+.form-actions {
+    display: flex;
+    gap: var(--spacing-md);
+    justify-content: flex-end;
+    margin-top: var(--spacing-md);
+}
+
+.cancel-btn {
+    padding: 10px 20px;
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.cancel-btn:hover {
+    background: var(--bg-secondary);
+}
+
+.save-btn {
+    padding: 10px 20px;
+    background: var(--accent-primary);
+    border: none;
+    border-radius: var(--radius-md);
+    color: var(--bg-primary);
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.save-btn:hover {
+    opacity: 0.9;
+}
+
+/* Preview Panel */
+.preview-panel {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: 50%;
+    background: var(--bg-primary);
+    border-left: 1px solid var(--border-color);
+    display: flex;
+    flex-direction: column;
+}
+
+.preview-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--spacing-md);
+    border-bottom: 1px solid var(--border-color);
+}
+
+.preview-header h3 {
+    margin: 0;
+    font-size: 0.9rem;
+    color: var(--text-primary);
+}
+
+.preview-header button {
+    width: 24px;
+    height: 24px;
+    border: none;
+    background: transparent;
+    color: var(--text-secondary);
+    cursor: pointer;
+    border-radius: var(--radius-sm);
+}
+
+.preview-header button:hover {
+    background: var(--bg-tertiary);
+}
+
+.preview-content {
+    flex: 1;
+    overflow: auto;
+    padding: var(--spacing-md);
+    margin: 0;
+    font-size: 0.8rem;
+    line-height: 1.5;
+    font-family: monospace;
+    color: var(--text-secondary);
+    white-space: pre-wrap;
+}
+
+/* Project Rules Info */
+.project-rules-info {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    padding: var(--spacing-sm) var(--spacing-lg);
+    background: var(--bg-tertiary);
+    border-top: 1px solid var(--border-color);
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+}
+
+.info-icon {
+    font-size: 1rem;
+}
+
+/* Empty state */
+.empty-state {
+    text-align: center;
+    padding: var(--spacing-xl);
+    color: var(--text-secondary);
+}
+
+.empty-state button {
+    margin-top: var(--spacing-md);
+    padding: 10px 20px;
+    background: var(--accent-dim);
+    border: none;
+    border-radius: var(--radius-md);
+    color: var(--accent-primary);
+    cursor: pointer;
+}
+
+.loading {
+    text-align: center;
+    padding: var(--spacing-xl);
+    color: var(--text-secondary);
+}

@@ -1,0 +1,315 @@
+/**
+ * MCP Health Dashboard CSS
+ */
+
+.mcp-health-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.75);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    backdrop-filter: blur(4px);
+}
+
+.mcp-health-modal {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    width: 90%;
+    max-width: 900px;
+    max-height: 85vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    box-shadow: var(--shadow-lg);
+}
+
+.mcp-health-header {
+    padding: var(--spacing-lg) var(--spacing-xl);
+    border-bottom: 1px solid var(--border-color);
+    position: relative;
+}
+
+.mcp-health-header h2 {
+    margin: 0;
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.mcp-health-subtitle {
+    margin: 4px 0 0 0;
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+}
+
+.mcp-health-header .close-btn {
+    position: absolute;
+    top: var(--spacing-md);
+    right: var(--spacing-md);
+    width: 32px;
+    height: 32px;
+    border: none;
+    background: transparent;
+    color: var(--text-secondary);
+    font-size: 1.5rem;
+    cursor: pointer;
+    border-radius: var(--radius-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+}
+
+.mcp-health-header .close-btn:hover {
+    background: var(--bg-tertiary);
+    color: var(--text-primary);
+}
+
+.mcp-health-content {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    overflow: hidden;
+}
+
+/* Stats Bar */
+.mcp-health-stats {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-lg);
+    padding: var(--spacing-md) var(--spacing-xl);
+    border-bottom: 1px solid var(--border-color);
+    background: var(--bg-tertiary);
+}
+
+.stat-item {
+    display: flex;
+    flex-direction: column;
+}
+
+.stat-value {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.stat-label {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+}
+
+.refresh-btn {
+    margin-left: auto;
+    padding: 8px 16px;
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    font-size: 0.85rem;
+    transition: all 0.2s;
+}
+
+.refresh-btn:hover:not(:disabled) {
+    border-color: var(--accent-dim);
+}
+
+.refresh-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* Body Layout */
+.mcp-health-body {
+    display: grid;
+    grid-template-columns: 1fr 1.5fr;
+    flex: 1;
+    overflow: hidden;
+    min-height: 0;
+}
+
+/* Server List */
+.server-list {
+    border-right: 1px solid var(--border-color);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.server-list h3,
+.log-panel h3 {
+    margin: 0;
+    padding: var(--spacing-md);
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    border-bottom: 1px solid var(--border-color);
+    flex-shrink: 0;
+}
+
+.server-list h3 span,
+.log-panel h3 span {
+    color: var(--accent-primary);
+}
+
+.server-item {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    padding: var(--spacing-md);
+    border-bottom: 1px solid var(--border-color);
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.server-item:hover {
+    background: var(--bg-tertiary);
+}
+
+.server-item.selected {
+    background: var(--bg-tertiary);
+    border-left: 2px solid var(--accent-primary);
+}
+
+.server-status {
+    flex-shrink: 0;
+}
+
+.status-dot {
+    display: block;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+
+    0%,
+    100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.6;
+    }
+}
+
+.server-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.server-name {
+    font-weight: 600;
+    color: var(--text-primary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.server-meta {
+    display: flex;
+    gap: var(--spacing-sm);
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    flex-wrap: wrap;
+}
+
+.server-actions {
+    display: flex;
+    gap: 4px;
+}
+
+.action-btn {
+    width: 28px;
+    height: 28px;
+    border: 1px solid var(--border-color);
+    background: var(--bg-secondary);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.8rem;
+    transition: all 0.2s;
+}
+
+.action-btn:hover:not(:disabled) {
+    background: var(--bg-primary);
+    border-color: var(--accent-dim);
+}
+
+.action-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.action-btn.kill:hover:not(:disabled) {
+    border-color: var(--error);
+}
+
+/* Log Panel */
+.log-panel {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.log-entries {
+    flex: 1;
+    overflow-y: auto;
+    padding: var(--spacing-sm);
+    font-family: monospace;
+    font-size: 0.75rem;
+    background: var(--bg-primary);
+}
+
+.log-entry {
+    padding: 4px 8px;
+    border-radius: var(--radius-sm);
+    margin-bottom: 2px;
+}
+
+.log-entry:hover {
+    background: var(--bg-tertiary);
+}
+
+.log-time {
+    color: var(--text-muted);
+    margin-right: var(--spacing-sm);
+}
+
+.log-level {
+    margin-right: var(--spacing-sm);
+    font-weight: 600;
+}
+
+.log-message {
+    word-break: break-word;
+}
+
+.log-error {
+    color: var(--error);
+}
+
+.log-warn {
+    color: var(--warning);
+}
+
+/* Empty States */
+.empty-state,
+.loading {
+    padding: var(--spacing-xl);
+    text-align: center;
+    color: var(--text-secondary);
+}
+
+.empty-state .hint {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    margin-top: var(--spacing-xs);
+}
