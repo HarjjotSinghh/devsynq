@@ -1155,7 +1155,7 @@ const App: React.FC = () => {
 
             {/* Footer */}
             <footer className="footer">
-                <p>DevSynq v1.1.0 · Built with 🍵 by <a href="https://github.com/harjjotsinghh" target="_blank" rel="noopener noreferrer">Harjot Rana</a></p>
+                <p>DevSynq v1.1.2 · Built with 🍵 by <a href="https://github.com/harjjotsinghh" target="_blank" rel="noopener noreferrer">Harjot Rana</a></p>
             </footer>
 
             {/* Toast */}
