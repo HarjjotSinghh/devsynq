@@ -66,6 +66,12 @@ export function Header() {
                         Features
                     </Link>
                     <Link
+                        href="/marketplace"
+                        className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                    >
+                        Marketplace
+                    </Link>
+                    <Link
                         href="/download"
                         className="text-sm text-muted-foreground hover:text-foreground transition-colors"
                     >
@@ -118,6 +124,13 @@ export function Header() {
                             onClick={() => setMobileMenuOpen(false)}
                         >
                             Features
+                        </Link>
+                        <Link
+                            href="/marketplace"
+                            className="block text-muted-foreground hover:text-foreground transition-colors"
+                            onClick={() => setMobileMenuOpen(false)}
+                        >
+                            Marketplace
                         </Link>
                         <Link
                             href="/download"

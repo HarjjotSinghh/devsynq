@@ -8,8 +8,8 @@ export interface MCPServerData {
     name: string;
     description: string;
     url: string;
-    category: string;
-    installMethod: "npx" | "pip" | "manual";
+    category?: string;
+    installMethod?: "npx" | "pip" | "manual";
     command?: string;
     env?: Record<string, string>;
     args?: string[] | Record<string, any>;

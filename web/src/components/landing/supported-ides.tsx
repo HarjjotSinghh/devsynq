@@ -37,16 +37,12 @@ export function SupportedIDEs() {
                     <div data-animate data-animate-order="4" className="flex flex-wrap justify-center gap-3 text-sm">
                         <div className="flex items-center gap-2 rounded-full border border-primary/25 bg-primary/10 px-3 py-1 text-primary">
                             <Check className="h-4 w-4" />
-                            {availableCount} available now
+                            {availableCount} AI IDEs available {comingSoonCount > 1 ? "now" : ""}
                         </div>
-                        <div className="flex items-center gap-2 rounded-full border border-muted-foreground/25 bg-muted/10 px-3 py-1 text-muted-foreground">
+                        {comingSoonCount > 0 && <div className="flex items-center gap-2 rounded-full border border-muted-foreground/25 bg-muted/10 px-3 py-1 text-muted-foreground">
                             <Clock className="h-4 w-4" />
                             {comingSoonCount} coming soon
-                        </div>
-                        <div className="flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-foreground/80">
-                            <Sparkles className="h-4 w-4 text-primary" />
-                            Fresh logos pulled from the app
-                        </div>
+                        </div>}
                     </div>
                 </div>
 

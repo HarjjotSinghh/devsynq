@@ -1,7 +1,7 @@
 'use client';
 
 import Image from "next/image";
-import { Check, RefreshCw, Key, Command, Activity, Sparkles } from "lucide-react";
+import { Check, RefreshCw, Key, Command, Activity, Sparkles, Package, FileText } from "lucide-react";
 import { useSequentialReveal } from "@/hooks/use-gsap-reveal";
 
 const features = [
@@ -41,6 +41,24 @@ const features = [
         screenshot: "/screenshots/IDE Process Manager.png",
         gradient: "from-primary to-primary/80",
     },
+    {
+        title: "Discover & Install Servers",
+        description:
+            "Browse the built-in MCP Marketplace. One-click install for PostgreSQL, Google Drive, Slack, and 100+ other agents. We handle the config.",
+        icon: Package,
+        benefits: ["Centralized catalog", "One-click installation", "Auto-updates"],
+        screenshot: "/screenshots/MCP Configuration Sync.png", // Placeholder
+        gradient: "from-primary to-primary/80",
+    },
+    {
+        title: "Enforce Coding Standards",
+        description:
+            "Define global rules for your AI agents. 'Always use TypeScript', 'No console.log'. Syncs to every project automatically.",
+        icon: FileText,
+        benefits: ["Global rule sets", "Project-specific overrides", "Consistent code quality"],
+        screenshot: "/screenshots/General App Settings.png", // Placeholder
+        gradient: "from-primary to-primary/80",
+    },
 ];
 
 export function Features() {
@@ -78,10 +96,6 @@ export function Features() {
                         <div className="inline-flex items-center gap-2 rounded-full border border-primary/25 bg-primary/10 px-3 py-1 text-primary">
                             <Check className="h-4 w-4" />
                             Sync, launch, observe
-                        </div>
-                        <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-foreground/80">
-                            <Sparkles className="h-4 w-4 text-primary" />
-                            Built to mirror the desktop app
                         </div>
                     </div>
                 </div>

@@ -3,6 +3,7 @@ import { JetBrains_Mono, Manrope } from "next/font/google";
 import "./globals.css";
 import { PostHogProvider } from "@/components/providers";
 import { Analytics } from "@vercel/analytics/next"
+import { NuqsAdapter } from 'nuqs/adapters/next/app'
 
 const manrope = Manrope({
   variable: "--font-manrope",
@@ -89,7 +90,9 @@ export default function RootLayout({
         className={`${manrope.variable} ${jetbrains.variable} antialiased bg-background text-foreground min-h-screen`}
       >
         <PostHogProvider>
-          {children}
+          <NuqsAdapter>
+            {children}
+          </NuqsAdapter>
         </PostHogProvider>
       </body>
       <Analytics />

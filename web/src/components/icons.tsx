@@ -52,7 +52,14 @@ import {
     Slash,
     Lightbulb,
     Key,
-    Edit2
+    Edit2,
+    Package,
+    Info,
+    GitBranch,
+    Tag,
+    Activity,
+    BookOpen,
+    Link
 } from 'lucide-react';
 
 type IDEType = 'Cursor' | 'VS Code' | 'Windsurf' | 'Zed' | 'WebStorm' | 'Trae' | 'Antigravity' | 'Kiro' | 'Qoder' | 'Replit' | 'Cody' | 'Continue' | 'IntelliJ IDEA' | 'PyCharm';
@@ -93,7 +100,15 @@ type IconName =
     | 'lightbulb'
     | 'key'
     | 'edit'
-    | 'folder';
+    | 'folder'
+    | 'profile'
+    | 'box'
+    | 'info'
+    | 'gitBranch'
+    | 'tag'
+    | 'activity'
+    | 'bookOpen'
+    | 'link';
 
 interface IconProps {
     name: IconName;
@@ -140,6 +155,14 @@ const iconMap: Record<IconName, LucideIcon> = {
     key: Key,
     edit: Edit2,
     folder: Folder,
+    profile: FileText,
+    box: Package,
+    info: Info,
+    gitBranch: GitBranch,
+    tag: Tag,
+    activity: Activity,
+    bookOpen: BookOpen,
+    link: Link,
 };
 
 export const Icon: React.FC<IconProps> = ({

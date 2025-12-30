@@ -91,17 +91,10 @@ export function Screenshots() {
                     <motion.h2 variants={itemVariants as Variants} className="text-3xl md:text-4xl font-black leading-tight">
                         Looks and feels like the desktop app
                     </motion.h2>
-                    <motion.p variants={itemVariants as Variants} className="text-muted-foreground max-w-2xl mx-auto">
-                        A curated peek at the Electron experience—now mirrored on the web. Pixel-perfect screens that match what you ship.
-                    </motion.p>
                     <motion.div variants={itemVariants as Variants} className="flex flex-wrap justify-center gap-3 text-sm text-muted-foreground">
                         <div className="inline-flex items-center gap-2 rounded-full border border-primary/25 bg-primary/10 px-3 py-1 text-primary">
                             <Monitor className="h-4 w-4" />
                             Live product captures
-                        </div>
-                        <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-foreground/80">
-                            <Sparkles className="h-4 w-4 text-primary" />
-                            Hover to zoom & glow
                         </div>
                     </motion.div>
                 </div>
@@ -119,7 +112,7 @@ export function Screenshots() {
                                     background: `radial-gradient(circle at 20% 15%, rgba(93,233,182,0.1), transparent 40%), radial-gradient(circle at 80% 0%, rgba(93,233,182,0.1), transparent 40%)`,
                                 }}
                             />
-                            <div className="relative aspect-[4/3] overflow-hidden">
+                            <div className="relative aspect-4/3 bg-background rounded-lg border border-border shadow-sm overflow-hidden group-hover:shadow-md transition-shadow">
                                 <Image
                                     src={shot.path}
                                     alt={shot.title}
