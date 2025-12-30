@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { ProfileSyncResult, ProfileSyncSettings, ProfileSyncStatus } from '../../types';
+import { ProfileSyncResult, ProfileSyncSettings as ProfileSyncSettingsType, ProfileSyncStatus } from '../../types';
 import './MCPSyncSettings.css'; // Reuse styling
 import { Icon, IdeIcon } from './Icons';
 
@@ -9,7 +9,7 @@ interface Props {
 
 export const ProfileSyncSettings: React.FC<Props> = ({ onToast }) => {
     const [statuses, setStatuses] = useState<ProfileSyncStatus[]>([]);
-    const [settings, setSettings] = useState<ProfileSyncSettings | null>(null);
+    const [settings, setSettings] = useState<ProfileSyncSettingsType | null>(null);
     const [syncing, setSyncing] = useState(false);
     const [lastResult, setLastResult] = useState<ProfileSyncResult | null>(null);
     const [loading, setLoading] = useState(true);
@@ -58,10 +58,10 @@ export const ProfileSyncSettings: React.FC<Props> = ({ onToast }) => {
             await loadData();
 
             if (result.success.length > 0) {
-                onToast(<><Icon name="checkCircle" size={14} color="black" /> Synced to {result.success.length} IDE(s)</>);
+                onToast(<><Icon name="checkCircle" size={14} color="var(--success)" /> Synced to {result.success.length} IDE(s)</>);
             }
             if (result.failed.length > 0) {
-                onToast(<><Icon name="alert" size={14} color="black" /> {result.failed.length} failed</>);
+                onToast(<><Icon name="alert" size={14} color="var(--warning)" /> {result.failed.length} failed</>);
             }
         } catch (error) {
             console.error('Profile sync failed:', error);
@@ -80,7 +80,7 @@ export const ProfileSyncSettings: React.FC<Props> = ({ onToast }) => {
         }
     };
 
-    const handleUpdateSettings = async (key: keyof ProfileSyncSettings, value: boolean) => {
+    const handleUpdateSettings = async (key: keyof ProfileSyncSettingsType, value: boolean) => {
         if (!settings) return;
         const newSettings = { ...settings, [key]: value };
         try {
@@ -143,7 +143,7 @@ export const ProfileSyncSettings: React.FC<Props> = ({ onToast }) => {
                         </>
                     ) : (
                         <>
-                            <Icon name="sync" size={16} color="black" /> Sync All
+                            <Icon name="sync" size={16} color="var(--text-on-accent)" /> Sync All
                         </>
                     )}
                 </button>

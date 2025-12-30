@@ -65,9 +65,9 @@ export const MCPSyncSettings: React.FC<Props> = ({ onToast }) => {
             await loadData();
 
             if (result.success.length > 0) {
-                onToast(<><Icon name="checkCircle" size={14} color="black" /> Synced to {result.success.join(', ')}</>);
+                onToast(<><Icon name="checkCircle" size={14} color="var(--success)" /> Synced to {result.success.join(', ')}</>);
             } else if (result.failed.length > 0) {
-                onToast(<><Icon name="xCircle" size={14} color="black" /> Failed: {result.failed[0]?.error ?? 'Unknown error'}</>);
+                onToast(<><Icon name="xCircle" size={14} color="var(--error)" /> Failed: {result.failed[0]?.error ?? 'Unknown error'}</>);
             }
         } catch (error) {
             console.error('Sync failed:', error);
@@ -86,10 +86,10 @@ export const MCPSyncSettings: React.FC<Props> = ({ onToast }) => {
             await loadData();
 
             if (result.success.length > 0) {
-                onToast(<><Icon name="checkCircle" size={14} color="black" /> Synced to {result.success.length} IDE(s)</>);
+                onToast(<><Icon name="checkCircle" size={14} color="var(--success)" /> Synced to {result.success.length} IDE(s)</>);
             }
             if (result.failed.length > 0) {
-                onToast(<><Icon name="alert" size={14} color="black" /> {result.failed.length} failed</>);
+                onToast(<><Icon name="alert" size={14} color="var(--warning)" /> {result.failed.length} failed</>);
             }
         } catch (error) {
             console.error('Sync all failed:', error);
@@ -104,10 +104,10 @@ export const MCPSyncSettings: React.FC<Props> = ({ onToast }) => {
         try {
             const result = await window.electronAPI.importMCPFromIDE(ideId);
             if (result.success) {
-                onToast(<><Icon name="checkCircle" size={14} color="black" /> Imported config from {ideId}</>);
+                onToast(<><Icon name="checkCircle" size={14} color="var(--success)" /> Imported config from {ideId}</>);
                 await loadData();
             } else {
-                onToast(<><Icon name="xCircle" size={14} color="black" /> Import failed: {result.error}</>);
+                onToast(<><Icon name="xCircle" size={14} color="var(--error)" /> Import failed: {result.error}</>);
             }
         } catch (error: any) {
             console.error('Import failed:', error);
@@ -229,7 +229,7 @@ export const MCPSyncSettings: React.FC<Props> = ({ onToast }) => {
                         </>
                     ) : (
                         <>
-                            <Icon name="sync" size={16} color="black" /> Sync All
+                            <Icon name="sync" size={16} color="var(--text-on-accent)" /> Sync All
                         </>
                     )}
                 </button>

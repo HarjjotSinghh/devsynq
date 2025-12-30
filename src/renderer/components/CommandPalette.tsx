@@ -44,7 +44,7 @@ function CommandPalette() {
                     title: ide.name,
                     subtitle: `Running • ${ide.memoryUsage ?? 0} MB`,
                     icon: <IdeIcon ide={ide.name} size={20} />,
-                    color: ide.color,
+                    color: ide.name === 'Cursor' ? 'var(--ide-cursor-color)' : ide.color,
                     keywords: ['running', 'focus', 'switch'],
                     action: async () => {
                         await window.electronAPI.focusIDE(ide.pid);
@@ -62,7 +62,7 @@ function CommandPalette() {
                     title: project.name,
                     subtitle: project.path,
                     icon: ide ? <IdeIcon ide={ide.name} size={20} /> : <Icon name="folder" size={20} />,
-                    color: ide?.color,
+                    color: ide?.name === 'Cursor' ? 'var(--ide-cursor-color)' : ide?.color,
                     keywords: ['project', 'open', 'folder', project.preferredIDE.toLowerCase()],
                     action: async () => {
                         await window.electronAPI.launchIDE(project.preferredIDE, project.path);
@@ -79,7 +79,7 @@ function CommandPalette() {
                     title: `Launch ${ide.name}`,
                     subtitle: 'Open IDE',
                     icon: <IdeIcon ide={ide.name} size={20} />,
-                    color: ide.color,
+                    color: ide.name === 'Cursor' ? 'var(--ide-cursor-color)' : ide.color,
                     keywords: ['launch', 'open', 'start', ide.name.toLowerCase()],
                     action: async () => {
                         await window.electronAPI.launchIDE(ide.name);
@@ -141,6 +141,10 @@ function CommandPalette() {
                         window.electronAPI.hideCommandPalette();
                     },
                 });
+            }
+
+            if ((data as any).settings?.theme) {
+                document.documentElement.setAttribute('data-theme', (data as any).settings.theme);
             }
 
             setAllItems(commandItems);
@@ -283,7 +287,9 @@ function CommandPalette() {
                             >
                                 <div
                                     className="item-icon"
-                                    style={item.color ? { backgroundColor: `${item.color}20` } : undefined}
+                                    style={item.color === 'var(--ide-cursor-color)'
+                                        ? { backgroundColor: 'rgba(var(--ide-cursor-color-rgb), 0.15)' }
+                                        : (item.color ? { backgroundColor: `${item.color}20` } : undefined)}
                                 >
                                     {item.icon}
                                 </div>

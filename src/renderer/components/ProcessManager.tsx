@@ -191,7 +191,7 @@ function ProcessManager({ onClose }: ProcessManagerProps) {
                         <div
                             key={ide.pid}
                             className="pm-process-card"
-                            style={{ '--accent-color': ide.color } as React.CSSProperties}
+                            style={{ '--accent-color': ide.name === 'Cursor' ? 'var(--ide-cursor-color)' : ide.color } as React.CSSProperties}
                         >
                             <div className="pm-process-icon">
                                 <span className="pm-ide-icon">

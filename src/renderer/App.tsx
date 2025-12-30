@@ -6,6 +6,7 @@ import Modal from './components/Modal';
 import ProjectGroupManager from './components/ProjectGroupManager';
 import { MCPHealthDashboard } from './components/MCPHealthDashboard';
 import { RulesLibrary } from './components/RulesLibrary';
+import { MCPMarketplace } from './components/MCPMarketplace';
 
 const SETTINGS_DEFAULTS: Settings = {
     defaultIDE: IDEType.Cursor,
@@ -20,7 +21,7 @@ const App: React.FC = () => {
     const [projects, setProjects] = useState<Project[]>([]);
     const [settings, setSettings] = useState<Settings>(SETTINGS_DEFAULTS);
     const [projectSearchTerm, setProjectSearchTerm] = useState('');
-    const [activeView, setActiveView] = useState<'home' | 'settings'>('home');
+    const [activeView, setActiveView] = useState<'home' | 'projects' | 'settings' | 'mcp'>('home');
     const [settingsTab, setSettingsTab] = useState<'general' | 'mcp' | 'processes' | 'apikeys' | 'shortcuts' | 'profile'>('general');
     const [isLoadingIDEs, setIsLoadingIDEs] = useState(true);
     const [isRefreshing, setIsRefreshing] = useState(false);
@@ -529,22 +530,6 @@ const App: React.FC = () => {
         );
     }
 
-    if (activeView === 'settings') {
-        return (
-            <SettingsPage
-                settings={settings}
-                ides={ides}
-                onSettingsChange={setSettings}
-                onSave={handleSaveSettings}
-                onClose={() => setActiveView('home')}
-                onToast={showToast}
-                activeTab={settingsTab}
-                onTabChange={setSettingsTab}
-                resolveShortcutIDE={resolveShortcutIDE}
-            />
-        );
-    }
-
     return (
         <div
             className={`app-container fade-in ${isDraggingOver ? 'dragging-over' : ''}`}
@@ -615,440 +600,485 @@ const App: React.FC = () => {
                     </div>
                 </header>
 
-                {/* MCP Sync CTA Section */}
-                <section className="mcp-sync-cta">
-                    <div className="mcp-cta-content">
-                        <div className="mcp-cta-info">
-                            <div className="mcp-cta-icon">
-                                <Icon name="sync" />
-                            </div>
-                            <div className="mcp-cta-text">
-                                <h3>MCP Configuration Sync</h3>
-                                <p>
-                                    {mcpSyncCount > 0
-                                        ? `Sync your MCP servers to ${mcpSyncCount} configured IDE${mcpSyncCount !== 1 ? 's' : ''}`
-                                        : 'Configure and sync MCP servers across all your AI IDEs'
-                                    }
-                                </p>
-                                {lastMcpSync && (
-                                    <span className="mcp-last-sync">
-                                        Last synced: {formatRelativeTime(lastMcpSync)}
-                                    </span>
-                                )}
-                            </div>
-                        </div>
-                        <div className="mcp-cta-actions">
-                            <button
-                                className="mcp-sync-btn primary"
-                                onClick={handleQuickMCPSync}
-                                disabled={isSyncingMCP}
-                            >
-                                {isSyncingMCP ? (
-                                    <>
-                                        <span className="btn-spinner"></span>
-                                        Syncing...
-                                    </>
-                                ) : (
-                                    <>
-                                        <Icon name="sync" size={16} />
-                                        Sync All Now
-                                    </>
-                                )}
-                            </button>
-                            <button
-                                className="mcp-sync-btn secondary"
-                                onClick={() => {
-                                    setSettingsTab('mcp');
-                                    setActiveView('settings');
-                                }}
-                            >
-                                <Icon name="settings" size={16} />
-                                Configure
-                            </button>
-                            <button
-                                className="mcp-sync-btn secondary"
-                                onClick={() => setIsMCPHealthOpen(true)}
-                                title="Server Health Dashboard"
-                                style={{ marginLeft: 8 }}
-                            >
-                                <Icon name="activity" size={16} />
-                                Health
-                            </button>
-                        </div>
-                    </div>
-                </section>
+                {/* Navigation Tabs */}
+                <nav className="nav-tabs">
+                    <button
+                        className={`nav-tab ${activeView === 'home' ? 'active' : ''}`}
+                        onClick={() => setActiveView('home')}
+                    >
+                        <Icon name="launch" size={16} />
+                        <span>Launch IDEs</span>
+                    </button>
+                    <button
+                        className={`nav-tab ${activeView === 'projects' ? 'active' : ''}`}
+                        onClick={() => setActiveView('projects')}
+                    >
+                        <Icon name="project" size={16} />
+                        <span>My Projects</span>
+                    </button>
+                    <button
+                        className={`nav-tab ${activeView === 'mcp' ? 'active' : ''}`}
+                        onClick={() => setActiveView('mcp')}
+                    >
+                        <Icon name="box" size={16} />
+                        <span>Browse MCP</span>
+                    </button>
+                </nav>
 
-                {/* Profile Sync CTA Section */}
-                <section className="mcp-sync-cta">
-                    <div className="mcp-cta-content">
-                        <div className="mcp-cta-info">
-                            <div className="mcp-cta-icon">
-                                <Icon name="profile" />
-                            </div>
-                            <div className="mcp-cta-text">
-                                <h3>Profile Sync (.code-profile)</h3>
-                                <p>
-                                    {profileSyncCount > 0
-                                        ? `Sync your profile to ${profileSyncCount} configured IDE${profileSyncCount !== 1 ? 's' : ''}`
-                                        : 'Sync your .code-profile across all configured IDEs'}
-                                </p>
-                                {lastProfileSync && (
-                                    <span className="mcp-last-sync">
-                                        Last synced: {formatRelativeTime(lastProfileSync)}
-                                    </span>
-                                )}
-                            </div>
-                        </div>
-                        <div className="mcp-cta-actions">
-                            <button
-                                className="mcp-sync-btn primary"
-                                onClick={handleQuickProfileSync}
-                                disabled={isSyncingProfile}
-                            >
-                                {isSyncingProfile ? (
-                                    <>
-                                        <span className="btn-spinner"></span>
-                                        Syncing...
-                                    </>
-                                ) : (
-                                    <>
-                                        <Icon name="sync" size={16} />
-                                        Sync All Now
-                                    </>
-                                )}
-                            </button>
-                            <button
-                                className="mcp-sync-btn secondary"
-                                onClick={() => {
-                                    setSettingsTab('profile');
-                                    setActiveView('settings');
-                                }}
-                            >
-                                <Icon name="settings" size={16} />
-                                Configure
-                            </button>
-                        </div>
-                    </div>
-                </section>
+                {activeView === 'home' ? (
+                    <>
 
-                {/* AI Rules Library CTA Section */}
-                <section className="mcp-sync-cta" style={{ background: 'linear-gradient(135deg, rgba(161, 161, 170, 0.1) 0%, rgba(161, 161, 170, 0.05) 100%)', borderColor: 'rgba(161, 161, 170, 0.2)' }}>
-                    <div className="mcp-cta-content">
-                        <div className="mcp-cta-info">
-                            <div className="mcp-cta-icon" style={{ color: '#d4d4d8' }}>
-                                <Icon name="bookOpen" />
-                            </div>
-                            <div className="mcp-cta-text">
-                                <h3>AI Rules Library</h3>
-                                <p>Manage and sync rule templates for your AI IDEs</p>
-                            </div>
-                        </div>
-                        <div className="mcp-cta-actions">
-                            <button
-                                className="mcp-sync-btn primary"
-                                onClick={() => setIsRulesLibraryOpen(true)}
-                                style={{ backgroundColor: '#52525b' }}
-                            >
-                                <Icon name="bookOpen" size={16} />
-                                Manage Rules
-                            </button>
-                        </div>
-                    </div>
-                </section>
-
-                {/* IDE Grid */}
-                <div id="ide-grid">
-                    {isLoadingIDEs ? (
-                        <div className="loading-state">
-                            <div className="loading-spinner"></div>
-                            <p>Scanning for installed IDEs...</p>
-                        </div>
-                    ) : (
-                        ides.map(ide => (
-                            <div
-                                key={ide.name}
-                                className={`ide-card ${ide.installed ? 'installed' : 'not-installed'}`}
-                                style={{ '--accent-color': ide.color } as React.CSSProperties}
-                                onClick={() => handleLaunchIDE(ide)}
-                            >
-                                <div className="card-content">
-                                    <div className="ide-icon-wrapper">
-                                        <IdeIcon ide={ide.name} />
+                        {/* MCP Sync CTA Section */}
+                        <section className="mcp-sync-cta">
+                            <div className="mcp-cta-content">
+                                <div className="mcp-cta-info">
+                                    <div className="mcp-cta-icon">
+                                        <Icon name="sync" />
                                     </div>
-                                    <h3 className="ide-name">{ide.name}</h3>
-                                    <div className="ide-status">
-                                        <span className={`status-dot ${ide.installed ? 'active' : 'inactive'}`}></span>
-                                        <span className="status-text">{ide.installed ? 'Installed' : 'Not Installed'}</span>
+                                    <div className="mcp-cta-text">
+                                        <h3>MCP Configuration Sync</h3>
+                                        <p>
+                                            {mcpSyncCount > 0
+                                                ? `Sync your MCP servers to ${mcpSyncCount} configured IDE${mcpSyncCount !== 1 ? 's' : ''}`
+                                                : 'Configure and sync MCP servers across all your AI IDEs'
+                                            }
+                                        </p>
+                                        {lastMcpSync && (
+                                            <span className="mcp-last-sync">
+                                                Last synced: {formatRelativeTime(lastMcpSync)}
+                                            </span>
+                                        )}
                                     </div>
+                                </div>
+                                <div className="mcp-cta-actions">
                                     <button
-                                        className={`ide-action-btn ${ide.installed ? 'launch-btn' : 'install-btn'}`}
-                                        onClick={(e) => {
-                                            e.stopPropagation();
-                                            handleLaunchIDE(ide);
-                                        }}
+                                        className="mcp-sync-btn primary"
+                                        onClick={handleQuickMCPSync}
+                                        disabled={isSyncingMCP}
                                     >
-                                        {ide.installed ? (
+                                        {isSyncingMCP ? (
                                             <>
-                                                <Icon name="launch" size={16} />
-                                                Launch
+                                                <span className="btn-spinner"></span>
+                                                Syncing...
                                             </>
                                         ) : (
                                             <>
-                                                <Icon name="download" size={16} />
-                                                Install
+                                                <Icon name="sync" size={16} />
+                                                Sync All Now
                                             </>
                                         )}
                                     </button>
+                                    <button
+                                        className="mcp-sync-btn secondary"
+                                        onClick={() => {
+                                            setSettingsTab('mcp');
+                                            setActiveView('settings');
+                                        }}
+                                    >
+                                        <Icon name="settings" size={16} />
+                                        Configure
+                                    </button>
+                                    <button
+                                        className="mcp-sync-btn secondary"
+                                        onClick={() => setIsMCPHealthOpen(true)}
+                                        title="Server Health Dashboard"
+                                        style={{ marginLeft: 8 }}
+                                    >
+                                        <Icon name="activity" size={16} />
+                                        Health
+                                    </button>
                                 </div>
                             </div>
-                        ))
-                    )}
-                </div>
+                        </section>
 
-                {/* Projects Section */}
-                <section className="projects-section">
-                    <div className="section-header">
-                        <h2 className="section-title">Projects</h2>
-                        <div className="section-header-actions">
-                            <button id="add-project-btn" className="add-project-btn" onClick={handleAddProject}>
-                                <Icon name="add" />
-                                <span>Add Project</span>
-                            </button>
-                            <button className="add-project-btn secondary" onClick={handleAddMasterDirectory}>
-                                <Icon name="folder" />
-                                <span>Add Master Dir</span>
-                            </button>
-                            <button
-                                className="add-project-btn secondary"
-                                onClick={() => setIsGroupManagerOpen(true)}
-                                title="Manage project groups"
-                            >
-                                <Icon name="settings" />
-                                <span>Groups</span>
-                            </button>
-                        </div>
-                    </div>
+                        {/* Profile Sync CTA Section */}
+                        <section className="mcp-sync-cta">
+                            <div className="mcp-cta-content">
+                                <div className="mcp-cta-info">
+                                    <div className="mcp-cta-icon">
+                                        <Icon name="profile" />
+                                    </div>
+                                    <div className="mcp-cta-text">
+                                        <h3>Profile Sync (.code-profile)</h3>
+                                        <p>
+                                            {profileSyncCount > 0
+                                                ? `Sync your profile to ${profileSyncCount} configured IDE${profileSyncCount !== 1 ? 's' : ''}`
+                                                : 'Sync your .code-profile across all configured IDEs'}
+                                        </p>
+                                        {lastProfileSync && (
+                                            <span className="mcp-last-sync">
+                                                Last synced: {formatRelativeTime(lastProfileSync)}
+                                            </span>
+                                        )}
+                                    </div>
+                                </div>
+                                <div className="mcp-cta-actions">
+                                    <button
+                                        className="mcp-sync-btn primary"
+                                        onClick={handleQuickProfileSync}
+                                        disabled={isSyncingProfile}
+                                    >
+                                        {isSyncingProfile ? (
+                                            <>
+                                                <span className="btn-spinner"></span>
+                                                Syncing...
+                                            </>
+                                        ) : (
+                                            <>
+                                                <Icon name="sync" size={16} />
+                                                Sync All Now
+                                            </>
+                                        )}
+                                    </button>
+                                    <button
+                                        className="mcp-sync-btn secondary"
+                                        onClick={() => {
+                                            setSettingsTab('profile');
+                                            setActiveView('settings');
+                                        }}
+                                    >
+                                        <Icon name="settings" size={16} />
+                                        Configure
+                                    </button>
+                                </div>
+                            </div>
+                        </section>
 
-                    {/* Group Filter Tabs */}
-                    {projectGroups.length > 0 && (
-                        <div className="group-filter-tabs">
-                            <button
-                                className={`group-filter-tab ${selectedGroupFilter === null ? 'active' : ''}`}
-                                onClick={() => setSelectedGroupFilter(null)}
-                            >
-                                All Projects
-                            </button>
-                            {projectGroups.map(group => (
-                                <button
-                                    key={group.id}
-                                    className={`group-filter-tab ${selectedGroupFilter === group.id ? 'active' : ''}`}
-                                    onClick={() => setSelectedGroupFilter(group.id)}
-                                    style={{ '--group-color': group.color } as React.CSSProperties}
-                                >
-                                    <span
-                                        className="group-color-indicator"
-                                        style={{ backgroundColor: group.color }}
-                                    />
-                                    {group.icon && <span className="group-icon">{group.icon}</span>}
-                                    {group.name}
-                                </button>
-                            ))}
-                        </div>
-                    )}
+                        {/* AI Rules Library CTA Section */}
+                        <section className="mcp-sync-cta rules-library-cta">
+                            <div className="mcp-cta-content">
+                                <div className="mcp-cta-info">
+                                    <div className="mcp-cta-icon">
+                                        <Icon name="bookOpen" />
+                                    </div>
+                                    <div className="mcp-cta-text">
+                                        <h3>AI Rules Library</h3>
+                                        <p>Manage and sync rule templates for your AI IDEs</p>
+                                    </div>
+                                </div>
+                                <div className="mcp-cta-actions">
+                                    <button
+                                        className="mcp-sync-btn primary"
+                                        onClick={() => setIsRulesLibraryOpen(true)}
+                                    >
+                                        <Icon name="bookOpen" size={16} />
+                                        Manage Rules
+                                    </button>
+                                </div>
+                            </div>
+                        </section>
 
-                    <div className="project-toolbar">
-                        <div className="search-input">
-                            <span aria-hidden="true" className="search-icon">
-                                <Icon name="search" />
-                            </span>
-                            <input
-                                id="project-search"
-                                type="text"
-                                placeholder="Search projects by name, path, or tag (Cmd/Ctrl + P)"
-                                value={projectSearchTerm}
-                                onChange={(e) => setProjectSearchTerm(e.target.value)}
-                            />
-                            <span className="shortcut-hint">⌘/Ctrl + P</span>
-                        </div>
-                    </div>
-
-                    {/* Recent Projects */}
-                    <div>
-                        <h3 className="section-subtitle">Recent</h3>
-                        <div id="recent-projects" className="projects-grid recent-grid">
-                            {recentProjects.length === 0 ? (
-                                <div style={{ gridColumn: '1/-1', textAlign: 'center', color: 'var(--text-muted)', padding: '12px' }}>
-                                    Launch some projects to see recent items here.
+                        {/* IDE Grid */}
+                        <div id="ide-grid">
+                            {isLoadingIDEs ? (
+                                <div className="loading-state">
+                                    <div className="loading-spinner"></div>
+                                    <p>Scanning for installed IDEs...</p>
                                 </div>
                             ) : (
-                                recentProjects.map(project => (
+                                ides.map(ide => (
                                     <div
-                                        key={project.id}
-                                        className="project-card compact"
-                                        onClick={() => handleLaunchProject(project)}
+                                        key={ide.name}
+                                        className={`ide-card ${ide.installed ? 'installed' : 'not-installed'}`}
+                                        style={{ '--accent-color': ide.name === 'Cursor' ? 'var(--ide-cursor-color)' : ide.color } as React.CSSProperties}
+                                        onClick={() => handleLaunchIDE(ide)}
                                     >
-                                        <div className="project-info">
-                                            <div className="project-icon">{getProjectIcon(project.preferredIDE)}</div>
-                                            <div className="project-details">
-                                                <div className="project-name">{project.name}</div>
-                                                <div className="project-path" title={project.path}>{project.path}</div>
-                                                <div className="project-ide" style={{ fontSize: '11px', color: 'var(--accent-primary)', marginTop: '2px' }} onClick={(e) => e.stopPropagation()}>
-                                                    <select
-                                                        value={project.preferredIDE}
-                                                        onChange={(e) => handleUpdateProjectIDE(e, project.id)}
-                                                        className="project-ide-select"
-                                                        title="Change preferred IDE"
-                                                    >
-                                                        {ides.filter(i => i.installed).map(ide => (
-                                                            <option key={ide.name} value={ide.name}>
-                                                                {ide.name}
-                                                            </option>
-                                                        ))}
-                                                        {!ides.some(i => i.installed && i.name === project.preferredIDE) && (
-                                                            <option value={project.preferredIDE} disabled>
-                                                                {project.preferredIDE}
-                                                            </option>
-                                                        )}
-                                                    </select>
-                                                </div>
-                                                <div className="project-meta">
-                                                    Last opened {project.lastOpened ? new Date(project.lastOpened).toLocaleString() : ''}
-                                                </div>
+                                        <div className="card-content">
+                                            <div className="ide-icon-wrapper">
+                                                <IdeIcon ide={ide.name} />
                                             </div>
-                                        </div>
-                                        <div className="project-actions">
+                                            <h3 className="ide-name">{ide.name}</h3>
+                                            <div className="ide-status">
+                                                <span className={`status-dot ${ide.installed ? 'active' : 'inactive'}`}></span>
+                                                <span className="status-text">{ide.installed ? 'Installed' : 'Not Installed'}</span>
+                                            </div>
                                             <button
-                                                className="project-action-btn launch"
-                                                title={`Open in ${project.preferredIDE}`}
+                                                className={`ide-action-btn ${ide.installed ? 'launch-btn' : 'install-btn'}`}
                                                 onClick={(e) => {
                                                     e.stopPropagation();
-                                                    handleLaunchProject(project);
+                                                    handleLaunchIDE(ide);
                                                 }}
                                             >
-                                                <Icon name="launch" size={16} />
-                                            </button>
-                                            <button
-                                                className="project-action-btn delete"
-                                                title="Remove Project"
-                                                onClick={(e) => handleDeleteProject(e, project.id, project.name)}
-                                            >
-                                                <Icon name="delete" size={16} />
+                                                {ide.installed ? (
+                                                    <>
+                                                        <Icon name="launch" size={16} />
+                                                        Launch
+                                                    </>
+                                                ) : (
+                                                    <>
+                                                        <Icon name="download" size={16} />
+                                                        Install
+                                                    </>
+                                                )}
                                             </button>
                                         </div>
                                     </div>
                                 ))
                             )}
                         </div>
-                    </div>
-
-                    {/* All Projects */}
-                    <div style={{ marginTop: 'var(--spacing-md)' }}>
-                        <h3 className="section-subtitle">All Projects</h3>
-                        <div id="projects-grid" className="projects-grid">
-                            {filteredProjects.length === 0 ? (
-                                <div style={{ gridColumn: '1/-1', textAlign: 'center', color: 'var(--text-muted)', padding: '20px' }}>
-                                    {projects.length === 0 ? 'No projects added yet. Click "Add Project" to get started.' : 'No projects found.'}
+                    </>
+                ) : activeView === 'projects' ? (
+                    <>
+                        {/* Projects Section */}
+                        <section className="projects-section">
+                            <div className="section-header">
+                                <h2 className="section-title">Projects</h2>
+                                <div className="section-header-actions">
+                                    <button id="add-project-btn" className="add-project-btn" onClick={handleAddProject}>
+                                        <Icon name="add" />
+                                        <span>Add Project</span>
+                                    </button>
+                                    <button className="add-project-btn secondary" onClick={handleAddMasterDirectory}>
+                                        <Icon name="folder" />
+                                        <span>Add Master Dir</span>
+                                    </button>
+                                    <button
+                                        className="add-project-btn secondary"
+                                        onClick={() => setIsGroupManagerOpen(true)}
+                                        title="Manage project groups"
+                                    >
+                                        <Icon name="settings" />
+                                        <span>Groups</span>
+                                    </button>
                                 </div>
-                            ) : (
-                                filteredProjects.map(project => {
-                                    const meta = projectMetadata[project.id];
-                                    const group = projectGroups.find(g => g.id === project.group);
-                                    return (
-                                        <div
-                                            key={project.id}
-                                            className="project-card"
-                                            onClick={() => handleLaunchProject(project)}
-                                            style={group ? { '--project-group-color': group.color } as React.CSSProperties : undefined}
+                            </div>
+
+                            {/* Group Filter Tabs */}
+                            {projectGroups.length > 0 && (
+                                <div className="group-filter-tabs">
+                                    <button
+                                        className={`group-filter-tab ${selectedGroupFilter === null ? 'active' : ''}`}
+                                        onClick={() => setSelectedGroupFilter(null)}
+                                    >
+                                        All Projects
+                                    </button>
+                                    {projectGroups.map(group => (
+                                        <button
+                                            key={group.id}
+                                            className={`group-filter-tab ${selectedGroupFilter === group.id ? 'active' : ''}`}
+                                            onClick={() => setSelectedGroupFilter(group.id)}
+                                            style={{ '--group-color': group.color } as React.CSSProperties}
                                         >
-                                            {group && <div className="project-group-indicator" style={{ backgroundColor: group.color }} />}
-                                            <div className="project-info">
-                                                <div className="project-icon">{getProjectIcon(project.preferredIDE)}</div>
-                                                <div className="project-details">
-                                                    <div className="project-name">{project.name}</div>
-                                                    <div className="project-path" title={project.path}>{project.path}</div>
+                                            <span
+                                                className="group-color-indicator"
+                                                style={{ backgroundColor: group.color }}
+                                            />
+                                            {group.icon && <span className="group-icon">{group.icon}</span>}
+                                            {group.name}
+                                        </button>
+                                    ))}
+                                </div>
+                            )}
 
-                                                    {/* Metadata Row */}
-                                                    <div className="project-metadata-row">
-                                                        {meta?.gitBranch && (
-                                                            <span className="metadata-badge git" title={`Branch: ${meta.gitBranch}`}>
-                                                                <Icon name="sync" size={10} />
-                                                                {meta.gitBranch}
-                                                            </span>
-                                                        )}
-                                                        {meta?.packageManager && (
-                                                            <span className="metadata-badge pkg" title={`Package Manager: ${meta.packageManager}`}>
-                                                                {getPackageManagerIcon(meta.packageManager)} {meta.packageManager}
-                                                            </span>
-                                                        )}
-                                                        {group && (
-                                                            <span
-                                                                className="metadata-badge group"
-                                                                style={{ backgroundColor: `${group.color}20`, color: group.color }}
+                            <div className="project-toolbar">
+                                <div className="search-input">
+                                    <span aria-hidden="true" className="search-icon">
+                                        <Icon name="search" />
+                                    </span>
+                                    <input
+                                        id="project-search"
+                                        type="text"
+                                        placeholder="Search projects by name, path, or tag (Cmd/Ctrl + P)"
+                                        value={projectSearchTerm}
+                                        onChange={(e) => setProjectSearchTerm(e.target.value)}
+                                    />
+                                    <span className="shortcut-hint">⌘/Ctrl + P</span>
+                                </div>
+                            </div>
+
+                            {/* Recent Projects */}
+                            <div>
+                                <h3 className="section-subtitle">Recent</h3>
+                                <div id="recent-projects" className="projects-grid recent-grid">
+                                    {recentProjects.length === 0 ? (
+                                        <div style={{ gridColumn: '1/-1', textAlign: 'center', color: 'var(--text-muted)', padding: '12px' }}>
+                                            Launch some projects to see recent items here.
+                                        </div>
+                                    ) : (
+                                        recentProjects.map(project => (
+                                            <div
+                                                key={project.id}
+                                                className="project-card compact"
+                                                onClick={() => handleLaunchProject(project)}
+                                            >
+                                                <div className="project-info">
+                                                    <div className="project-icon">{getProjectIcon(project.preferredIDE)}</div>
+                                                    <div className="project-details">
+                                                        <div className="project-name">{project.name}</div>
+                                                        <div className="project-path" title={project.path}>{project.path}</div>
+                                                        <div className="project-ide" style={{ fontSize: '11px', color: 'var(--accent-primary)', marginTop: '2px' }} onClick={(e) => e.stopPropagation()}>
+                                                            <select
+                                                                value={project.preferredIDE}
+                                                                onChange={(e) => handleUpdateProjectIDE(e, project.id)}
+                                                                className="project-ide-select"
+                                                                title="Change preferred IDE"
                                                             >
-                                                                {group.icon} {group.name}
-                                                            </span>
-                                                        )}
-                                                    </div>
-
-                                                    {/* Tags */}
-                                                    {project.tags && project.tags.length > 0 && (
-                                                        <div className="project-tags">
-                                                            {project.tags.slice(0, 3).map(tag => (
-                                                                <span key={tag} className="project-tag">{tag}</span>
-                                                            ))}
-                                                            {project.tags.length > 3 && (
-                                                                <span className="project-tag more">+{project.tags.length - 3}</span>
-                                                            )}
+                                                                {ides.filter(i => i.installed).map(ide => (
+                                                                    <option key={ide.name} value={ide.name}>
+                                                                        {ide.name}
+                                                                    </option>
+                                                                ))}
+                                                                {!ides.some(i => i.installed && i.name === project.preferredIDE) && (
+                                                                    <option value={project.preferredIDE} disabled>
+                                                                        {project.preferredIDE}
+                                                                    </option>
+                                                                )}
+                                                            </select>
                                                         </div>
-                                                    )}
-
-                                                    <div className="project-ide" onClick={(e) => e.stopPropagation()}>
-                                                        <select
-                                                            value={project.preferredIDE}
-                                                            onChange={(e) => handleUpdateProjectIDE(e, project.id)}
-                                                            className="project-ide-select"
-                                                            title="Change preferred IDE"
-                                                        >
-                                                            {ides.filter(i => i.installed).map(ide => (
-                                                                <option key={ide.name} value={ide.name}>
-                                                                    {ide.name}
-                                                                </option>
-                                                            ))}
-                                                            {!ides.some(i => i.installed && i.name === project.preferredIDE) && (
-                                                                <option value={project.preferredIDE} disabled>
-                                                                    {project.preferredIDE}
-                                                                </option>
-                                                            )}
-                                                        </select>
+                                                        <div className="project-meta">
+                                                            Last opened {project.lastOpened ? new Date(project.lastOpened).toLocaleString() : ''}
+                                                        </div>
                                                     </div>
                                                 </div>
+                                                <div className="project-actions">
+                                                    <button
+                                                        className="project-action-btn launch"
+                                                        title={`Open in ${project.preferredIDE}`}
+                                                        onClick={(e) => {
+                                                            e.stopPropagation();
+                                                            handleLaunchProject(project);
+                                                        }}
+                                                    >
+                                                        <Icon name="launch" size={16} />
+                                                    </button>
+                                                    <button
+                                                        className="project-action-btn delete"
+                                                        title="Remove Project"
+                                                        onClick={(e) => handleDeleteProject(e, project.id, project.name)}
+                                                    >
+                                                        <Icon name="delete" size={16} />
+                                                    </button>
+                                                </div>
                                             </div>
-                                            <div className="project-actions">
-                                                <button
-                                                    className="project-action-btn launch"
-                                                    title={`Open in ${project.preferredIDE}`}
-                                                    onClick={(e) => {
-                                                        e.stopPropagation();
-                                                        handleLaunchProject(project);
-                                                    }}
-                                                >
-                                                    <Icon name="launch" size={16} />
-                                                </button>
-                                                <button
-                                                    className="project-action-btn delete"
-                                                    title="Remove Project"
-                                                    onClick={(e) => handleDeleteProject(e, project.id, project.name)}
-                                                >
-                                                    <Icon name="delete" size={16} />
-                                                </button>
-                                            </div>
+                                        ))
+                                    )}
+                                </div>
+                            </div>
+
+                            {/* All Projects */}
+                            <div style={{ marginTop: 'var(--spacing-md)' }}>
+                                <h3 className="section-subtitle">All Projects</h3>
+                                <div id="projects-grid" className="projects-grid">
+                                    {filteredProjects.length === 0 ? (
+                                        <div style={{ gridColumn: '1/-1', textAlign: 'center', color: 'var(--text-muted)', padding: '20px' }}>
+                                            {projects.length === 0 ? 'No projects added yet. Click "Add Project" to get started.' : 'No projects found.'}
                                         </div>
-                                    );
-                                })
-                            )}
-                        </div>
-                    </div>
-                </section>
+                                    ) : (
+                                        filteredProjects.map(project => {
+                                            const meta = projectMetadata[project.id];
+                                            const group = projectGroups.find(g => g.id === project.group);
+                                            return (
+                                                <div
+                                                    key={project.id}
+                                                    className="project-card"
+                                                    onClick={() => handleLaunchProject(project)}
+                                                    style={group ? { '--project-group-color': group.color } as React.CSSProperties : undefined}
+                                                >
+                                                    {group && <div className="project-group-indicator" style={{ backgroundColor: group.color }} />}
+                                                    <div className="project-info">
+                                                        <div className="project-icon">{getProjectIcon(project.preferredIDE)}</div>
+                                                        <div className="project-details">
+                                                            <div className="project-name">{project.name}</div>
+                                                            <div className="project-path" title={project.path}>{project.path}</div>
+
+                                                            {/* Metadata Row */}
+                                                            <div className="project-metadata-row">
+                                                                {meta?.gitBranch && (
+                                                                    <span className="metadata-badge git" title={`Branch: ${meta.gitBranch}`}>
+                                                                        <Icon name="sync" size={10} />
+                                                                        {meta.gitBranch}
+                                                                    </span>
+                                                                )}
+                                                                {meta?.packageManager && (
+                                                                    <span className="metadata-badge pkg" title={`Package Manager: ${meta.packageManager}`}>
+                                                                        {getPackageManagerIcon(meta.packageManager)} {meta.packageManager}
+                                                                    </span>
+                                                                )}
+                                                                {group && (
+                                                                    <span
+                                                                        className="metadata-badge group"
+                                                                        style={{ backgroundColor: `${group.color}20`, color: group.color }}
+                                                                    >
+                                                                        {group.icon} {group.name}
+                                                                    </span>
+                                                                )}
+                                                            </div>
+
+                                                            {/* Tags */}
+                                                            {project.tags && project.tags.length > 0 && (
+                                                                <div className="project-tags">
+                                                                    {project.tags.slice(0, 3).map(tag => (
+                                                                        <span key={tag} className="project-tag">{tag}</span>
+                                                                    ))}
+                                                                    {project.tags.length > 3 && (
+                                                                        <span className="project-tag more">+{project.tags.length - 3}</span>
+                                                                    )}
+                                                                </div>
+                                                            )}
+
+                                                            <div className="project-ide" onClick={(e) => e.stopPropagation()}>
+                                                                <select
+                                                                    value={project.preferredIDE}
+                                                                    onChange={(e) => handleUpdateProjectIDE(e, project.id)}
+                                                                    className="project-ide-select"
+                                                                    title="Change preferred IDE"
+                                                                >
+                                                                    {ides.filter(i => i.installed).map(ide => (
+                                                                        <option key={ide.name} value={ide.name}>
+                                                                            {ide.name}
+                                                                        </option>
+                                                                    ))}
+                                                                    {!ides.some(i => i.installed && i.name === project.preferredIDE) && (
+                                                                        <option value={project.preferredIDE} disabled>
+                                                                            {project.preferredIDE}
+                                                                        </option>
+                                                                    )}
+                                                                </select>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div className="project-actions">
+                                                        <button
+                                                            className="project-action-btn launch"
+                                                            title={`Open in ${project.preferredIDE}`}
+                                                            onClick={(e) => {
+                                                                e.stopPropagation();
+                                                                handleLaunchProject(project);
+                                                            }}
+                                                        >
+                                                            <Icon name="launch" size={16} />
+                                                        </button>
+                                                        <button
+                                                            className="project-action-btn delete"
+                                                            title="Remove Project"
+                                                            onClick={(e) => handleDeleteProject(e, project.id, project.name)}
+                                                        >
+                                                            <Icon name="delete" size={16} />
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            );
+                                        })
+                                    )}
+                                </div>
+                            </div>
+                        </section>
+                    </>
+                ) : activeView === 'settings' ? (
+                    <SettingsPage
+                        settings={settings}
+                        ides={ides as IDE[]}
+                        onSettingsChange={setSettings}
+                        onSave={handleSaveSettings}
+                        onClose={() => setActiveView('home')}
+                        onToast={showToast}
+                        activeTab={settingsTab as any}
+                        onTabChange={(tab) => setSettingsTab(tab as any)}
+                        resolveShortcutIDE={resolveShortcutIDE}
+                    />
+                ) : (
+                    <MCPMarketplace onToast={showToast} />
+                )}
             </main>
 
             {/* Scan Projects Modal */}
@@ -1125,7 +1155,7 @@ const App: React.FC = () => {
 
             {/* Footer */}
             <footer className="footer">
-                <p>DevSynq v0.0.1 · Built with Electron + React + TypeScript</p>
+                <p>DevSynq v1.1.0 · Built with 🍵 by <a href="https://github.com/harjjotsinghh" target="_blank" rel="noopener noreferrer">Harjot Rana</a></p>
             </footer>
 
             {/* Toast */}

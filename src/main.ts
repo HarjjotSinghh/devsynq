@@ -1398,10 +1398,13 @@ ipcMain.handle("get-command-palette-data", async () => {
   const projects = loadProjects();
   const runningIDEs = await getRunningIDEs();
 
+  const settings = loadSettings();
+
   return {
     ides: ides.filter((ide: any) => ide.installed),
     projects,
     runningIDEs,
+    settings,
   };
 });
 

@@ -63,7 +63,7 @@
     align-items: center;
     justify-content: space-between;
     padding: var(--spacing-md) var(--spacing-xl);
-    background: rgba(0, 0, 0, 0.95);
+    background: var(--bg-secondary);
     border-bottom: 1px solid var(--border-color);
     -webkit-app-region: drag;
     flex-shrink: 0;
@@ -84,7 +84,7 @@
     background: var(--bg-card);
     border: 1px solid var(--border-color);
     border-radius: var(--radius-md);
-    color: white;
+    color: var(--text-primary);
     font-size: 14px;
     cursor: pointer;
     transition: all 0.15s ease;
@@ -180,12 +180,12 @@
     background: var(--bg-tertiary);
     border-radius: var(--radius-sm);
     flex-shrink: 0;
-    color: white;
+    color: var(--text-primary);
 }
 
 .settings-nav-item.active .nav-icon {
     background: var(--accent-gradient);
-    color: black;
+    color: var(--text-on-accent);
 }
 
 .nav-content {
@@ -416,7 +416,7 @@
     background: var(--accent-gradient);
     border: none;
     border-radius: var(--radius-md);
-    color: black;
+    color: var(--text-on-accent);
     font-size: 14px;
     font-weight: 500;
     cursor: pointer;
@@ -438,29 +438,34 @@
 }
 
 .shortcut-row {
-    display: grid;
-    grid-template-columns: 180px 1fr 220px;
+    display: flex;
+    flex-wrap: wrap;
     gap: var(--spacing-md);
     align-items: center;
     padding: var(--spacing-md);
     background: var(--bg-card);
     border: 1px solid var(--border-color);
     border-radius: var(--radius-md);
+    min-height: 60px;
 }
 
 .shortcut-label {
-    display: inline-flex;
+    flex: 0 0 160px;
+    display: flex;
     align-items: center;
     gap: var(--spacing-sm);
     font-weight: 600;
     color: var(--text-primary);
 }
 
-.shortcut-label svg {
-    color: white;
+.settings-select {
+    flex: 1;
+    min-width: 200px;
 }
 
 .shortcut-resolved {
+    flex: 1;
+    min-width: 200px;
     display: flex;
     align-items: center;
     gap: var(--spacing-sm);
@@ -583,7 +588,7 @@
     gap: var(--spacing-sm);
     padding: 8px 16px;
     background: var(--accent-primary);
-    color: black;
+    color: var(--text-on-accent);
     border: none;
     border-radius: var(--radius-md);
     font-size: 13px;
@@ -642,8 +647,10 @@
 
 .apikey-card {
     display: flex;
+    flex-wrap: wrap;
     align-items: center;
     justify-content: space-between;
+    gap: var(--spacing-lg);
     padding: var(--spacing-lg);
     background: var(--bg-card);
     border: 1px solid var(--border-color);
@@ -657,7 +664,7 @@
 
 .apikey-info {
     flex: 1;
-    min-width: 0;
+    min-width: 250px;
     padding-right: var(--spacing-lg);
 }
 
@@ -684,6 +691,7 @@
 }
 
 .apikey-value {
+    flex: 1;
     flex-shrink: 0;
     min-width: 300px;
 }
@@ -741,7 +749,7 @@
 
 .apikey-btn-save {
     background: var(--accent-primary);
-    color: black;
+    color: var(--text-on-accent);
 }
 
 .apikey-btn-save:hover {
@@ -868,9 +876,10 @@
 
 .apikeys-toggle {
     position: relative;
-    width: 40px;
-    height: 22px;
+    width: 44px;
+    height: 24px;
     cursor: pointer;
+    flex-shrink: 0;
 }
 
 .apikeys-toggle input {
@@ -905,7 +914,7 @@
 
 .apikeys-toggle input:checked+.toggle-slider:before {
     transform: translateX(18px);
-    background: white;
+    background: #ffffff;
 }
 
 .apikeys-ide-status {
@@ -970,7 +979,7 @@
     border-radius: var(--radius-md);
     background: var(--bg-card);
     color: var(--text-primary);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
     border: 1px solid var(--border-color);
     display: flex;
     align-items: center;
@@ -1169,6 +1178,7 @@
     position: relative;
     width: 48px;
     height: 48px;
+    flex-shrink: 0;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -1191,6 +1201,7 @@
 
 .pm-process-info {
     flex: 1;
+    min-width: 200px;
 }
 
 .pm-process-name {
@@ -1202,8 +1213,9 @@
 
 .pm-process-details {
     display: flex;
+    flex-wrap: wrap;
     align-items: center;
-    gap: var(--spacing-lg);
+    gap: var(--spacing-md) var(--spacing-lg);
 }
 
 .pm-detail {
@@ -1313,4 +1325,33 @@
     margin: 0;
     color: var(--text-muted);
     font-size: 14px;
+}
+
+/* Sparklines */
+.pm-sparklines {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-lg);
+    margin-top: var(--spacing-md);
+    padding-top: var(--spacing-md);
+    border-top: 1px solid var(--border-color);
+}
+
+.pm-sparkline-item {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+    background: var(--bg-tertiary);
+    padding: 6px 12px;
+    border-radius: var(--radius-sm);
+    flex: 1;
+    min-width: 150px;
+}
+
+.pm-sparkline-label {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    min-width: 30px;
 }
