@@ -39,7 +39,7 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     locale: "en_US",
-    url: "https://devsynq.com",
+    url: "https://devsynq.app",
     title: "DevSynq - Sync Your MCP Config Across All AI IDEs",
     description:
       "DevSynq syncs your MCP servers, API keys, and projects across Cursor, Windsurf, VS Code, and more. One config. All your IDEs.",

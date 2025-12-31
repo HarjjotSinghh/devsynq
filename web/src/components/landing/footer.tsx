@@ -21,7 +21,7 @@ const resourceLinks = [
 const companyLinks = [
     { label: 'About', href: '#' },
     { label: 'Twitter', href: 'https://twitter.com/harjjotsinghh' },
-    { label: 'Contact', href: 'mailto:hello@devsynq.com' },
+    { label: 'Contact', href: 'mailto:hello@devsynq.app' },
 ];
 
 export function Footer() {

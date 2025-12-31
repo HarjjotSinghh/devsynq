@@ -23,7 +23,7 @@ import {
 const CLOUD_SYNC_CONFIG_FILE = 'cloud-sync-config.json';
 
 // Default sync server URL (can be customized)
-const DEFAULT_SYNC_SERVER = 'https://devsynq.com/api/cloud-sync';
+const DEFAULT_SYNC_SERVER = 'https://devsynq.app/api/cloud-sync';
 
 // Data types that can be synced
 export type SyncDataType = 'projects' | 'mcp_config' | 'settings' | 'api_keys' | 'profile' | 'full_backup';

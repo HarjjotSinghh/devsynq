@@ -48,12 +48,12 @@ export const CloudSyncSettings: React.FC<CloudSyncSettingsProps> = ({
     const [regEmail, setRegEmail] = useState('');
     const [regPassword, setRegPassword] = useState('');
     const [regDisplayName, setRegDisplayName] = useState('');
-    const [regServerUrl, setRegServerUrl] = useState('https://devsynq.com/api/cloud-sync');
+    const [regServerUrl, setRegServerUrl] = useState('https://devsynq.app/api/cloud-sync');
 
     // Form state for login
     const [loginAccessKey, setLoginAccessKey] = useState('');
     const [loginPassword, setLoginPassword] = useState('');
-    const [loginServerUrl, setLoginServerUrl] = useState('https://devsynq.com/api/cloud-sync');
+    const [loginServerUrl, setLoginServerUrl] = useState('https://devsynq.app/api/cloud-sync');
 
     // State for showing access key after registration
     const [newAccessKey, setNewAccessKey] = useState<string | null>(null);

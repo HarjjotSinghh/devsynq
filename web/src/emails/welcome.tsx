@@ -98,8 +98,8 @@ export const WelcomeEmail = ({
                     <Section style={footer}>
                         <Text style={footerText}>
                             You&apos;re receiving this because you signed up at{' '}
-                            <Link href="https://devsynq.com" style={footerLink}>
-                                devsynq.com
+                            <Link href="https://devsynq.app" style={footerLink}>
+                                devsynq.app
                             </Link>
                         </Text>
                         <Text style={footerText}>
@@ -117,7 +117,7 @@ export const WelcomeEmail = ({
                                 Twitter
                             </Link>
                             {' • '}
-                            <Link href="https://devsynq.com" style={footerLink}>
+                            <Link href="https://devsynq.app" style={footerLink}>
                                 Website
                             </Link>
                         </Text>

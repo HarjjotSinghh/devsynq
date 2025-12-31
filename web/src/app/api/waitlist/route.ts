@@ -64,7 +64,7 @@ export async function POST(request: NextRequest) {
         // Send welcome email
         try {
             await resend.emails.send({
-                from: 'DevSynq <hello@devsynq.com>',
+                from: 'DevSynq <hello@devsynq.app>',
                 to: email,
                 subject: "You're on the DevSynq waitlist! 🎉",
                 react: WelcomeEmail({ email, spotsRemaining: spotsRemaining - 1 }),

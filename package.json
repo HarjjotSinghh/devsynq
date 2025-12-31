@@ -4,7 +4,7 @@
   "description": "AI IDE Launcher - Launch your favorite AI-powered development environments",
   "author": {
     "name": "DevSynq",
-    "email": "hello@devsynq.com"
+    "email": "hello@devsynq.app"
   },
   "main": "dist/main.js",
   "private": true,
