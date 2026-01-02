@@ -591,3 +591,194 @@ export function hasProjectMCPs(projectPath: string): boolean {
     return config !== null && Object.keys(config.mcpServers).length > 0;
 }
 
+// ============================================================================
+// Centralized vs Per-Project MCP Configuration
+// ============================================================================
+
+export interface ProjectMCPInfo {
+    usesCustom: boolean;
+    configPath: string;
+    exists: boolean;
+    serverCount: number;
+}
+
+/**
+ * Validate an MCP configuration file
+ */
+export function validateMCPConfigFile(filePath: string): { valid: boolean; error?: string } {
+    if (!fileExists(filePath)) {
+        return { valid: false, error: 'File does not exist' };
+    }
+
+    try {
+        const content = fs.readFileSync(filePath, 'utf8');
+        const config = JSON.parse(content);
+
+        // Check for required mcpServers property
+        if (!config.mcpServers || typeof config.mcpServers !== 'object') {
+            return { valid: false, error: 'Missing or invalid mcpServers property' };
+        }
+
+        // Validate each server entry
+        for (const [name, server] of Object.entries(config.mcpServers)) {
+            if (!server || typeof server !== 'object') {
+                return { valid: false, error: `Invalid server configuration for "${name}"` };
+            }
+            const serverObj = server as Record<string, unknown>;
+            if (!serverObj.command || typeof serverObj.command !== 'string') {
+                return { valid: false, error: `Missing command for server "${name}"` };
+            }
+        }
+
+        return { valid: true };
+    } catch (error: any) {
+        return { valid: false, error: `Invalid JSON: ${error.message}` };
+    }
+}
+
+/**
+ * Get information about a project's MCP configuration
+ */
+export function getProjectCustomMCPInfo(projectPath: string, customPath?: string): ProjectMCPInfo {
+    if (customPath) {
+        // Custom path is set - resolve it
+        const resolvedPath = path.isAbsolute(customPath)
+            ? customPath
+            : path.join(projectPath, customPath);
+        
+        const exists = fileExists(resolvedPath);
+        let serverCount = 0;
+        
+        if (exists) {
+            const config = readJSON<MCPConfig>(resolvedPath, { mcpServers: {} });
+            serverCount = Object.keys(config.mcpServers).length;
+        }
+
+        return {
+            usesCustom: true,
+            configPath: resolvedPath,
+            exists,
+            serverCount,
+        };
+    }
+
+    // No custom path - using centralized config
+    const masterConfig = getMasterConfig();
+    return {
+        usesCustom: false,
+        configPath: MASTER_MCP_PATH,
+        exists: fileExists(MASTER_MCP_PATH),
+        serverCount: Object.keys(masterConfig.mcpServers).length,
+    };
+}
+
+/**
+ * Get the effective MCP configuration for a project
+ * Uses custom config if set, otherwise falls back to master
+ */
+export function getEffectiveMCPConfig(projectPath: string, customPath?: string): MCPConfig {
+    if (customPath) {
+        const resolvedPath = path.isAbsolute(customPath)
+            ? customPath
+            : path.join(projectPath, customPath);
+        
+        if (fileExists(resolvedPath)) {
+            return readJSON<MCPConfig>(resolvedPath, { mcpServers: {} });
+        }
+        // Custom path set but file doesn't exist - fall back to master
+        console.warn(`Custom MCP config not found at ${resolvedPath}, using master`);
+    }
+
+    return getMasterConfig();
+}
+
+/**
+ * Create a project-specific MCP config from the master config
+ */
+export function createProjectMCPFromMaster(projectPath: string): string {
+    const masterConfig = getMasterConfig();
+    const projectConfigPath = path.join(projectPath, '.devsynq', 'mcp.json');
+    
+    writeJSON(projectConfigPath, masterConfig);
+    
+    console.log(`Created project MCP config at ${projectConfigPath}`);
+    return projectConfigPath;
+}
+
+/**
+ * Sync MCP config to IDEs for a specific project
+ * Uses the project's custom config if set, otherwise uses master
+ */
+export async function syncMCPConfigsForProject(
+    projectPath: string,
+    customConfigPath?: string,
+    ideIds?: string[]
+): Promise<SyncResult> {
+    const config = getEffectiveMCPConfig(projectPath, customConfigPath);
+    const settings = loadSyncSettings();
+    
+    const result: SyncResult = {
+        success: [],
+        failed: [],
+        requireRestart: [],
+        skipped: [],
+    };
+
+    const idesToSync = ideIds || Object.keys(IDE_MCP_PATHS);
+
+    for (const ideId of idesToSync) {
+        if (!settings.enabledIDEs[ideId]) {
+            result.skipped.push(ideId);
+            continue;
+        }
+
+        if (!getIDEInstallStatus(ideId)) {
+            result.skipped.push(ideId);
+            continue;
+        }
+
+        const idePath = IDE_MCP_PATHS[ideId];
+        if (!idePath) {
+            result.skipped.push(ideId);
+            continue;
+        }
+        
+        try {
+            // Create backup if enabled
+            if (settings.createBackups && fileExists(idePath)) {
+                const timestamp = new Date().toISOString().replace(/[:.]/g, '-').split('T').join('_');
+                const backupPath = getBackupPath(ideId, timestamp);
+                copyFile(idePath, backupPath);
+            }
+
+            // Write the effective config
+            writeJSON(idePath, config);
+
+            appendSyncLog({
+                timestamp: Date.now(),
+                ideId,
+                action: 'sync',
+                success: true,
+            });
+
+            result.success.push(ideId);
+            result.requireRestart.push(ideId);
+        } catch (error: any) {
+            appendSyncLog({
+                timestamp: Date.now(),
+                ideId,
+                action: 'sync',
+                success: false,
+                error: error.message,
+            });
+
+            result.failed.push({
+                ide: ideId,
+                error: error.message,
+            });
+        }
+    }
+
+    return result;
+}
+

@@ -1,0 +1,290 @@
+.project-mcp-settings {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    background: var(--surface);
+    border-radius: 12px;
+    overflow: hidden;
+    max-height: 550px;
+    width: 480px;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+}
+
+.project-mcp-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 24px;
+    background: var(--surface-elevated);
+    border-bottom: 1px solid var(--border);
+}
+
+.project-mcp-header .header-info h3 {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 0;
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.project-mcp-header .project-name {
+    margin: 4px 0 0 0;
+    font-size: 13px;
+    color: var(--text-secondary);
+}
+
+.project-mcp-header .close-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border: none;
+    background: transparent;
+    color: var(--text-secondary);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.project-mcp-header .close-btn:hover {
+    background: var(--hover);
+    color: var(--text-primary);
+}
+
+.project-mcp-loading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 60px 20px;
+    gap: 12px;
+    color: var(--text-secondary);
+}
+
+.project-mcp-loading .loading-spinner {
+    width: 32px;
+    height: 32px;
+    border: 3px solid var(--border);
+    border-top-color: var(--accent);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.project-mcp-content {
+    flex: 1;
+    overflow-y: auto;
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+/* Status Section */
+.mcp-status-section {
+    background: var(--surface-elevated);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px;
+}
+
+.status-indicator {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 10px;
+}
+
+.status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.status-badge.centralized {
+    background: rgba(var(--accent-rgb), 0.15);
+    color: var(--accent);
+}
+
+.status-badge.custom {
+    background: rgba(168, 85, 247, 0.15);
+    color: rgb(168, 85, 247);
+}
+
+.server-count {
+    font-size: 12px;
+    color: var(--text-secondary);
+}
+
+.config-path {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    color: var(--text-secondary);
+}
+
+.config-path code {
+    background: var(--surface);
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-family: 'SF Mono', monospace;
+    font-size: 11px;
+    max-width: 350px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.missing-badge {
+    background: rgba(239, 68, 68, 0.15);
+    color: rgb(239, 68, 68);
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 10px;
+    font-weight: 600;
+}
+
+/* Mode Section */
+.mcp-mode-section h4 {
+    margin: 0 0 16px 0;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.mode-options {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.mode-option {
+    background: var(--surface-elevated);
+    border: 2px solid var(--border);
+    border-radius: 12px;
+    padding: 16px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.mode-option:hover {
+    border-color: var(--border-hover);
+}
+
+.mode-option.selected {
+    border-color: var(--accent);
+    background: rgba(var(--accent-rgb), 0.05);
+}
+
+.mode-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 8px;
+}
+
+.mode-title {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.mode-header .check-icon {
+    margin-left: auto;
+    color: var(--accent);
+}
+
+.mode-description {
+    margin: 0 0 12px 0;
+    font-size: 13px;
+    color: var(--text-secondary);
+    line-height: 1.5;
+}
+
+.custom-actions {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.mode-action-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 14px;
+    font-size: 12px;
+    font-weight: 500;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    background: var(--surface);
+    color: var(--text-primary);
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.mode-action-btn:hover:not(:disabled) {
+    background: var(--hover);
+    border-color: var(--border-hover);
+}
+
+.mode-action-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.mode-action-btn.primary {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: var(--text-on-accent);
+}
+
+.mode-action-btn.primary:hover:not(:disabled) {
+    filter: brightness(1.1);
+}
+
+/* Info Note */
+.mcp-info-note {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 14px;
+    background: rgba(var(--accent-rgb), 0.08);
+    border-radius: 8px;
+    border: 1px solid rgba(var(--accent-rgb), 0.2);
+}
+
+.mcp-info-note svg {
+    flex-shrink: 0;
+    color: var(--accent);
+    margin-top: 2px;
+}
+
+.mcp-info-note p {
+    margin: 0;
+    font-size: 12px;
+    color: var(--text-secondary);
+    line-height: 1.5;
+}
+
+/* Modal container for standalone use */
+.project-mcp-modal-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    width: 100%;
+    height: 100%;
+}

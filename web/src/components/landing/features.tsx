@@ -8,9 +8,9 @@ const features = [
     {
         title: "Master MCP Config → All IDEs",
         description:
-            "Edit your mcp.json once. Click Sync. Every IDE gets updated. Cursor, Windsurf, Trae, Qoder—all in sync.",
+            "Edit your mcp.json once. Click Sync. Every IDE gets updated—or override per-project for specialized setups. The choice is yours.",
         icon: RefreshCw,
-        benefits: ["Sync to unlimited IDEs", "Per-IDE overrides available", "Automatic backup on sync"],
+        benefits: ["Sync to unlimited IDEs", "Per-project custom configs", "Automatic backup on sync"],
         screenshot: "/screenshots/MCP Configuration Sync.png",
         gradient: "from-primary to-primary/80",
     },

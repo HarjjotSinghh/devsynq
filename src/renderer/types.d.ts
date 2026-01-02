@@ -99,6 +99,51 @@ export interface ElectronAPI {
     getMCPSyncLog: () => Promise<SyncLogEntry[]>;
 
     // ============================================================================
+    // Project-Specific MCP Config APIs
+    // ============================================================================
+
+    // Get project MCP config info
+    getProjectMcpInfo: (projectId: string) => Promise<{
+        usesCustom: boolean;
+        configPath: string;
+        exists: boolean;
+        serverCount: number;
+        error?: string;
+    }>;
+
+    // Set custom MCP config path for a project
+    setProjectMcpConfig: (projectId: string, configPath: string | null) => Promise<{
+        success: boolean;
+        error?: string;
+    }>;
+
+    // Clear custom MCP config (revert to centralized)
+    clearProjectMcpConfig: (projectId: string) => Promise<{
+        success: boolean;
+        error?: string;
+    }>;
+
+    // Browse for MCP config file
+    browseForMcpConfig: () => Promise<{
+        path: string;
+        valid: boolean;
+        error?: string;
+    } | null>;
+
+    // Create project-specific MCP config from master
+    createProjectMcpConfig: (projectId: string) => Promise<{
+        success: boolean;
+        configPath?: string;
+        error?: string;
+    }>;
+
+    // Open project MCP config in default editor
+    openProjectMcpConfig: (projectId: string) => Promise<{
+        success: boolean;
+        error?: string;
+    }>;
+
+    // ============================================================================
     // Profile Sync APIs
     // ============================================================================
     getProfileSyncStatus: () => Promise<ProfileSyncStatus[]>;

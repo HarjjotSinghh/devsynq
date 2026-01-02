@@ -124,3 +124,10 @@ export function getOverridePath(ideId: string): string {
 export function getBackupPath(ideId: string, timestamp: string): string {
   return path.join(DEVSYNQ_DIR, 'backups', `${ideId}`, `mcp.${timestamp}.json`);
 }
+
+/**
+ * Get the default project-level MCP config path
+ */
+export function getProjectMCPConfigPath(projectPath: string): string {
+  return path.join(projectPath, '.devsynq', 'mcp.json');
+}

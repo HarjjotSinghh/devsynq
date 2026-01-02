@@ -81,6 +81,34 @@ contextBridge.exposeInMainWorld("electronAPI", {
         ipcRenderer.invoke("get-mcp-sync-log"),
 
     // ============================================================================
+    // Project-Specific MCP Config APIs
+    // ============================================================================
+
+    // Get project MCP config info (whether using centralized or custom)
+    getProjectMcpInfo: (projectId: string) =>
+        ipcRenderer.invoke("get-project-mcp-info", projectId),
+
+    // Set custom MCP config path for a project
+    setProjectMcpConfig: (projectId: string, configPath: string | null) =>
+        ipcRenderer.invoke("set-project-mcp-config", projectId, configPath),
+
+    // Clear custom MCP config (revert to centralized)
+    clearProjectMcpConfig: (projectId: string) =>
+        ipcRenderer.invoke("clear-project-mcp-config", projectId),
+
+    // Browse for MCP config file
+    browseForMcpConfig: () =>
+        ipcRenderer.invoke("browse-for-mcp-config"),
+
+    // Create project-specific MCP config from master
+    createProjectMcpConfig: (projectId: string) =>
+        ipcRenderer.invoke("create-project-mcp-config", projectId),
+
+    // Open project MCP config in default editor
+    openProjectMcpConfig: (projectId: string) =>
+        ipcRenderer.invoke("open-project-mcp-config", projectId),
+
+    // ============================================================================
     // Profile Sync APIs
     // ============================================================================
 

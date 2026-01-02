@@ -43,6 +43,9 @@ export interface Project {
   metadata?: ProjectMetadata;
   // Enhancement: Project-Specific MCPs
   mcpServers?: string[]; // Array of MCP server IDs
+  // Custom MCP configuration path (absolute or relative to project)
+  // When set, this overrides the centralized master MCP config for this project
+  customMcpConfigPath?: string;
 }
 
 export interface PreLaunchScript {

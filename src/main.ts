@@ -32,6 +32,10 @@ import {
   deleteOverride,
   getMasterConfigPath,
   loadSyncLog,
+  getProjectCustomMCPInfo,
+  validateMCPConfigFile,
+  createProjectMCPFromMaster,
+  getEffectiveMCPConfig,
 } from "./lib/mcp-sync";
 
 // Import process manager functions
@@ -968,6 +972,119 @@ ipcMain.handle("open-mcp-master-config", async () => {
 // Get sync log
 ipcMain.handle("get-mcp-sync-log", () => {
   return loadSyncLog();
+});
+
+// ============================================================================
+// Project-Specific MCP Config IPC Handlers
+// ============================================================================
+
+// Get project MCP config info (whether using centralized or custom)
+ipcMain.handle("get-project-mcp-info", (_event: unknown, projectId: string) => {
+  const projects = loadProjects();
+  const project = projects.find((p) => p.id === projectId);
+  if (!project) {
+    return { error: "Project not found" };
+  }
+  return getProjectCustomMCPInfo(project.path, project.customMcpConfigPath);
+});
+
+// Set custom MCP config path for a project
+ipcMain.handle("set-project-mcp-config", (_event: unknown, projectId: string, configPath: string | null) => {
+  const projects = loadProjects();
+  const project = projects.find((p) => p.id === projectId);
+  if (!project) {
+    return { success: false, error: "Project not found" };
+  }
+
+  if (configPath) {
+    // Validate the config file
+    const validation = validateMCPConfigFile(configPath);
+    if (!validation.valid) {
+      return { success: false, error: validation.error };
+    }
+    project.customMcpConfigPath = configPath;
+  } else {
+    delete project.customMcpConfigPath;
+  }
+
+  saveProjects(projects);
+  return { success: true };
+});
+
+// Clear custom MCP config (revert to centralized)
+ipcMain.handle("clear-project-mcp-config", (_event: unknown, projectId: string) => {
+  const projects = loadProjects();
+  const project = projects.find((p) => p.id === projectId);
+  if (!project) {
+    return { success: false, error: "Project not found" };
+  }
+
+  delete project.customMcpConfigPath;
+  saveProjects(projects);
+  return { success: true };
+});
+
+// Browse for MCP config file
+ipcMain.handle("browse-for-mcp-config", async () => {
+  if (!mainWindow) return null;
+
+  const result = await dialog.showOpenDialog(mainWindow, {
+    properties: ["openFile"],
+    title: "Select MCP Configuration File",
+    filters: [
+      { name: "JSON Files", extensions: ["json"] },
+      { name: "All Files", extensions: ["*"] },
+    ],
+  });
+
+  if (result.canceled || result.filePaths.length === 0) {
+    return null;
+  }
+
+  const filePath = result.filePaths[0];
+  const validation = validateMCPConfigFile(filePath);
+  
+  return {
+    path: filePath,
+    valid: validation.valid,
+    error: validation.error,
+  };
+});
+
+// Create project-specific MCP config from master
+ipcMain.handle("create-project-mcp-config", (_event: unknown, projectId: string) => {
+  const projects = loadProjects();
+  const project = projects.find((p) => p.id === projectId);
+  if (!project) {
+    return { success: false, error: "Project not found" };
+  }
+
+  try {
+    const configPath = createProjectMCPFromMaster(project.path);
+    // Set the project to use this new config (relative path)
+    project.customMcpConfigPath = ".devsynq/mcp.json";
+    saveProjects(projects);
+    return { success: true, configPath };
+  } catch (error: any) {
+    return { success: false, error: error.message };
+  }
+});
+
+// Open project MCP config in default editor
+ipcMain.handle("open-project-mcp-config", async (_event: unknown, projectId: string) => {
+  const projects = loadProjects();
+  const project = projects.find((p) => p.id === projectId);
+  if (!project) {
+    return { success: false, error: "Project not found" };
+  }
+
+  const info = getProjectCustomMCPInfo(project.path, project.customMcpConfigPath);
+  if (!info.exists) {
+    return { success: false, error: "Config file does not exist" };
+  }
+
+  await shell.openPath(info.configPath);
+  return { success: true };
 });
 
 // ============================================================================

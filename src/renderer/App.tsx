@@ -7,6 +7,7 @@ import ProjectGroupManager from './components/ProjectGroupManager';
 import { MCPHealthDashboard } from './components/MCPHealthDashboard';
 import { RulesLibrary } from './components/RulesLibrary';
 import { MCPMarketplace } from './components/MCPMarketplace';
+import { ProjectMCPSettings } from './components/ProjectMCPSettings';
 
 const SETTINGS_DEFAULTS: Settings = {
     defaultIDE: IDEType.Cursor,
@@ -50,6 +51,7 @@ const App: React.FC = () => {
     const [isMCPHealthOpen, setIsMCPHealthOpen] = useState(false);
     const [isRulesLibraryOpen, setIsRulesLibraryOpen] = useState(false);
     const [selectedProjectForRules, setSelectedProjectForRules] = useState<string | undefined>(undefined);
+    const [selectedProjectForMCP, setSelectedProjectForMCP] = useState<Project | null>(null);
 
     // --- Initialization ---
     useEffect(() => {
@@ -1049,6 +1051,17 @@ const App: React.FC = () => {
                                                             <Icon name="launch" size={16} />
                                                         </button>
                                                         <button
+                                                            className={`project-action-btn mcp ${project.customMcpConfigPath ? 'custom' : ''}`}
+                                                            title={project.customMcpConfigPath ? 'Custom MCP Config' : 'MCP Config (Centralized)'}
+                                                            onClick={(e) => {
+                                                                e.stopPropagation();
+                                                                setSelectedProjectForMCP(project);
+                                                            }}
+                                                        >
+                                                            <Icon name="settings" size={16} />
+                                                            {project.customMcpConfigPath && <span className="custom-dot" />}
+                                                        </button>
+                                                        <button
                                                             className="project-action-btn delete"
                                                             title="Remove Project"
                                                             onClick={(e) => handleDeleteProject(e, project.id, project.name)}
@@ -1152,6 +1165,27 @@ const App: React.FC = () => {
                 onToast={showToast}
                 projectPath={selectedProjectForRules}
             />
+
+            {/* Project MCP Settings Modal */}
+            {selectedProjectForMCP && (
+                <div
+                    className="modal-overlay"
+                    onClick={(e) => {
+                        if (e.target === e.currentTarget) {
+                            setSelectedProjectForMCP(null);
+                        }
+                    }}
+                >
+                    <div className="project-mcp-modal-container">
+                        <ProjectMCPSettings
+                            project={selectedProjectForMCP}
+                            onClose={() => setSelectedProjectForMCP(null)}
+                            onToast={showToast}
+                            onProjectUpdated={loadProjects}
+                        />
+                    </div>
+                </div>
+            )}
 
             {/* Footer */}
             <footer className="footer">
