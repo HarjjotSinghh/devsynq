@@ -42,6 +42,16 @@ A sleek, modern Electron application to launch your favorite AI-powered developm
 **Method 1: Download Installer**
 Download the latest release for your operating system from the [Releases](https://github.com/HarjjotSinghh/devsynq/releases) page.
 
+> **macOS Users:** If you see "Apple could not verify" when opening the app:
+> 1. **Right-click** (or Control-click) on DevSynq in your Applications folder
+> 2. Select **"Open"** from the context menu
+> 3. Click **"Open"** in the dialog that appears
+> 
+> This only needs to be done once. Alternatively, run in Terminal:
+> ```bash
+> xattr -d com.apple.quarantine /Applications/DevSynq.app
+> ```
+
 **Method 2: Build from Source**
 
 ```bash
