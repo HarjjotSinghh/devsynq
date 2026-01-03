@@ -1,4 +1,4 @@
-![DevSynq Banner](assets/branding/twitter%20header.png)
+<img width="1681" height="961" alt="image" src="https://github.com/user-attachments/assets/c0903432-54af-4b8d-ada0-6b5535892a06" />
 
 # DevSynq - AI IDE Launcher
 
@@ -8,6 +8,12 @@ A sleek, modern Electron application to launch your favorite AI-powered developm
 ![Electron](https://img.shields.io/badge/Electron-39.2.6-blue)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5.0-blue)
 ![Bun](https://img.shields.io/badge/Bun-1.3.2-orange)
+
+<center>
+
+  [![Watch the full introduction video for DevSynq here](https://www.youtube.com/watch?v=oBqtXS-ZsTM)](https://www.youtube.com/watch?v=oBqtXS-ZsTM)
+
+</center>
 
 ## Features
 
