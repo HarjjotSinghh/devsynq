@@ -525,6 +525,7 @@ export interface ElectronAPI {
     cloudSyncUpdateSettings: (settings: { autoSync?: boolean; syncInterval?: number }) => Promise<{ success: boolean }>;
     cloudSyncFullBackup: () => Promise<CloudSyncResult>;
     cloudSyncRestoreBackup: () => Promise<CloudSyncResult>;
+    cloudSyncCreateCheckoutSession: () => Promise<CloudSyncResult & { checkoutUrl?: string }>;
 }
 
 // Cloud Sync Types
@@ -537,6 +538,7 @@ interface CloudSyncConfig {
     lastSyncAt: number | null;
     autoSync: boolean;
     syncInterval: number;
+    planType?: string;
 }
 
 interface CloudSyncResult {

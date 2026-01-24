@@ -1043,7 +1043,7 @@ ipcMain.handle("browse-for-mcp-config", async () => {
 
   const filePath = result.filePaths[0];
   const validation = validateMCPConfigFile(filePath);
-  
+
   return {
     path: filePath,
     valid: validation.valid,
@@ -1894,6 +1894,11 @@ ipcMain.handle("cloud-sync-push", async (
 // Pull data from cloud sync
 ipcMain.handle("cloud-sync-pull", async (_event: unknown, dataType: SyncDataType) => {
   return await cloudSyncService.pull(dataType);
+});
+
+// Create checkout session
+ipcMain.handle("cloud-sync-create-checkout-session", async () => {
+  return await cloudSyncService.createCheckoutSession();
 });
 
 // List all backups

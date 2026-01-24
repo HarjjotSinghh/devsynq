@@ -47,6 +47,10 @@ export const cloudSyncUsers = pgTable('cloud_sync_users', {
     isActive: boolean('is_active').default(true).notNull(),
     // Plan type for future monetization
     planType: text('plan_type').default('free').notNull(), // 'free', 'pro'
+    // DodoPayments subscription fields
+    customerId: text('customer_id'),
+    subscriptionId: text('subscription_id'),
+    subscriptionStatus: text('subscription_status').default('inactive'),
 });
 
 /**

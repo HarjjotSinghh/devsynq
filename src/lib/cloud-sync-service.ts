@@ -39,6 +39,7 @@ export interface CloudSyncConfig {
     lastSyncAt: number | null;
     autoSync: boolean;
     syncInterval: number; // minutes
+    planType: string; // 'free', 'pro'
 }
 
 export interface SyncResult {
@@ -147,6 +148,7 @@ export class CloudSyncService {
             lastSyncAt: this.config.lastSyncAt,
             autoSync: this.config.autoSync,
             syncInterval: this.config.syncInterval,
+            planType: this.config.planType || 'free',
         };
     }
 
@@ -205,6 +207,7 @@ export class CloudSyncService {
                 lastSyncAt: null,
                 autoSync: true,
                 syncInterval: 60, // Default: sync every hour
+                planType: data.user.planType || 'free',
             };
 
             this.encryptionPassword = encryptionPassword;
@@ -273,6 +276,7 @@ export class CloudSyncService {
                 lastSyncAt: null,
                 autoSync: true,
                 syncInterval: 60,
+                planType: data.account.planType || 'free',
             };
 
             this.encryptionPassword = encryptionPassword;
@@ -589,6 +593,41 @@ export class CloudSyncService {
     /**
      * Updates auto-sync settings
      */
+    /**
+     * Creates a checkout session for premium subscription
+     */
+    async createCheckoutSession(): Promise<SyncResult & { checkoutUrl?: string }> {
+        if (!this.config) {
+            return { success: false, message: 'Not logged in' };
+        }
+
+        try {
+            const response = await this.apiRequest('/checkout', 'POST');
+            const result = await response.json();
+
+            if (!response.ok) {
+                return {
+                    success: false,
+                    message: result.error || 'Failed to create checkout session',
+                    error: result.error,
+                };
+            }
+
+            return {
+                success: true,
+                message: 'Checkout session created',
+                checkoutUrl: result.checkout_url,
+            };
+        } catch (error) {
+            console.error('Create checkout session error:', error);
+            return {
+                success: false,
+                message: 'Failed to create checkout session',
+                error: error instanceof Error ? error.message : 'Unknown error',
+            };
+        }
+    }
+
     updateSettings(settings: Partial<Pick<CloudSyncConfig, 'autoSync' | 'syncInterval'>>): void {
         if (!this.config) return;
 

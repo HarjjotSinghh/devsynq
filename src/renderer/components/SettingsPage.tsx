@@ -5,6 +5,7 @@ import { ProfileSyncSettings } from './ProfileSyncSettings';
 import ProcessManager from './ProcessManager';
 import APIKeysManager from './APIKeysManager';
 import { Icon, IdeIcon } from './Icons';
+import { CloudSyncContent } from './CloudSyncContent';
 import './SettingsPage.css';
 
 interface SettingsPageProps {
@@ -19,7 +20,7 @@ interface SettingsPageProps {
     resolveShortcutIDE: (index: number) => IDEType | undefined;
 }
 
-type TabId = 'general' | 'shortcuts' | 'mcp' | 'profile' | 'processes' | 'apikeys';
+type TabId = 'general' | 'shortcuts' | 'mcp' | 'profile' | 'processes' | 'apikeys' | 'cloudsync';
 
 interface Tab {
     id: TabId;
@@ -35,6 +36,7 @@ const TABS: Tab[] = [
     { id: 'profile', label: 'Profile Sync', icon: <Icon name="profile" />, description: 'Sync .code-profile across IDEs' },
     { id: 'processes', label: 'Processes', icon: <Icon name="project" />, description: 'Running IDE management' },
     { id: 'apikeys', label: 'API Keys', icon: <Icon name="theme" />, description: 'API key storage and sync' },
+    { id: 'cloudsync', label: 'Cloud Sync', icon: <Icon name="hardDrive" />, description: 'Backup and sync across devices' },
 ];
 
 function SettingsPage({
@@ -283,6 +285,12 @@ function SettingsPage({
                     {activeTab === 'apikeys' && (
                         <div key="apikeys" className="settings-panel page-transition-enter">
                             <APIKeysManager />
+                        </div>
+                    )}
+
+                    {activeTab === 'cloudsync' && (
+                        <div key="cloudsync" className="settings-panel page-transition-enter">
+                            <CloudSyncContent onToast={(msg) => onToast(msg)} />
                         </div>
                     )}
                 </main>

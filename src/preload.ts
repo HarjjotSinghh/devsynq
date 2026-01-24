@@ -448,4 +448,7 @@ contextBridge.exposeInMainWorld("electronAPI", {
 
     // Restore from full backup
     cloudSyncRestoreBackup: () => ipcRenderer.invoke("cloud-sync-restore-backup"),
+
+    // Create checkout session
+    cloudSyncCreateCheckoutSession: () => ipcRenderer.invoke("cloud-sync-create-checkout-session"),
 });
