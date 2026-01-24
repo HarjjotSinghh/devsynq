@@ -13,6 +13,11 @@ export enum IDEType {
   Antigravity = "Antigravity",
   Kiro = "Kiro",
   Qoder = "Qoder",
+  // CLI Tools
+  ClaudeCodeCLI = "Claude Code CLI",
+  CodexCLI = "Codex CLI",
+  GeminiCLI = "Gemini CLI",
+  AugmentCLI = "Augment CLI",
 }
 
 export interface IDE {

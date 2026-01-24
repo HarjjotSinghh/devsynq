@@ -55,6 +55,11 @@ export const IDE_MCP_PATHS: Record<string, string> = {
     "cline_mcp_settings.json"
   ),
   kiro: path.join(APPDATA, "Kiro", "mcp.json"),
+  // CLI Tools
+  claudecode: path.join(HOME, ".claude.json"),
+  codexcli: path.join(HOME, ".codex", "config.toml"),
+  geminicli: path.join(HOME, ".gemini", "settings.json"),
+  augmentcli: path.join(HOME, ".augment", "settings.json"),
 };
 
 /**
@@ -75,6 +80,11 @@ export const IDE_NAMES: Record<IDEType, string> = {
   [IDEType.Antigravity]: "Antigravity",
   [IDEType.Kiro]: "Kiro",
   [IDEType.Qoder]: "Qoder",
+  // CLI Tools
+  [IDEType.ClaudeCodeCLI]: "Claude Code CLI",
+  [IDEType.CodexCLI]: "Codex CLI",
+  [IDEType.GeminiCLI]: "Gemini CLI",
+  [IDEType.AugmentCLI]: "Augment CLI",
 };
 
 /**
@@ -88,6 +98,29 @@ export const IDE_ICONS: Record<string, string> = {
   windsurf: '🏄',
   vscode: '💻',
   kiro: '🔮',
+  // CLI Tools
+  claudecode: '🤖',
+  codexcli: '🧠',
+  geminicli: '💎',
+  augmentcli: '🔧',
+};
+
+/**
+ * Config file formats for different tools
+ * Most use JSON, but Codex CLI uses TOML
+ */
+export const IDE_CONFIG_FORMATS: Record<string, 'json' | 'toml'> = {
+  cursor: 'json',
+  qoder: 'json',
+  antigravity: 'json',
+  trae: 'json',
+  windsurf: 'json',
+  vscode: 'json',
+  kiro: 'json',
+  claudecode: 'json',
+  codexcli: 'toml',
+  geminicli: 'json',
+  augmentcli: 'json',
 };
 
 /**

@@ -332,6 +332,57 @@ const IDEs: IDE[] = [
     downloadUrl: "https://www.jetbrains.com/pycharm/download/",
     color: "#21d19f",
   },
+  // ============================================================================
+  // CLI Tools - AI Coding Assistants (Command Line)
+  // ============================================================================
+  {
+    name: IDEType.ClaudeCodeCLI,
+    icon: "🤖",
+    macPaths: ["/usr/local/bin/claude", `${os.homedir()}/.npm-global/bin/claude`],
+    winPaths: [
+      `${os.homedir()}\\AppData\\Roaming\\npm\\claude.cmd`,
+      `C:\\Program Files\\nodejs\\claude.cmd`,
+    ],
+    linuxPaths: ["/usr/local/bin/claude", "/usr/bin/claude", `${os.homedir()}/.npm-global/bin/claude`],
+    downloadUrl: "https://github.com/anthropics/claude-code",
+    color: "#C15F3C", // Claude's rust-orange brand color
+  },
+  {
+    name: IDEType.CodexCLI,
+    icon: "🧠",
+    macPaths: [`${os.homedir()}/.codex/bin/codex`, "/usr/local/bin/codex"],
+    winPaths: [
+      `${os.homedir()}\\.codex\\bin\\codex.exe`,
+      `C:\\Program Files\\OpenAI\\Codex\\codex.exe`,
+    ],
+    linuxPaths: [`${os.homedir()}/.codex/bin/codex`, "/usr/local/bin/codex", "/usr/bin/codex"],
+    downloadUrl: "https://developers.openai.com/codex/cli/",
+    color: "#10A37F", // OpenAI's green brand color
+  },
+  {
+    name: IDEType.GeminiCLI,
+    icon: "💎",
+    macPaths: ["/usr/local/bin/gemini", `${os.homedir()}/.npm-global/bin/gemini`],
+    winPaths: [
+      `${os.homedir()}\\AppData\\Roaming\\npm\\gemini.cmd`,
+      `C:\\Program Files\\nodejs\\gemini.cmd`,
+    ],
+    linuxPaths: ["/usr/local/bin/gemini", "/usr/bin/gemini", `${os.homedir()}/.npm-global/bin/gemini`],
+    downloadUrl: "https://github.com/google-gemini/gemini-cli",
+    color: "#4285F4", // Google Blue
+  },
+  {
+    name: IDEType.AugmentCLI,
+    icon: "🔧",
+    macPaths: ["/usr/local/bin/augment", `${os.homedir()}/.augment/bin/augment`],
+    winPaths: [
+      `${os.homedir()}\\.augment\\bin\\augment.exe`,
+      `C:\\Program Files\\Augment\\augment.exe`,
+    ],
+    linuxPaths: [`${os.homedir()}/.augment/bin/augment`, "/usr/local/bin/augment", "/usr/bin/augment"],
+    downloadUrl: "https://www.augmentcode.com/",
+    color: "#6366F1", // Augment's purple/indigo color
+  },
 ];
 
 function getIDEPath(ide: IDE): string | null {
@@ -652,6 +703,11 @@ ipcMain.handle(
           Kiro: "kiro",
           Qoder: "qoder",
           Trae: "trae",
+          // CLI Tools
+          "Claude Code CLI": "claudecode",
+          "Codex CLI": "codexcli",
+          "Gemini CLI": "geminicli",
+          "Augment CLI": "augmentcli",
         };
         const ideId = ideIdMap[ideName];
         if (ideId && syncSettings.enabledIDEs[ideId]) {
@@ -762,6 +818,11 @@ ipcMain.handle(
           Kiro: "kiro",
           Qoder: "qoder",
           Trae: "trae",
+          // CLI Tools
+          "Claude Code CLI": "claudecode",
+          "Codex CLI": "codexcli",
+          "Gemini CLI": "geminicli",
+          "Augment CLI": "augmentcli",
         };
         const ideId = ideIdMap[ideName];
         if (ideId) {
